@@ -1,0 +1,438 @@
+{
+  "version": 4,
+  "generatedAt": "2026-06-09T20:24:40.185Z",
+  "fingerprint": "21:124490:1780867609756:1e29a8f8",
+  "map": {
+    "ok": true,
+    "repo": {
+      "root": "/Users/segzy/projects/segunolumbe",
+      "name": "segunolumbe",
+      "package": {
+        "name": "segunolumbe",
+        "version": "1.0.0",
+        "type": "module",
+        "private": true
+      },
+      "git": {
+        "available": true,
+        "root": "/Users/segzy/projects/segunolumbe",
+        "branch": "main",
+        "commit": "c6f9c36",
+        "clean": false,
+        "changes": 11,
+        "status": "## main...origin/main"
+      },
+      "fileCount": 21,
+      "sourceFileCount": 11,
+      "languages": [
+        {
+          "language": "TypeScript",
+          "count": 11
+        },
+        {
+          "language": "JSON",
+          "count": 3
+        },
+        {
+          "language": "Markdown",
+          "count": 1
+        },
+        {
+          "language": "YAML",
+          "count": 1
+        }
+      ],
+      "entrypoints": []
+    },
+    "summary": {
+      "routes": 0,
+      "apiRoutes": 0,
+      "controllers": 0,
+      "services": 0,
+      "modules": 0,
+      "components": 4,
+      "hooks": 1,
+      "apiClients": 0,
+      "dtos": 0,
+      "schemas": 0,
+      "tests": 0,
+      "symbols": 15,
+      "dataAccessFiles": 0,
+      "dataAccessHits": 0
+    },
+    "domains": [
+      {
+        "name": "components",
+        "fileCount": 3,
+        "kinds": [
+          {
+            "kind": "component",
+            "count": 3
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "fileCount": 3,
+        "kinds": [
+          {
+            "kind": "source",
+            "count": 3
+          }
+        ]
+      },
+      {
+        "name": "App",
+        "fileCount": 1,
+        "kinds": [
+          {
+            "kind": "component",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "name": "hooks",
+        "fileCount": 1,
+        "kinds": [
+          {
+            "kind": "hook",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "name": "main",
+        "fileCount": 1,
+        "kinds": [
+          {
+            "kind": "source",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "name": "vite-env.d",
+        "fileCount": 1,
+        "kinds": [
+          {
+            "kind": "source",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "name": "vite.config",
+        "fileCount": 1,
+        "kinds": [
+          {
+            "kind": "source",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "files": [
+      {
+        "path": "src/App.tsx",
+        "kind": "component",
+        "domain": "App",
+        "domains": [
+          "App"
+        ],
+        "httpMethods": [],
+        "imports": [
+          "./components/Base",
+          "./components/Card",
+          "./components/DailyQuote",
+          "./data/products",
+          "./data/tools"
+        ],
+        "exports": [
+          "App"
+        ],
+        "symbols": [
+          {
+            "type": "function",
+            "name": "App",
+            "line": 7
+          }
+        ],
+        "isVendor": false
+      },
+      {
+        "path": "src/components/Base.tsx",
+        "kind": "component",
+        "domain": "components",
+        "domains": [
+          "components"
+        ],
+        "httpMethods": [],
+        "imports": [
+          "react",
+          "../hooks/useReveal"
+        ],
+        "exports": [
+          "Base"
+        ],
+        "symbols": [
+          {
+            "type": "const",
+            "name": "logo",
+            "line": 4
+          },
+          {
+            "type": "type",
+            "name": "Props",
+            "line": 6
+          },
+          {
+            "type": "function",
+            "name": "Base",
+            "line": 8
+          }
+        ],
+        "isVendor": false
+      },
+      {
+        "path": "src/components/Card.tsx",
+        "kind": "component",
+        "domain": "components",
+        "domains": [
+          "components"
+        ],
+        "httpMethods": [],
+        "imports": [],
+        "exports": [
+          "Card"
+        ],
+        "symbols": [
+          {
+            "type": "type",
+            "name": "Props",
+            "line": 1
+          },
+          {
+            "type": "function",
+            "name": "Card",
+            "line": 12
+          }
+        ],
+        "isVendor": false
+      },
+      {
+        "path": "src/components/DailyQuote.tsx",
+        "kind": "component",
+        "domain": "components",
+        "domains": [
+          "components"
+        ],
+        "httpMethods": [],
+        "imports": [
+          "react",
+          "../data/quotes"
+        ],
+        "exports": [
+          "DailyQuote"
+        ],
+        "symbols": [
+          {
+            "type": "function",
+            "name": "DailyQuote",
+            "line": 4
+          }
+        ],
+        "isVendor": false
+      },
+      {
+        "path": "src/data/products.ts",
+        "kind": "source",
+        "domain": "data",
+        "domains": [
+          "data"
+        ],
+        "httpMethods": [],
+        "imports": [],
+        "exports": [
+          "Card",
+          "products"
+        ],
+        "symbols": [
+          {
+            "type": "type",
+            "name": "Card",
+            "line": 1
+          },
+          {
+            "type": "const",
+            "name": "products",
+            "line": 12
+          }
+        ],
+        "isVendor": false
+      },
+      {
+        "path": "src/data/quotes.ts",
+        "kind": "source",
+        "domain": "data",
+        "domains": [
+          "data"
+        ],
+        "httpMethods": [],
+        "imports": [],
+        "exports": [
+          "Quote",
+          "quotes",
+          "quoteForToday"
+        ],
+        "symbols": [
+          {
+            "type": "type",
+            "name": "Quote",
+            "line": 1
+          },
+          {
+            "type": "const",
+            "name": "quotes",
+            "line": 3
+          },
+          {
+            "type": "function",
+            "name": "quoteForToday",
+            "line": 37
+          }
+        ],
+        "isVendor": false
+      },
+      {
+        "path": "src/data/tools.ts",
+        "kind": "source",
+        "domain": "data",
+        "domains": [
+          "data"
+        ],
+        "httpMethods": [],
+        "imports": [
+          "./products"
+        ],
+        "exports": [
+          "Tool",
+          "tools"
+        ],
+        "symbols": [
+          {
+            "type": "type",
+            "name": "Tool",
+            "line": 3
+          },
+          {
+            "type": "const",
+            "name": "tools",
+            "line": 5
+          }
+        ],
+        "isVendor": false
+      },
+      {
+        "path": "src/hooks/useReveal.ts",
+        "kind": "hook",
+        "domain": "hooks",
+        "domains": [
+          "hooks"
+        ],
+        "httpMethods": [],
+        "imports": [
+          "react"
+        ],
+        "exports": [
+          "useReveal"
+        ],
+        "symbols": [
+          {
+            "type": "function",
+            "name": "useReveal",
+            "line": 3
+          }
+        ],
+        "isVendor": false
+      },
+      {
+        "path": "src/main.tsx",
+        "kind": "source",
+        "domain": "main",
+        "domains": [
+          "main"
+        ],
+        "httpMethods": [],
+        "imports": [
+          "react",
+          "react-dom/client",
+          "./App",
+          "./styles/global.css"
+        ],
+        "exports": [],
+        "symbols": [],
+        "isVendor": false
+      },
+      {
+        "path": "src/vite-env.d.ts",
+        "kind": "source",
+        "domain": "vite-env.d",
+        "domains": [
+          "vite-env.d"
+        ],
+        "httpMethods": [],
+        "imports": [],
+        "exports": [],
+        "symbols": [],
+        "isVendor": false
+      },
+      {
+        "path": "vite.config.ts",
+        "kind": "source",
+        "domain": "vite.config",
+        "domains": [
+          "vite.config"
+        ],
+        "httpMethods": [],
+        "imports": [
+          "vite",
+          "@vitejs/plugin-react"
+        ],
+        "exports": [
+          "default"
+        ],
+        "symbols": [],
+        "isVendor": false
+      }
+    ],
+    "tokenEstimate": {
+      "fullJson": 1007,
+      "estimated": true,
+      "method": "ceil(characters / 4)",
+      "total": 995,
+      "sections": [
+        {
+          "name": "repo",
+          "tokens": 127,
+          "characters": 508
+        },
+        {
+          "name": "summary",
+          "tokens": 48,
+          "characters": 190
+        },
+        {
+          "name": "domains",
+          "tokens": 125,
+          "characters": 500
+        },
+        {
+          "name": "files",
+          "tokens": 695,
+          "characters": 2778
+        }
+      ]
+    }
+  }
+}
