@@ -14,6 +14,13 @@ export const products: Card[] = [
     links: [{ label: 'bashbop.com ↗', href: 'https://bashbop.com', site: true }],
   },
   {
+    name: 'Brain Boost Buddy',
+    domain: 'desktop · ks2',
+    what:
+      'A Mac and Windows app that locks the laptop at login until your child passes a short quiz. Maths, English and money, aimed at UK KS2 (ages 9–11). I built it when screen time kept turning into a daily argument. You hold the parent PIN; they earn the unlock. Sold as a one-time purchase.',
+    links: [{ label: 'brainboostbuddy.com ↗', href: 'https://brainboostbuddy.com', site: true }],
+  },
+  {
     name: 'Snap A Bird',
     domain: 'mobile · birds',
     what:

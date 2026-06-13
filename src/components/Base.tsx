@@ -46,6 +46,7 @@ export default function Base({ children }: Props) {
             <div className="fcol">
               <h5>Products</h5>
               <a href="https://bashbop.com">BashBop ↗</a>
+              <a href="https://brainboostbuddy.com">Brain Boost Buddy ↗</a>
               <a href="https://snapabird.com">Snap A Bird ↗</a>
             </div>
             <div className="fcol">

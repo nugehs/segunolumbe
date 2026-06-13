@@ -29,7 +29,8 @@ export default function App() {
             <header className="shead rv">
               <h2>Products</h2>
               <p className="snote">
-                Both under BashBop Ltd. One is the business; the other is an app I made for my son.
+                All under BashBop Ltd. Events pay the bills; the other two started at my kitchen
+                table.
               </p>
             </header>
             {products.map((p) => (
