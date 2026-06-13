@@ -15,7 +15,7 @@ export function useReveal() {
       { threshold: 0.12, rootMargin: '0px 0px -50px 0px' },
     );
     document.querySelectorAll<HTMLElement>('.rv').forEach((el, i) => {
-      el.dataset.d = String((i % 4) * 80);
+      if (!el.dataset.d) el.dataset.d = String(Math.min(i, 8) * 70);
       io.observe(el);
     });
     return () => io.disconnect();

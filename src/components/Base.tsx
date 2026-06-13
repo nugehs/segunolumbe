@@ -20,7 +20,6 @@ export default function Base({ children }: Props) {
             <div className="nlx">
               <a href="#products">products</a>
               <a href="#work">open source</a>
-              <a href="#how">how i build</a>
               <a className="cta" href="https://github.com/nugehs">
                 github ↗
               </a>
@@ -34,22 +33,14 @@ export default function Base({ children }: Props) {
       <footer>
         <div className="wrap">
           <div className="fgrid">
-            <div className="fcol" style={{ maxWidth: '32ch' }}>
-              <div className="id" style={{ marginBottom: 16 }}>
+            <div className="fcol fcol-wide">
+              <div className="id fbrand">
                 <img className="mk" src={logo} alt="Segun Olumbe" />
                 OLUMBE
               </div>
-              <p
-                style={{
-                  fontFamily: "'Spectral',serif",
-                  fontStyle: 'italic',
-                  color: 'var(--ink-3)',
-                  fontSize: 15,
-                  lineHeight: 1.5,
-                }}
-              >
-                Engineer and founder in London. I build software you can open up and check — and the
-                occasional bird app for my son.
+              <p className="fblurb">
+                Engineer and founder in London. BashBop pays some of the bills; Snap A Bird was for
+                my kid.
               </p>
             </div>
             <div className="fcol">
@@ -65,15 +56,14 @@ export default function Base({ children }: Props) {
               <a href="https://www.npmjs.com/package/@nugehs/aiglare">aiglare</a>
             </div>
             <div className="fcol">
-              <h5>Elsewhere</h5>
+              <h5>Contact</h5>
               <a href="https://github.com/nugehs">github ↗</a>
               <a href="https://www.npmjs.com/search?q=%40nugehs">npm ↗</a>
-              <a href="mailto:info@bashbop.com">email ↗</a>
+              <a href="mailto:info@bashbop.com">info@bashbop.com</a>
             </div>
           </div>
           <div className="fnote">
             <span>© 2026 Oluwasegun Olumbe</span>
-            <span>static analysis, never the model</span>
           </div>
         </div>
       </footer>
