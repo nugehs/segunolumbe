@@ -26,19 +26,20 @@ export default function App() {
               </span>
             </h1>
             <p className="sub rv">
-              I'm a full-stack engineer in South London. I build commerce systems at <b>Sky</b>, run{' '}
-              <b>BashBop</b> on the side, and write small open-source tools when something annoys me
+              Full-stack engineer in South London. I build commerce systems by day, run{' '}
+              <b>BashBop</b> on the side, and ship small open-source tools when something annoys me
               enough.{' '}
-              <span className="a">The common thread: I don't trust black boxes.</span> If a piece of
-              software is making a call that matters, I want to be able to open it up and see exactly
-              why it decided what it decided.
+              <span className="a">The common thread: I don't trust black boxes.</span> If software
+              is making a call that matters, I want to open it up and see exactly why it decided what
+              it decided.
             </p>
             <DailyQuote />
             <div className="who rv">
-              $ whoami
-              <br />
-              <b>senior full-stack</b> @ sky · <b>founder</b> @ bashbop ltd · author of repoctx,
-              tieline, bouncer, aiglare
+              <span className="who-prompt">$ whoami</span>
+              <span className="who-line">
+                <b>full-stack engineer</b> · <b>founder</b> @ bashbop ltd · author of repoctx,
+                tieline, bouncer, aiglare
+              </span>
             </div>
           </div>
         </section>
@@ -47,7 +48,7 @@ export default function App() {
           <div className="wrap">
             <div className="thesis-head rv">
               <span className="kick">
-                <span className="sq"></span>How I build
+                <span className="sq"></span>What I stand for
               </span>
             </div>
             <div className="trow">

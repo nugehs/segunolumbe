@@ -15,7 +15,6 @@ export default function DailyQuote() {
         {q.text}
       </span>
       <span className="ori">
-        &mdash;{' '}
         <span className="dq-ori" suppressHydrationWarning>
           {q.origin}
         </span>
