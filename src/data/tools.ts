@@ -36,7 +36,7 @@ export const tools: Card[] = [
     name: 'aiglare',
     domain: 'ai governance',
     what:
-      'Finds places in a JS/TS codebase where model output can reach a user or trigger a side effect (payments, email, writes). Flags the ones that look irreversible or unconfirmed. Fails the build on red; ignores the rest.',
+      'Finds places in a JS/TS codebase where model output reaches a user or triggers a side effect (payments, email, writes) without guardrails. Maps findings to SOC 2, EU AI Act, NIST AI RMF, and OWASP LLM Top 10 controls. Outputs ESLint-style lint, Markdown evidence docs, or a branded HTML report for auditors. Fails the build on red; ignores the rest.',
     links: [
       { label: 'site ↗', href: 'https://nugehs.github.io/aiglare-web/', site: true },
       { label: 'npm ↗', href: 'https://www.npmjs.com/package/@nugehs/aiglare' },
