@@ -9,7 +9,7 @@ export default function App() {
       <main id="top">
         <section className="hero">
           <div className="wrap">
-            <p className="stamp rv">South London</p>
+            <p className="stamp rv">Engineer &amp; Founder · South London · 3 products, 5 open-source tools</p>
             <h1 className="rv">
               <span>Oluwasegun</span>
               <span className="l2">
@@ -44,11 +44,17 @@ export default function App() {
             <header className="shead rv">
               <h2>Open source</h2>
               <p className="snote">
-                Four CLI packages on npm. I use them in CI before I trust an agent with the same
-                question.
+                A deterministic governance toolchain. Four checks — AI governance, compliance,
+                contract drift, merge readiness — unified by <b>gate</b> into one ship/no-ship
+                verdict. Local-first, runs in CI, callable by agents over MCP.
+              </p>
+              <p className="strust mono rv">
+                published on npm · gate also ships to the VS Code Marketplace + Open VSX (Cursor)
               </p>
             </header>
-            {tools.map((t) => (
+            <Card key={tools[0].name} {...tools[0]} lead />
+            <p className="tgroup mono rv">the four it runs ↓</p>
+            {tools.slice(1).map((t) => (
               <Card key={t.name} {...t} />
             ))}
           </div>

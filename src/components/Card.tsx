@@ -3,11 +3,12 @@ type Props = {
   domain: string;
   what: string;
   links: { label: string; href: string; site?: boolean }[];
+  lead?: boolean;
 };
 
-export default function Card({ name, domain, what, links }: Props) {
+export default function Card({ name, domain, what, links, lead }: Props) {
   return (
-    <article className="tool rv">
+    <article className={`tool rv${lead ? ' tool--lead' : ''}`}>
       <div className="tcol">
         <div className="tname">
           {name} <span className="dom">{domain}</span>
