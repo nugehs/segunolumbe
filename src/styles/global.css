@@ -57,11 +57,23 @@ nav{display:flex;justify-content:space-between;align-items:center;height:64px}
 }
 .hero .wrap{position:relative}
 .stamp{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:clamp(32px,5vw,48px)}
-h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(54px,11vw,132px);line-height:.9;letter-spacing:-.045em;margin-bottom:clamp(28px,4vw,42px)}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(46px,8vw,104px);line-height:.9;letter-spacing:-.045em;margin-bottom:clamp(28px,4vw,42px)}
 h1 .l2{display:block;margin-top:.04em}
 h1 .em{color:var(--accent);font-style:normal}
-.sub{font-size:clamp(20px,2.5vw,26px);line-height:1.48;color:var(--ink-2);max-width:56ch;font-weight:400}
+.sub{font-size:clamp(20px,2.5vw,26px);line-height:1.48;color:var(--ink-2);max-width:52ch;font-weight:400}
 .sub b{color:var(--ink);font-weight:700}
+.herow{display:flex;justify-content:space-between;align-items:flex-end;gap:clamp(32px,5vw,72px);flex-wrap:wrap}
+.hcard{flex:0 0 auto;width:min(320px,100%);border:2px solid var(--line-2);background:var(--panel);padding:22px 24px}
+.hcard-k{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.hcard-name{display:block;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:-.03em;margin:8px 0 10px;color:var(--ink)}
+.hcard-what{font-size:15px;line-height:1.5;color:var(--ink-2);margin-bottom:16px}
+.hcard-link{display:inline-block;font-size:12px;font-weight:600;color:var(--accent-deep);border-bottom:2px solid var(--accent);padding-bottom:2px;text-decoration:none;transition:.15s}
+.hcard-link:hover{color:var(--accent-hot)}
+/* hero portrait */
+.herohead{display:grid;grid-template-columns:1fr clamp(240px,30%,360px);gap:clamp(28px,4vw,64px);align-items:center}
+.heroportrait{margin:0;border:2px solid var(--line-2);line-height:0;background:var(--panel)}
+.heroportrait img{display:block;width:100%;height:auto}
+@media(max-width:760px){.herohead{grid-template-columns:1fr;justify-items:start}.heroportrait{max-width:300px}}
 
 /* ─── sections ─── */
 section{padding:clamp(64px,9vw,88px) 0}
