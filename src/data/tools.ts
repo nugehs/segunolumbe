@@ -5,7 +5,7 @@ export const tools: Card[] = [
     name: 'gate',
     domain: 'unified verdict',
     what:
-      'Runs aiglare, bouncer, tieline & repoctx against a repo and merges them into one ship/no-ship verdict — pass, warn, or fail. A --ci gate that can\'t be silently bypassed, an MCP server for agents, and a VS Code / Cursor extension that puts the verdict in your status bar with inline squiggles on the offending lines. The spine the other four were already implying.',
+      'The four below each check one thing. I got tired of running them one at a time and reading four outputs, so gate runs all four and gives you a single answer: pass, warn, or fail. Same thing in CI, as an MCP server an agent can call, and as a VS Code / Cursor extension that drops the verdict in your status bar and underlines whatever failed.',
     links: [
       { label: 'vs code ↗', href: 'https://marketplace.visualstudio.com/items?itemName=nugehs.gate', site: true },
       { label: 'open vsx ↗', href: 'https://open-vsx.org/extension/nugehs/gate' },
