@@ -51,6 +51,7 @@ export default function Base({ children }: Props) {
             </div>
             <div className="fcol">
               <h5>Open source</h5>
+              <a href="https://www.npmjs.com/package/@nugehs/gate">gate</a>
               <a href="https://www.npmjs.com/package/@nugehs/repoctx">repoctx</a>
               <a href="https://www.npmjs.com/package/@nugehs/tieline">tieline</a>
               <a href="https://www.npmjs.com/package/@nugehs/bouncer">bouncer</a>
