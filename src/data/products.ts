@@ -15,9 +15,9 @@ export const products: Card[] = [
   },
   {
     name: 'Brain Boost Buddy',
-    domain: 'desktop · ks2',
+    domain: 'desktop · ks1–ks2',
     what:
-      'A Mac and Windows app that locks the laptop at login until your child passes a short quiz. Maths, English and money, aimed at UK KS2 (ages 9–11). I built it when screen time kept turning into a daily argument. You hold the parent PIN; they earn the unlock. Sold as a one-time purchase.',
+      'A Mac and Windows app that locks the laptop at login until your child passes a short quiz. Maths, English and money for UK Years 2–6 (ages 6–11), with SATs or 11+ practice. I built it when screen time kept turning into a daily argument. You hold the parent PIN; they earn the unlock. Free 7-day trial, then £2.99 a month.',
     links: [{ label: 'brainboostbuddy.com ↗', href: 'https://brainboostbuddy.com', site: true }],
   },
   {
