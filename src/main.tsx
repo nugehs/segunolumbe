@@ -10,8 +10,8 @@ const app = (
   </StrictMode>
 );
 
-// Prerendered build ships static HTML in #root — hydrate it.
-// Dev server ships an empty #root — render normally.
+// Prerendered build ships static HTML in #root: hydrate it.
+// Dev server ships an empty #root: render normally.
 if (el.hasChildNodes()) {
   hydrateRoot(el, app);
 } else {
