@@ -1,56 +1,79 @@
 import { useState } from 'react';
 import type { Card as WorkItem } from './data/products';
 import { products } from './data/products';
+import { pages, type PageMode } from './data/pages';
 import { stack } from './data/stack';
 import { tools } from './data/tools';
 
-type Mode = 'stack' | 'products' | 'tools';
+type WorkMode = 'tools' | 'products' | 'stack';
+type Mode = WorkMode | PageMode;
 
-const catalog: Record<Mode, WorkItem[]> = {
-  stack,
-  products,
+const catalog: Record<WorkMode, WorkItem[]> = {
   tools,
+  products,
+  stack,
 };
 
-const modes: { id: Mode; label: string; note: string }[] = [
-  {
-    id: 'stack',
-    label: 'Stack',
-    note: 'NBCUniversal streaming work, toolkit, compliance, and AI.',
-  },
-  {
-    id: 'products',
-    label: 'Side projects',
-    note: 'A few things I built in my spare time.',
-  },
+const workModes: { id: WorkMode; label: string; note: string }[] = [
   {
     id: 'tools',
     label: 'Open source',
-    note: 'Small packages on npm and the MCP registry. Gate ties the rest together.',
+    note:
+      'Context, contracts, compliance, governance. One verdict in CI, in your editor, and in the agent. Local-first. MCP-native. Static analysis, never the model.',
+  },
+  {
+    id: 'products',
+    label: 'Products',
+    note: 'Commercial products and apps. Proof I ship real systems.',
+  },
+  {
+    id: 'stack',
+    label: 'Background',
+    note: 'Day job at NBCUniversal, toolkit, and the engineering behind the tools.',
   },
 ];
 
-const rosterLabel: Record<Mode, string> = {
-  stack: 'Stack',
-  products: 'Side projects',
+const pageModes: { id: PageMode; label: string }[] = [
+  { id: 'writing', label: 'Writing' },
+  { id: 'now', label: 'Now' },
+  { id: 'speaking', label: 'Speaking' },
+];
+
+const rosterLabel: Record<WorkMode, string> = {
   tools: 'Open source',
+  products: 'Products',
+  stack: 'Background',
 };
 
+function isWorkMode(mode: Mode): mode is WorkMode {
+  return mode in catalog;
+}
+
 export default function App() {
-  const [mode, setMode] = useState<Mode>('stack');
-  const [selected, setSelected] = useState<string>(stack[0].name);
+  const [mode, setMode] = useState<Mode>('tools');
+  const [selected, setSelected] = useState<string>(tools[0].name);
 
-  const items = catalog[mode];
-  const active = items.find((item) => item.name === selected) ?? items[0];
+  const workItems = isWorkMode(mode) ? catalog[mode] : null;
+  const active =
+    workItems?.find((item) => item.name === selected) ?? workItems?.[0] ?? null;
+  const page = !isWorkMode(mode) ? pages[mode] : null;
 
-  function switchMode(next: Mode) {
+  function switchWork(next: WorkMode) {
     setMode(next);
     setSelected(catalog[next][0].name);
+  }
+
+  function switchPage(next: PageMode) {
+    setMode(next);
   }
 
   function pick(item: WorkItem) {
     setSelected(item.name);
   }
+
+  const modeNote = isWorkMode(mode)
+    ? workModes.find((m) => m.id === mode)?.note
+    : page?.body;
 
   return (
     <div className="shell">
@@ -69,11 +92,12 @@ export default function App() {
             Oluwasegun
             <span>Olumbe</span>
           </h1>
-          <p className="role">Software engineer</p>
+          <p className="role">Founder & software architect</p>
+          <p className="tagline">Static analysis, never the model.</p>
           <p className="bio">
-            Software engineer on streaming clients used by millions. In my spare time I build small
-            apps and open-source tools, usually because I hit the same problem twice and got tired of
-            guessing.
+            Founder of <b>BashBop</b>. I build deterministic tools that make AI software safer,
+            faster, and more reliable: context, contracts, compliance, governance. Local-first.
+            MCP-native.
           </p>
         </div>
         <div className="identity-links">
@@ -86,7 +110,7 @@ export default function App() {
 
       <main className="stage">
         <div className="modebar" role="tablist" aria-label="Work">
-          {modes.map((m) => (
+          {workModes.map((m) => (
             <button
               key={m.id}
               type="button"
@@ -95,46 +119,73 @@ export default function App() {
               aria-selected={mode === m.id}
               aria-controls="work-panel"
               className={mode === m.id ? 'mode on' : 'mode'}
-              onClick={() => switchMode(m.id)}
+              onClick={() => switchWork(m.id)}
             >
               {m.label}
             </button>
           ))}
         </div>
 
-        <p className="mode-note">{modes.find((m) => m.id === mode)?.note}</p>
+        <nav className="pagenav" aria-label="More">
+          {pageModes.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              className={mode === m.id ? 'page-link on' : 'page-link'}
+              aria-current={mode === m.id ? 'page' : undefined}
+              onClick={() => switchPage(m.id)}
+            >
+              {m.label}
+            </button>
+          ))}
+        </nav>
 
-        <div className="work" id="work-panel" role="tabpanel" aria-labelledby={`tab-${mode}`}>
-          <nav className="roster" aria-label={rosterLabel[mode]}>
-            {items.map((item) => (
-              <button
-                key={item.name}
-                type="button"
-                className={item.name === active.name ? 'roster-item on' : 'roster-item'}
-                aria-current={item.name === active.name ? 'true' : undefined}
-                onClick={() => pick(item)}
-              >
-                <span className="roster-name">{item.name}</span>
-                <span className="roster-dom">{item.domain}</span>
-              </button>
-            ))}
-          </nav>
+        {isWorkMode(mode) && modeNote ? <p className="mode-note">{modeNote}</p> : null}
 
-          <article className="detail" key={`${mode}-${active.name}`}>
-            <p className="detail-dom">{active.domain}</p>
-            <h2>{active.name}</h2>
-            <p className="detail-what">{active.what}</p>
-            {active.links.length > 0 ? (
-              <div className="detail-links">
-                {active.links.map((link) => (
-                  <a key={link.href} className={link.site ? 'site' : undefined} href={link.href}>
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            ) : null}
+        {isWorkMode(mode) && active ? (
+          <div className="work" id="work-panel" role="tabpanel" aria-labelledby={`tab-${mode}`}>
+            <nav className="roster" aria-label={rosterLabel[mode]}>
+              {workItems!.map((item) => (
+                <button
+                  key={item.name}
+                  type="button"
+                  className={item.name === active.name ? 'roster-item on' : 'roster-item'}
+                  aria-current={item.name === active.name ? 'true' : undefined}
+                  onClick={() => pick(item)}
+                >
+                  <span className="roster-name">{item.name}</span>
+                  <span className="roster-dom">{item.domain}</span>
+                </button>
+              ))}
+            </nav>
+
+            <article className="detail" key={`${mode}-${active.name}`}>
+              <p className="detail-dom">{active.domain}</p>
+              <h2>{active.name}</h2>
+              <p className="detail-what">{active.what}</p>
+              {active.links.length > 0 ? (
+                <div className="detail-links">
+                  {active.links.map((link) => (
+                    <a key={link.href} className={link.site ? 'site' : undefined} href={link.href}>
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              ) : null}
+            </article>
+          </div>
+        ) : page ? (
+          <article className="detail detail-full" key={mode}>
+            <p className="detail-dom">{page.domain}</p>
+            <h2>{page.title}</h2>
+            <p className="detail-what">{page.body}</p>
+            <div className="detail-links">
+              <a className="site" href="mailto:info@bashbop.com">
+                get in touch ↗
+              </a>
+            </div>
           </article>
-        </div>
+        ) : null}
       </main>
     </div>
   );
