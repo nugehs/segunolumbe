@@ -10,7 +10,7 @@ Hiring managers, collaborators, and engineers who land on a personal site to dec
 
 ## Product Purpose
 
-Personal portfolio for Oluwasegun Olumbe, engineer and founder in London. It presents BashBop, Brain Boost Buddy, Snap A Bird, and the open-source tools (gate, repoctx, tieline, bouncer, aiglare) with equal weight. Success is a visitor leaving convinced he builds both products and tools, and clicking through to the work.
+Personal portfolio for Oluwasegun Olumbe, engineer and founder in London. It presents BashBop, Brain Boost Buddy, Snap A Bird, and the open-source tools (gate, Òtítọ́, tieline, bouncer, aiglare) with equal weight. Success is a visitor leaving convinced he builds both products and tools, and clicking through to the work.
 
 ## Brand Personality
 

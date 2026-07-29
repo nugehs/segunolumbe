@@ -15,7 +15,7 @@ export const now: Page = {
   title: 'Now',
   domain: 'q3 2026',
   body:
-    'Shipping gate, repoctx, tieline, bouncer, and aiglare as a connected MCP suite. Growing BashBop. Writing the umbrella story that ties the tools together. Day job: OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
+    'Shipping gate, Òtítọ́, tieline, bouncer, and aiglare as a connected MCP suite. Growing BashBop. Writing the umbrella story that ties the tools together. Day job: OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
 };
 
 export const speaking: Page = {

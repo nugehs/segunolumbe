@@ -18,15 +18,19 @@ export const tools: Card[] = [
     ],
   },
   {
-    name: 'repoctx',
-    domain: 'repo context · mcp',
+    name: 'Òtítọ́',
+    domain: 'deterministic context · mcp',
     what:
-      'Map of imports, call paths, tests, and permissions so a reviewer or agent knows what a change actually touches before anyone edits. Runs locally. Official MCP server if you want agents to call it.',
+      'Maps imports, call paths, tests, and permissions so a reviewer or agent can see what a change actually touches before editing. Runs locally, with deterministic context, impact analysis, and merge-readiness evidence.',
     links: [
-      { label: 'mcp ↗', href: mcp('repoctx'), site: true },
-      { label: 'site ↗', href: 'https://nugehs.github.io/repoctx-web/' },
-      { label: 'npm ↗', href: 'https://www.npmjs.com/package/@nugehs/repoctx' },
-      { label: 'github ↗', href: 'https://github.com/nugehs/repoctx' },
+      {
+        label: 'mcp ↗',
+        href: 'https://registry.modelcontextprotocol.io/?q=io.github.BASHBOP%2Fotito',
+        site: true,
+      },
+      { label: 'site ↗', href: 'https://bashbop.github.io/otito/' },
+      { label: 'npm ↗', href: 'https://www.npmjs.com/package/@bashbop/otito' },
+      { label: 'github ↗', href: 'https://github.com/BASHBOP/otito' },
     ],
   },
   {

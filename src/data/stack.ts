@@ -29,7 +29,7 @@ export const stack: Card[] = [
     name: 'AI',
     domain: 'software 2.0',
     what:
-      'I care about the Software 2.0 shift: AI-augmented development workflows that make engineering faster without making it sloppy. In practice that means MCP servers agents can call (gate, repoctx, tieline, bouncer, aiglare on the official registry), repo context before an agent edits, contract and compliance checks in CI, and scans for model output that hits users or side effects without guardrails. Wire it in, constrain it, fail closed when it is wrong.',
+      'I care about the Software 2.0 shift: AI-augmented development workflows that make engineering faster without making it sloppy. In practice that means MCP servers agents can call (gate, Òtítọ́, tieline, bouncer, aiglare on the official registry), deterministic context before an agent edits, contract and compliance checks in CI, and scans for model output that hits users or side effects without guardrails. Wire it in, constrain it, fail closed when it is wrong.',
     links: [
       {
         label: 'mcp registry ↗',
