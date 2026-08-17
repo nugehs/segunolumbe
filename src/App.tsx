@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import ArticleBody from './components/ArticleBody';
 import type { Card as WorkItem } from './data/products';
+import { articles } from './data/articles';
 import { products } from './data/products';
 import { pages, type PageMode } from './data/pages';
 import { stack } from './data/stack';
@@ -52,11 +54,16 @@ function isWorkMode(mode: Mode): mode is WorkMode {
 export default function App() {
   const [mode, setMode] = useState<Mode>('tools');
   const [selected, setSelected] = useState<string>(tools[0].name);
+  const [selectedArticle, setSelectedArticle] = useState<string>(articles[0].slug);
 
   const workItems = isWorkMode(mode) ? catalog[mode] : null;
   const active =
     workItems?.find((item) => item.name === selected) ?? workItems?.[0] ?? null;
   const page = !isWorkMode(mode) ? pages[mode] : null;
+  const activeArticle =
+    mode === 'writing'
+      ? articles.find((item) => item.slug === selectedArticle) ?? articles[0]
+      : null;
 
   function switchWork(next: WorkMode) {
     setMode(next);
@@ -65,6 +72,9 @@ export default function App() {
 
   function switchPage(next: PageMode) {
     setMode(next);
+    if (next === 'writing') {
+      setSelectedArticle(articles[0].slug);
+    }
   }
 
   function pick(item: WorkItem) {
@@ -73,7 +83,9 @@ export default function App() {
 
   const modeNote = isWorkMode(mode)
     ? workModes.find((m) => m.id === mode)?.note
-    : page?.body;
+    : mode === 'writing'
+      ? pages.writing.body
+      : page?.body;
 
   return (
     <div className="shell">
@@ -140,7 +152,7 @@ export default function App() {
           ))}
         </nav>
 
-        {isWorkMode(mode) && modeNote ? <p className="mode-note">{modeNote}</p> : null}
+        {modeNote ? <p className="mode-note">{modeNote}</p> : null}
 
         {isWorkMode(mode) && active ? (
           <div className="work" id="work-panel" role="tabpanel" aria-labelledby={`tab-${mode}`}>
@@ -172,6 +184,36 @@ export default function App() {
                   ))}
                 </div>
               ) : null}
+            </article>
+          </div>
+        ) : mode === 'writing' && activeArticle ? (
+          <div className="work" id="writing-panel">
+            <nav className="roster" aria-label="Articles">
+              {articles.map((item) => (
+                <button
+                  key={item.slug}
+                  type="button"
+                  className={item.slug === activeArticle.slug ? 'roster-item on' : 'roster-item'}
+                  aria-current={item.slug === activeArticle.slug ? 'true' : undefined}
+                  onClick={() => setSelectedArticle(item.slug)}
+                >
+                  <span className="roster-name">{item.shortTitle}</span>
+                  <span className="roster-dom">{item.domain}</span>
+                </button>
+              ))}
+            </nav>
+
+            <article className="detail detail-article" key={activeArticle.slug}>
+              <p className="detail-dom">{activeArticle.category}</p>
+              <h2 className="detail-title-article">{activeArticle.title}</h2>
+              <p className="detail-what">{activeArticle.description}</p>
+              <ArticleBody markdown={activeArticle.body} />
+              <div className="detail-links">
+                <a className="site" href={activeArticle.canonicalUrl}>
+                  read on geekienews ↗
+                </a>
+                <a href="https://geekienews.com/rss.xml">rss ↗</a>
+              </div>
             </article>
           </div>
         ) : page ? (
