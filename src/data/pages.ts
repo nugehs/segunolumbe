@@ -15,7 +15,7 @@ export const now: Page = {
   title: 'Now',
   domain: 'q3 2026',
   body:
-    'Shipping gate, Òtítọ́, tieline, bouncer, and aiglare as a connected MCP suite. Growing BashBop. Writing the umbrella story that ties the tools together. Day job: OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
+    'Shipped Òtítọ́ v1.7.0 with a real gate-effectiveness corpus: one valid control passes and six adversarial changes are blocked for named reasons. Building the broader trust layer for AI-assisted software teams, growing BashBop, and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
 };
 
 export const speaking: Page = {

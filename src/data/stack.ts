@@ -27,9 +27,9 @@ export const stack: Card[] = [
   },
   {
     name: 'AI',
-    domain: 'software 2.0',
+    domain: 'generation + trust',
     what:
-      'I care about the Software 2.0 shift: AI-augmented development workflows that make engineering faster without making it sloppy. In practice that means MCP servers agents can call (gate, Òtítọ́, tieline, bouncer, aiglare on the official registry), deterministic context before an agent edits, contract and compliance checks in CI, and scans for model output that hits users or side effects without guardrails. Wire it in, constrain it, fail closed when it is wrong.',
+      'Frontier models already plan, search, edit, and recover. The durable work is the independent trust layer around them: deterministic context before the edit, exact validation after it, permissions, review evidence, and a human merge decision. Òtítọ́ is that trust harness; gate, tieline, bouncer, and aiglare extend the same fail-closed approach across delivery, contracts, compliance, and AI governance.',
     links: [
       {
         label: 'mcp registry ↗',

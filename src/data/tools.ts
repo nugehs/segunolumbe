@@ -19,17 +19,18 @@ export const tools: Card[] = [
   },
   {
     name: 'Òtítọ́',
-    domain: 'deterministic context · mcp',
+    domain: 'trust harness · v1.7.0',
     what:
-      'Maps imports, call paths, tests, and permissions so a reviewer or agent can see what a change actually touches before editing. Runs locally, with deterministic context, impact analysis, and merge-readiness evidence.',
+      'Models generate the change. Òtítọ́ proves whether it is safe to merge. It gives agents deterministic repository context, then checks changed-file risk, secrets, validation, ownership, CI, and review readiness. v1.7.0 adds a gate-effectiveness corpus: one valid control passes and six adversarial changes must fail for named reasons.',
     links: [
+      { label: 'v1.7.0 ↗', href: 'https://github.com/BASHBOP/otito/releases/tag/v1.7.0' },
       {
         label: 'mcp ↗',
         href: 'https://registry.modelcontextprotocol.io/?q=io.github.BASHBOP%2Fotito',
         site: true,
       },
       { label: 'site ↗', href: 'https://bashbop.github.io/otito/' },
-      { label: 'npm ↗', href: 'https://www.npmjs.com/package/@bashbop/otito' },
+      { label: 'npm ↗', href: 'https://www.npmjs.com/package/@bashbop/otito/v/1.7.0' },
       { label: 'github ↗', href: 'https://github.com/BASHBOP/otito' },
     ],
   },
