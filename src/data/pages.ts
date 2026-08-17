@@ -6,9 +6,9 @@ export type Page = {
 
 export const writing: Page = {
   title: 'Writing',
-  domain: 'essays · in progress',
+  domain: 'essays · geekienews',
   body:
-    'Long-form pieces on AI engineering, static analysis, and building products that encode real constraints. First essay coming soon: why a deterministic trust layer beats asking the model.',
+    'Long-form pieces on AI engineering, static analysis, and building products that encode real constraints. Published on GeekieNews — embedded here, canonical there.',
 };
 
 export const now: Page = {
