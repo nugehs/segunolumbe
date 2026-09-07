@@ -116,6 +116,8 @@ export default function App() {
           <a href="https://github.com/nugehs">GitHub</a>
           <a href="https://www.npmjs.com/search?q=%40nugehs">npm</a>
           <a href="https://registry.modelcontextprotocol.io/?q=nugehs">MCP</a>
+          <a href="https://www.linkedin.com/in/segunolumbe/">LinkedIn</a>
+          <a href={`${import.meta.env.BASE_URL}olumbe-cv.pdf`}>Resume</a>
           <a href="mailto:info@bashbop.com">Email</a>
         </div>
       </aside>
