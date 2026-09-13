@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bashbop DevOps Track</title>
+<meta name="description" content="A seven-job, progress-tracked DevOps learning path built on the bashbop web and API repos.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚦</text></svg>">
+<link id="fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style id="app-css">
+:root{
+  --ground:#F2F4F7;--surface:#FFFFFF;--sunk:#E9EDF3;--ink:#142033;--ink-2:#4A5669;--ink-3:#7A8699;--line:#D5DBE4;
+  --accent:#2A4FD6;--accent-ink:#FFFFFF;--accent-soft:#E3E9FB;
+  --pass:#1F8A4C;--pass-soft:#DDF1E5;--run:#B86E00;--run-soft:#FBEBD2;--fail:#C9362B;--fail-soft:#F8E0DD;--queued:#9AA5B5;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E141D;--surface:#161E2A;--sunk:#1C2533;--ink:#E6EBF2;--ink-2:#A3AEBF;--ink-3:#6F7B8E;--line:#283345;
+  --accent:#86A2FF;--accent-ink:#0E141D;--accent-soft:#1D2848;
+  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#5C687A;color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --ground:#0E141D;--surface:#161E2A;--sunk:#1C2533;--ink:#E6EBF2;--ink-2:#A3AEBF;--ink-3:#6F7B8E;--line:#283345;
+  --accent:#86A2FF;--accent-ink:#0E141D;--accent-soft:#1D2848;
+  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#5C687A;color-scheme:dark;}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+code{font:0.86em/1.4 var(--mono);background:var(--sunk);border:1px solid var(--line);padding:.05em .38em;border-radius:4px;word-break:break-word}
+.app{display:grid;grid-template-rows:auto 1fr auto;height:100vh;height:100dvh}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:20px;padding:10px 20px;border-bottom:1px solid var(--line);background:var(--surface)}
+.brand{font:800 15px/1 var(--display);font-stretch:112%;letter-spacing:-.01em;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.brand i{width:10px;height:10px;border-radius:2px;background:var(--accent);display:inline-block;transform:rotate(45deg)}
+.rail{flex:1;display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.job{display:flex;align-items:center;gap:7px;border:0;background:none;padding:4px 6px;cursor:pointer;white-space:nowrap;border-radius:6px;font:500 12px/1 var(--mono);color:var(--ink-2)}
+.job:hover{background:var(--sunk)}
+.job.here{color:var(--ink);background:var(--accent-soft)}
+.wire{flex:1;min-width:10px;height:2px;background:var(--line);position:relative;overflow:hidden}
+.wire.lit{background:var(--pass)}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--queued);display:grid;place-items:center;flex:none}
+.dot.passed{background:var(--pass);border-color:var(--pass)}
+.dot.passed::after{content:"";width:5px;height:3px;border:solid var(--surface);border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg)}
+.dot.running{border-color:var(--run);position:relative}
+.dot.running::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--run);animation:pulse 1.6s ease-in-out infinite}
+.chip{font:500 12px/1 var(--mono);padding:7px 10px;border-radius:999px;border:1px solid var(--line);white-space:nowrap;display:flex;align-items:center;gap:7px;background:var(--surface)}
+.chip b{width:7px;height:7px;border-radius:50%;background:var(--queued)}
+.chip[data-s="saved"] b{background:var(--pass)}
+.chip[data-s="unsaved"] b,.chip[data-s="saving"] b{background:var(--run)}
+.chip[data-s="error"] b,.chip[data-s="conflict"] b{background:var(--fail)}
+.chip button{border:0;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:4px 9px;font:600 11px/1 var(--mono);cursor:pointer}
+
+/* stage */
+.stage{overflow:hidden;position:relative}
+.slide{position:absolute;inset:0;overflow-y:auto;padding:clamp(24px,5vh,56px) clamp(18px,5vw,64px) 40px}
+.inner{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.slide.in-next{animation:inR .42s cubic-bezier(.2,.7,.2,1) both}
+.slide.in-prev{animation:inL .42s cubic-bezier(.2,.7,.2,1) both}
+.slide.animate [data-a]{animation:rise .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 55ms + 120ms)}
+@keyframes inR{from{transform:translateX(40px);opacity:.0}to{transform:none;opacity:1}}
+@keyframes inL{from{transform:translateX(-40px);opacity:.0}to{transform:none;opacity:1}}
+@keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes pulse{50%{transform:scale(.55);opacity:.5}}
+@keyframes flow{to{background-position:-24px 0}}
+
+.eyebrow{font:500 12px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.eyebrow .st{letter-spacing:.04em}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:clamp(40px,7vw,84px);line-height:.95;font-weight:850;font-stretch:118%;letter-spacing:-.035em}
+h2{font-size:clamp(30px,4.6vw,54px);line-height:1;font-weight:800;font-stretch:114%;letter-spacing:-.03em}
+h3{font-size:19px;line-height:1.2;font-weight:700;font-stretch:108%;letter-spacing:-.01em}
+.lede{font-size:clamp(17px,1.6vw,20px);color:var(--ink-2);max-width:62ch;margin:0}
+p{margin:0;max-width:68ch}
+.muted{color:var(--ink-2)}
+.small{font-size:14px}
+
+.pill{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:5px;white-space:nowrap}
+.pill.passed{background:var(--pass-soft);color:var(--pass)}
+.pill.running{background:var(--run-soft);color:var(--run)}
+.pill.queued{background:var(--sunk);color:var(--ink-2)}
+.pill.risk{background:var(--fail-soft);color:var(--fail)}
+.pill.warn{background:var(--run-soft);color:var(--run)}
+.pill.good{background:var(--pass-soft);color:var(--pass)}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+
+/* cover run graph */
+.run{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.runrow{display:grid;grid-template-columns:28px 1fr auto;gap:14px;align-items:center;padding:12px 16px;border:0;border-top:1px solid var(--line);background:none;text-align:left;cursor:pointer;width:100%}
+.runrow:first-child{border-top:0}
+.runrow:hover{background:var(--sunk)}
+.runrow .nm{font-weight:600}
+.runrow .meta{font:12px/1.3 var(--mono);color:var(--ink-3)}
+.bar{height:4px;border-radius:2px;background:var(--sunk);overflow:hidden;margin-top:6px}
+.bar span{display:block;height:100%;background:var(--pass);border-radius:2px;transition:width .4s}
+.runrow .right{display:flex;align-items:center;gap:10px;font:12px var(--mono);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:28px;align-items:end}
+.stat .n{font:800 44px/1 var(--display);font-stretch:112%;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat .l{font:12px/1.3 var(--mono);color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font:12px var(--mono);color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+input[type=date]{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 16px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* loop */
+.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.loop>div{padding:20px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.loop>div:first-child{border-left:0}
+.loop .k{font:600 12px var(--mono);color:var(--accent)}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;align-items:center;font-size:14px}
+kbd{font:600 12px var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:3px 7px;background:var(--surface);white-space:nowrap}
+
+/* audit */
+.findings{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.finding{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:start;padding:13px 16px;border-top:1px solid var(--line)}
+.finding:first-child{border-top:0}
+.finding .fix{font:12px var(--mono);color:var(--ink-3);white-space:nowrap;border:0;background:none;cursor:pointer;padding:0}
+.finding .fix:hover{color:var(--accent)}
+.strengths{display:flex;flex-wrap:wrap;gap:8px}
+.strengths span{font-size:14px;border:1px solid var(--line);border-radius:6px;padding:5px 10px;background:var(--surface)}
+
+/* concepts */
+.terms{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.term{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.term b{font:600 14px/1.3 var(--mono);color:var(--ink)}
+.term span{font-size:14px;color:var(--ink-2)}
+
+/* flow diagram */
+.flow{display:flex;align-items:stretch;overflow-x:auto;padding:6px 2px 14px}
+.node{flex:1 0 150px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;position:relative}
+.node .tag{font:600 11px var(--mono);color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.node .t{font:700 16px/1.2 var(--display);font-stretch:106%}
+.node .s{font-size:13px;color:var(--ink-2)}
+.node.gap{border-style:dashed;border-color:var(--run)}
+.node.gap .tag{color:var(--run)}
+.node.hot{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.link{flex:0 0 34px;align-self:center;height:2px;background-image:linear-gradient(90deg,var(--accent) 50%,transparent 50%);background-size:12px 2px;animation:flow 1s linear infinite;position:relative}
+.link::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:var(--accent);border-right:0}
+.callouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.callout{border-left:3px solid var(--run);padding:4px 0 4px 14px;font-size:15px;color:var(--ink-2)}
+.callout.info{border-left-color:var(--accent)}
+
+/* lab */
+.labhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:14px}
+.count{font:800 34px/1 var(--display);font-stretch:110%;font-variant-numeric:tabular-nums}
+.count small{font:500 13px var(--mono);color:var(--ink-3);margin-left:6px}
+.tasks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.task{border-top:1px solid var(--line)}
+.task:first-child{border-top:0}
+.task label{display:grid;grid-template-columns:22px 1fr;gap:14px;padding:13px 16px;cursor:pointer;align-items:start}
+.task label:hover{background:var(--sunk)}
+.task input{appearance:none;width:20px;height:20px;margin:2px 0 0;border:2px solid var(--queued);border-radius:5px;display:grid;place-items:center;cursor:pointer;transition:background .15s,border-color .15s}
+.task input:checked{background:var(--pass);border-color:var(--pass)}
+.task input:checked::after{content:"";width:9px;height:5px;border:solid var(--surface);border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg)}
+.task input:checked:not(.settled)::after{animation:pop .25s ease-out}
+@keyframes pop{from{transform:translateY(-1px) rotate(-45deg) scale(.2)}}
+.task .tx{display:flex;flex-direction:column;gap:3px}
+.task .why{font-size:13.5px;color:var(--ink-3)}
+.task.done .main{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line);text-decoration-thickness:2px}
+
+/* check */
+details.q{border-top:1px solid var(--line);padding:12px 0}
+details.q:first-of-type{border-top:0;padding-top:0}
+details.q summary{cursor:pointer;font-weight:600;list-style:none;display:grid;grid-template-columns:18px 1fr;gap:10px}
+details.q summary::before{content:"+";font:600 16px/1.4 var(--mono);color:var(--accent)}
+details.q[open] summary::before{content:"−"}
+details.q summary::-webkit-details-marker{display:none}
+details.q p{margin:8px 0 0 28px;color:var(--ink-2);font-size:15px}
+textarea{width:100%;min-height:120px;resize:vertical;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:12px;font:14px/1.5 var(--mono)}
+.res{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+.res li{display:grid;grid-template-columns:auto 1fr;gap:10px}
+.res li::before{content:"↗";color:var(--accent);font-family:var(--mono)}
+
+/* bottom */
+.bottom{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:10px 20px;border-top:1px solid var(--line);background:var(--surface)}
+.nav{display:flex;gap:8px}
+.nav button{width:40px;height:36px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;font:600 16px var(--mono)}
+.nav button:hover:not(:disabled){border-color:var(--ink-3)}
+.nav button:disabled{opacity:.35;cursor:default}
+.where{display:flex;flex-direction:column;gap:6px;min-width:0}
+.where .lbl{font:12px/1 var(--mono);color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{height:3px;background:var(--sunk);border-radius:2px;overflow:hidden}
+.track span{display:block;height:100%;background:var(--accent);transition:width .35s}
+.ovbtn{font:500 12px var(--mono);border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 12px;cursor:pointer;white-space:nowrap}
+
+/* overview */
+.overview{position:fixed;inset:0;background:color-mix(in srgb,var(--ground) 92%,transparent);backdrop-filter:blur(6px);overflow-y:auto;padding:40px clamp(16px,5vw,60px);z-index:10}
+.ovgrid{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.ovgroup h3{margin-bottom:10px;display:flex;gap:10px;align-items:center}
+.ovcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.ovcard{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.ovcard:hover{border-color:var(--accent)}
+.ovcard.cur{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.ovcard span{font:11px var(--mono);color:var(--ink-3)}
+
+@media (max-width:760px){
+  .top{flex-wrap:wrap;gap:10px}
+  .rail{order:3;flex-basis:100%}
+  .job .jl{display:none}
+  .finding{grid-template-columns:1fr}
+  .flow{flex-direction:column}
+  .link{flex:0 0 26px;width:2px;height:auto;align-self:center;background-image:linear-gradient(180deg,var(--accent) 50%,transparent 50%);background-size:2px 12px}
+  .link::after{right:-4px;top:auto;bottom:-1px;border:5px solid transparent;border-top-color:var(--accent);border-bottom:0}
+  .ovbtn{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="application/json" id="progress-data">{"v":1,"updatedAt":0,"started":"","done":{},"notes":{}}</script>
+
+<script id="app-js">
+(function(){
+"use strict";
+
+/* ------------------------------------------------------------------ content */
+var PHASES=[
+{ id:"p1", short:"Linux", title:"Linux & networking on your own stack", weeks:[1,3],
+  why:"Every later job — pipelines, containers, Terraform, alerts — assumes you can read a server, trace a request and restart a process calmly. Learn it on the machine bashbop already runs on, not a tutorial VM.",
+  terms:[["systemd & PM2","What keeps a process alive and restarts it after a crash or reboot."],["journalctl / pm2 logs","Where a process writes what went wrong."],["ss -tlnp","Which program is listening on which port."],["DNS: A, CNAME, TTL","How a name becomes an IP, and how long caches keep it."],["TLS & SSL modes","Who holds the certificate, and Cloudflare Flexible vs Full (strict)."],["Reverse proxy","Nginx accepting :443 and forwarding to the app’s local port."],["File permissions","Users, groups, chmod — why the app should not run as root."]],
+  flowTitle:"One request, end to end",
+  flow:[["client","Browser","guest opens an event page"],["edge","Cloudflare","DNS answers, proxy terminates TLS"],["origin","Nginx :443","forwards to the upstream port"],["app","bashbop-api","NestJS process under PM2"],["data","Postgres + Redis","queries, sessions, cache"]],
+  hot:3,
+  callouts:[["warn","The API docs describe PM2 behind Nginx/Cloudflare. Confirm this on the real host — docs drift."],["info","Draw this diagram from memory at the end of the job. If you can’t, you don’t know it yet."]],
+  tasks:[
+    ["Run `dig +short` and `dig +trace` against the web and API domains. Note which records are proxied by Cloudflare.","Proxied records return Cloudflare edge IPs, not your server."],
+    ["Run `curl -svI https://<api-domain>/` and read the certificate issuer, expiry and HTTP version.",""],
+    ["Check the Cloudflare SSL/TLS mode for the zone and write down why it is (or should be) Full (strict).","Flexible means the edge talks plain HTTP to your origin."],
+    ["SSH into the API host. Run `pm2 ls`, `pm2 logs bashbop-api --lines 100` and `pm2 startup` — explain each output.",""],
+    ["Open the Nginx site config under `/etc/nginx/sites-enabled/`. Identify the upstream port, timeouts and body-size limit.","`client_max_body_size` matters for event image uploads."],
+    ["Run `ss -tlnp` and justify every listening port. Anything unexplained is a finding.",""],
+    ["Check who the API process runs as (`ps -o user= -p <pid>`) and what the `.env` file permissions are.",""],
+    ["Reboot a staging or throwaway copy of the host and confirm everything returns without manual steps.","Never practise this on production."],
+    ["Write `docs/ops/request-path.md` with the diagram above, filled in with real hostnames, ports and versions.",""]
+  ],
+  exit:["I can draw the full request path from memory, including ports.","I can find and read the logs for any layer in under two minutes.","A reboot does not need me."],
+  quiz:[["Nginx returns 502 Bad Gateway. Which layer is failing, and what do you run first?","Nginx is up but can’t reach its upstream. Check `pm2 ls` (is bashbop-api online?) and `ss -tlnp` (is it listening on the port Nginx expects?), then the Nginx error log."],
+        ["What changes when a DNS record is proxied (orange cloud) in Cloudflare?","DNS returns Cloudflare edge IPs, hiding your origin. TLS terminates at the edge; the SSL mode decides how the edge connects to your origin. Real client IPs arrive in `CF-Connecting-IP`."],
+        ["The API is up but slow. Name three places to look before touching code.","Host load (`top`/`htop`, memory, disk), database (slow queries, connection count), and logs for timeouts to third parties like Stripe or Paystack."]],
+  res:["Linux Journey — linuxjourney.com","Julia Evans’ networking and DNS zines — wizardzines.com","nginx.org — Beginner’s Guide","Cloudflare Learning Center — SSL/TLS encryption modes"]
+},
+{ id:"p2", short:"CI", title:"Harden the CI you already have", weeks:[4,5],
+  why:"You have seven workflows in the web repo and a strong one in the API — but they disagree on Node versions and only guard main properly. This is where your ‘never merge red’ rule becomes something GitHub enforces instead of something you remember.",
+  terms:[["Triggers","`pull_request`, `push`, `workflow_dispatch` — and why `pull_request_target` is dangerous."],["Required status checks","Branch protection that blocks merging until named jobs pass."],["Caching","`actions/setup-node` cache for dependencies, `actions/cache` for `.next/cache`."],["Concurrency groups","Cancel superseded runs when a PR gets a new push."],["Single source of versions","`.nvmrc` read by every workflow via `node-version-file`."],["Secret scanning","gitleaks on every push, plus rotation when something leaks."],["Pinning actions","Referencing an action by commit SHA to limit supply-chain risk."]],
+  flowTitle:"The PR gate you want",
+  flow:[["trigger","PR opened","into develop or main"],["parallel","Lint + types","`yarn lint`, `yarn tsc:check`"],["parallel","Unit tests","`yarn test` (Jest)"],["parallel","Build","`next build`, cached"],["gate","Required checks","merge button stays grey until green"]],
+  hot:4,
+  callouts:[["warn","Today `main-branch-checks.yml` (which runs the type check) only triggers on PRs into main. `next.config.mjs` also sets `typescript.ignoreBuildErrors: true`, so `next build` in other workflows doesn’t catch type errors either."],["warn","Node 18 in `e2e-tests.yml` and `main-branch-checks.yml`, 20 in `bundle-size.yml`, 22 in `repoctx-ci.yml`. Node 18 left security support in April 2025."]],
+  tasks:[
+    ["Add `.nvmrc` to bashbop-event-web and switch every workflow’s setup-node step to `node-version-file: .nvmrc`.","Match the Dockerfile’s `node:20-alpine`, or bump both together."],
+    ["Make the lint / type check / test job run on PRs into `develop` as well as `main`.",""],
+    ["Enable branch protection (or a ruleset) on `main` and `develop` requiring those checks to pass.","Test it: open a PR with a deliberate type error and confirm you can’t merge."],
+    ["Standardise installs on `yarn install --immutable` (the repo uses Yarn Berry; `--frozen-lockfile` is the legacy flag).",""],
+    ["Add `concurrency` with `cancel-in-progress: true` to the web PR workflows, as bashbop-api’s `ci.yml` already does.",""],
+    ["Cache `.next/cache` in build jobs and record build time before and after.",""],
+    ["Stop `bundle-size.yml` rebuilding main on every PR — store main’s report as an artifact on push and download it in PRs.","Halves that job’s minutes."],
+    ["Port `gitleaks.yml` from bashbop-api into bashbop-event-web.",""],
+    ["Replace the non-dummy `CSRF_SECRET` in the web repo’s tracked `.env.test` with an obvious test value; rotate it anywhere the real value was used.",""],
+    ["Untrack `server.log` and `server-logs.log` in bashbop-api (`git rm --cached`) and add `*.log` to `.gitignore`.",""],
+    ["Once `tsc` is a required check everywhere, fix the backlog and remove `ignoreBuildErrors: true` from `next.config.mjs`.","Then a type error fails the build itself, not just a separate job."]
+  ],
+  exit:["A PR with a type error cannot be merged into develop or main.","Every workflow uses the same Node version from one file.","I recorded CI minutes before and after, and they went down."],
+  quiz:[["Why is `pull_request_target` risky on a public repo?","It runs in the base repository’s context with access to secrets, so checking out and running a fork’s code there can leak those secrets."],
+        ["A check is flaky and blocks merges. What’s the right move?","Fix or quarantine the test explicitly (and track it), not remove the required check or retry until green. A gate people learn to bypass is not a gate."],
+        ["What does `concurrency: cancel-in-progress` save you?","Runner minutes and queue time: when you push again to a PR, the now-stale run is cancelled instead of finishing."]],
+  res:["GitHub Docs — Security hardening for GitHub Actions","GitHub Docs — Caching dependencies to speed up workflows","GitHub Docs — About protected branches and rulesets","gitleaks — github.com/gitleaks/gitleaks"]
+},
+{ id:"p3", short:"Containers", title:"Containers: package bashbop once, run it anywhere", weeks:[6,8],
+  why:"The web repo already has a good multi-stage Dockerfile using Next’s standalone output — but nothing builds it. Learning why each line exists, then containerising the API and the whole stack, is the foundation for every deploy that follows.",
+  terms:[["Image vs container","A read-only template vs a running process with its own filesystem view."],["Layers & cache","Each instruction is a layer; order them so dependencies rarely rebuild."],["Multi-stage builds","Build with the toolchain, ship only the output."],[".dockerignore","Keeps `node_modules`, `.next`, reports and `.env*` out of the build context."],["Non-root user","The runner stage already switches to `nextjs` (uid 1001)."],["Healthchecks","How an orchestrator knows the app is actually serving."],["Compose","One file that starts web, API, Postgres and Redis on a shared network."]],
+  flowTitle:"What your Dockerfile already does",
+  flow:[["stage 1","deps","`yarn install --immutable` on node:20-alpine"],["stage 2","builder","copies source, `yarn build` → `.next/standalone`"],["stage 3","runner","non-root `nextjs`, only standalone + static + public"],["run","node server.js","listens on PORT=80"]],
+  hot:2,
+  callouts:[["info","Port 80 as a non-root user works in Docker 20.10+ because it lowers the unprivileged-port floor inside the container. Other runtimes may not — decide whether 3000 is safer."],["warn","`NEXT_PUBLIC_*` values are inlined at build time. An image built for staging will carry staging URLs into production. You’ll solve this in job 4."]],
+  tasks:[
+    ["Build locally with `docker build -t bashbop-web .` and record the image size from `docker image ls`.",""],
+    ["Run `docker history bashbop-web` and identify the largest layer and why it’s there.",""],
+    ["Check for a `.dockerignore`; add or tighten it to exclude `node_modules`, `.next`, `test-results`, `playwright-report`, `storybook-static` and `.env*`.","Compare build-context size before and after."],
+    ["Add a lightweight health route (e.g. `/api/health`) and a `HEALTHCHECK` or orchestrator probe that uses it.",""],
+    ["Scan the image with `trivy image bashbop-web` and fix or document every critical finding.",""],
+    ["Write a Dockerfile for bashbop-api: NestJS build, `prisma generate`, libvips for image processing, non-root runtime.","CI already installs `libvips-dev` — mirror that."],
+    ["Create a `docker-compose.yml` with web, API, `postgres:16` and `redis:7-alpine` — the same versions API CI uses.",""],
+    ["Add a CI job that builds the web image on PRs (no push) so a broken Dockerfile fails fast.",""]
+  ],
+  exit:["`docker compose up` runs the whole of bashbop locally.","I can explain every line of both Dockerfiles.","No critical vulnerabilities are unaddressed in either image."],
+  quiz:[["Why copy `package.json` and the lockfile before the rest of the source?","So the dependency-install layer is cached and only reruns when dependencies change, not on every code edit."],
+        ["How is a container different from a VM?","Containers share the host kernel and isolate with namespaces and cgroups; a VM runs its own kernel on virtual hardware. Containers start faster and weigh less, with weaker isolation."],
+        ["What does `output: 'standalone'` give you?","A minimal `server.js` plus only the `node_modules` files the app actually needs, so the runtime image doesn’t need a full install."]],
+  res:["Docker Docs — Multi-stage builds and build cache","Next.js Docs — `output: 'standalone'`","Trivy — trivy.dev","TechWorld with Nana — Docker tutorial (free, YouTube)"]
+},
+{ id:"p4", short:"Delivery", title:"Continuous delivery: merge is the only way to prod", weeks:[9,11],
+  why:"Release Please already versions bashbop on merge to main. Right now that version never turns into a deploy. This job connects the two: an immutable image per release, automatic staging, a gated production step, and a rollback you’ve actually practised.",
+  terms:[["Immutable tags","Deploy `:<git-sha>`, never a moving `:latest`."],["Registry","GHCR or ECR — where built images live."],["Environments","GitHub staging / production with required reviewers."],["OIDC","Short-lived cloud credentials for CI instead of stored keys."],["Rolling / blue-green","Replacing versions without dropping requests."],["Expand–contract migrations","Schema changes that both old and new app versions tolerate."],["Feature flags","Ship code dark; the API already has `FEATURE_FLAGS_ENABLED`."]],
+  flowTitle:"From merge to production",
+  flow:[["release","Release Please","tags the version on main"],["build","Image :sha","pushed to the registry"],["staging","Deploy + sanity","`yarn test:sanity` against staging"],["gate","Approval","production environment reviewer"],["prod","Deploy","migrations first, then app"],["safety","Verify / roll back","previous sha in < 5 min"]],
+  hot:3,
+  callouts:[["warn","Web: `NEXT_PUBLIC_BACKEND_URL` is baked into the bundle. Either build per environment or move to runtime config so one image can promote from staging to prod."],["info","bashbop-api already has `deploy-migrations.yml` and `migration-check.yml`. Make them a gated step in the deploy, not a separate manual run."]],
+  tasks:[
+    ["Write an ADR choosing where web and API run (e.g. VPS + Docker, AWS ECS Fargate, Fly.io) with cost, effort and lock-in.",""],
+    ["Add a workflow that builds and pushes `ghcr.io/bashbop/bashbop-event-web:<sha>` (plus the semver tag) when Release Please publishes a release.",""],
+    ["Decide how `NEXT_PUBLIC_*` values reach each environment, and implement it.","Build-once-deploy-many is the goal."],
+    ["Create GitHub Environments `staging` and `production`; require a reviewer for production.",""],
+    ["Deploy to staging automatically after the image is pushed, then run the sanity Playwright suite against it.",""],
+    ["Authenticate CI to your cloud with OIDC; delete any long-lived deploy keys.",""],
+    ["Replace PM2 on the API with the container from job 3, deployed by the same pipeline.",""],
+    ["Run database migrations as a gated step before the new API version starts.",""],
+    ["Practise one expand–contract change on a harmless column (add → backfill → switch → remove).",""],
+    ["Rollback drill: redeploy the previous sha on staging, time it, and write the steps down.",""]
+  ],
+  exit:["Nobody deploys from a laptop — merge is the only path.","Rolling back production takes under five minutes and is written down.","Migrations never break the version that is still running."],
+  quiz:[["Why must a migration be backward compatible with the previous app version?","During a rolling deploy both versions run at once. If the new schema breaks the old code, users hit errors mid-deploy — and rollback becomes impossible."],
+        ["What’s wrong with deploying `:latest`?","It’s mutable: you can’t tell what’s running, can’t reproduce it, and rolling back to ‘the previous latest’ is guesswork."],
+        ["Why OIDC instead of an access key in GitHub secrets?","Credentials are minted per run, expire in minutes and can be scoped to a repo and branch, so there’s no long-lived key to leak."]],
+  res:["GitHub Docs — Using environments for deployment","GitHub Docs — Security hardening with OpenID Connect","Martin Fowler — BlueGreenDeployment","release-please — github.com/googleapis/release-please"]
+},
+{ id:"p5", short:"IaC", title:"Infrastructure as code & secrets", weeks:[12,15],
+  why:"If staging disappeared tomorrow, how long would it take to rebuild — and would it match production? Terraform (or OpenTofu) turns DNS, R2 buckets, servers and databases into reviewed pull requests, and a secrets manager ends `.env` files on servers.",
+  terms:[["Declarative state","Describe what should exist; the tool works out the changes."],["plan / apply","A reviewable diff before anything changes."],["Remote state & locking","Shared state that two people can’t corrupt at once."],["Import","Bringing resources you made by hand under management."],["Drift","When reality no longer matches the code."],["Modules","Reusable building blocks — one for staging and production."],["Least privilege","Every token and role can do only its job."]],
+  flowTitle:"The change workflow",
+  flow:[["author","Edit .tf","in an infra repo or folder"],["review","terraform plan","posted as a PR comment"],["merge","Approve","a human reads the diff"],["apply","terraform apply","from CI only"],["record","Remote state","locked, versioned"]],
+  hot:1,
+  callouts:[["info","Start with what already exists: bashbop’s Cloudflare DNS records and the R2 bucket the API uses (`CF_R2_BUCKET_NAME`). Import them before creating anything new."],["warn","bashbop-api CI lists dozens of environment variables. Sorting secret from config is half the work of this job."]],
+  tasks:[
+    ["Install Terraform or OpenTofu and configure the Cloudflare provider with a scoped API token.",""],
+    ["Import the existing bashbop DNS records, then run `plan` until it shows no changes.",""],
+    ["Manage the R2 bucket(s) the API uses as code.",""],
+    ["Set up remote state with locking.",""],
+    ["Add a PR workflow that posts `plan` output and applies only on merge.",""],
+    ["Define staging compute and a managed Postgres as a reusable module.",""],
+    ["Inventory the env vars in bashbop-api `ci.yml` and `.env.example`; label each secret or config.",""],
+    ["Move production secrets into a secrets manager (e.g. Doppler, Infisical, 1Password, AWS Secrets Manager) and inject them at deploy time.",""],
+    ["Destroy staging and recreate it from code. Time it and fix whatever you had to do by hand.",""]
+  ],
+  exit:["Staging can be destroyed and rebuilt from code alone.","No production secret lives in a file on a server or in Git.","Infrastructure changes arrive as reviewed pull requests."],
+  quiz:[["What happens if two people run apply at once without state locking?","Both read the same state, make conflicting changes and write back — state can end up corrupt or out of sync with reality."],
+        ["You change a DNS record by hand in the dashboard. What happens on the next plan?","Terraform detects drift and proposes reverting it to what the code says. Fix it in code instead."],
+        ["Why import before creating?","Creating a duplicate of something that already exists either fails or silently splits ownership; import puts the real resource under management."]],
+  res:["HashiCorp Developer — Terraform tutorials","OpenTofu documentation — opentofu.org","Cloudflare Terraform provider documentation","Yevgeniy Brikman — Terraform: Up & Running"]
+},
+{ id:"p6", short:"Observe", title:"Observability: hear about outages before users do", weeks:[16,18],
+  why:"Bashbop takes money through Stripe, Paystack and MTN MoMo. The September 2025 booking and payment recovery left a trail of hand-written SQL in the API repo — a sign the problem was found late and fixed by hand. This job makes the next one visible in minutes.",
+  terms:[["Logs, metrics, traces","What happened, how much, and where the time went."],["Structured logs","JSON lines with a request id you can search on."],["OpenTelemetry","Vendor-neutral instrumentation for NestJS, Prisma and Next.js."],["SLI / SLO","The measurement, and the target you promise."],["Error budget","How much failure the SLO allows before you stop shipping features."],["Symptom alerts","Page on ‘checkouts failing’, not ‘CPU 80%’."],["Runbook & postmortem","What to do now; what we learned after."]],
+  flowTitle:"Follow one paid booking",
+  flow:[["web","Checkout page","trace starts, request id created"],["api","Booking API","span: validate, price, reserve"],["provider","Stripe / Paystack","span: payment intent"],["webhook","Webhook","span: confirm booking"],["signal","Dashboards & alerts","SLO burn → phone"]],
+  hot:3,
+  callouts:[["info","An SLO of 99.5% over 30 days allows 216 minutes of failure (43,200 min × 0.5%). That number is your error budget."],["warn","Webhooks are where payments silently go wrong. Measure the time from provider event to confirmed booking."]],
+  tasks:[
+    ["Switch bashbop-api to structured JSON logs (e.g. pino) with a request id on every line.",""],
+    ["Pass the request id from the web app to the API so one booking can be followed across both.",""],
+    ["Add OpenTelemetry auto-instrumentation to the API (HTTP, NestJS, Prisma) and export traces.",""],
+    ["Register OpenTelemetry in the web app with `instrumentation.ts`.",""],
+    ["Trace one real test-mode paid booking from checkout to webhook confirmation.",""],
+    ["Define three SLIs with SLOs: checkout success rate, API p95 latency, webhook-to-confirmation lag.",""],
+    ["Set up uptime checks for web and API health routes that alert your phone.",""],
+    ["Write a ‘Payments failing’ runbook covering Stripe, Paystack and MTN MoMo.",""],
+    ["Write a blameless postmortem for the September 2025 booking/payment recovery: timeline, detection, cause, prevention.",""]
+  ],
+  exit:["An outage reaches me through an alert before a user message.","I can follow any booking across web, API and payment provider.","Every alert links to a runbook."],
+  quiz:[["Your SLO is 99.5% monthly and you’ve used 180 minutes of errors by day 12. What now?","You’ve spent ~83% of a 216-minute budget with 18 days left. Slow risky releases and prioritise reliability work until the burn rate is safe."],
+        ["Why alert on symptoms instead of causes?","Users feel symptoms. CPU spikes may be harmless, while a broken webhook at low CPU loses money. Symptom alerts are fewer and always matter."],
+        ["What makes a postmortem ‘blameless’?","It asks how the system allowed the failure, not who caused it — so people share what really happened and the fixes target process and tooling."]],
+  res:["Google — Site Reliability Engineering, ch. 4 ‘Service Level Objectives’ (sre.google)","OpenTelemetry — JavaScript getting started","Next.js Docs — OpenTelemetry","Grafana Labs — Prometheus and Loki getting started"]
+},
+{ id:"p7", short:"Scale", title:"Reliability drills, then Kubernetes", weeks:[19,26],
+  why:"Prove the system survives failure — restore a backup, find the breaking point, kill a dependency on purpose. Only then learn Kubernetes: bashbop probably doesn’t need it yet, but the job market does, and you’ll understand it far better with everything above in place.",
+  terms:[["RPO / RTO","How much data you can lose; how long you can be down."],["Restore testing","A backup you haven’t restored is a hope, not a backup."],["Load testing","k6 scripts that find the traffic level where things break."],["Game days","Planned failure in staging to test alerts and runbooks."],["Pod, Deployment, Service","Kubernetes’ unit of work, rollout controller and stable address."],["Probes","Readiness gates traffic; liveness restarts stuck pods."],["Helm & GitOps","Packaged manifests, synced from Git by Argo CD."]],
+  flowTitle:"GitOps on Kubernetes",
+  flow:[["ci","Image :sha","from job 4’s pipeline"],["git","Manifests repo","PR bumps the image tag"],["sync","Argo CD","notices the change"],["cluster","Deployment","rolling update, probes gate traffic"],["edge","Ingress","routes bashbop traffic"]],
+  hot:2,
+  callouts:[["info","Use `k3d` or `kind` locally first. A managed cluster costs real money every hour it runs."],["warn","The API repo has a `database-backups/` folder. Manual dumps in a repo are not a backup strategy — automate and test restores."]],
+  tasks:[
+    ["Automate Postgres backups off the host; restore one into a scratch database and record RPO and RTO.",""],
+    ["Schedule a monthly restore test and put it in the calendar.",""],
+    ["Write a k6 load test for the public event page and the booking API; record the breaking point on staging.",""],
+    ["Run a game day: stop Redis on staging, check alerts fire and the runbook works.",""],
+    ["Create a local cluster with `k3d` and deploy the web image with a Deployment, Service and Ingress.",""],
+    ["Add readiness and liveness probes using the health route from job 3.",""],
+    ["Package web and API as Helm charts.",""],
+    ["Install Argo CD and sync a staging namespace from a GitOps repo.",""],
+    ["Write an honest ADR: does bashbop need Kubernetes in production this year?",""],
+    ["Optional: book the AWS Solutions Architect Associate or CKA exam as a deadline.",""]
+  ],
+  exit:["I’ve restored a real backup and know our RPO and RTO.","I know the traffic level where bashbop breaks, and what breaks first.","I can deploy bashbop to Kubernetes via GitOps — and argue whether we should."],
+  quiz:[["RPO is 1 hour and RTO is 30 minutes. What does that promise?","You’ll lose at most one hour of data, and service will be back within 30 minutes of an incident."],
+        ["Readiness vs liveness probe?","A failing readiness probe removes the pod from traffic but leaves it running; a failing liveness probe restarts the container."],
+        ["Why deploy through Git (Argo CD) instead of `kubectl apply` from CI?","The cluster continuously matches Git, drift is corrected, every change is a reviewed commit, and rollback is a revert."]],
+  res:["Kubernetes Docs — Tutorials (kubernetes.io)","Burns, Beda, Hightower & Evenson — Kubernetes: Up & Running","Grafana k6 documentation","Argo CD — Getting Started","CNCF — CKA curriculum"]
+}
+];
+
+var FINDINGS=[
+  ["risk","Type check (`tsc`) only runs on PRs into main — and `next.config.mjs` sets `ignoreBuildErrors: true`, so the build won’t catch type errors on develop PRs either.",1],
+  ["risk","A non-dummy `CSRF_SECRET` is committed in web `.env.test`.",1],
+  ["warn","Workflows use Node 18, 20 and 22; Node 18 is out of security support.",1],
+  ["warn","No workflow deploys the web app; the Dockerfile is never built in CI.",3],
+  ["warn","API production runs under PM2 behind Nginx per docs — not described as code.",4],
+  ["warn","Sept 2025 booking/payment recovery lives as ad-hoc SQL files in the API root.",5],
+  ["info","`bundle-size.yml` builds both main and the PR on every PR, with no build cache.",1],
+  ["info","`server.log` and `server-logs.log` are tracked in bashbop-api.",1]
+];
+var STRENGTHS=["Postgres + Redis service containers in API CI","gitleaks in bashbop-api","Release Please versioning","Migration check & deploy workflows","Multi-stage, non-root web Dockerfile","Compliance checks (bouncer) on PRs"];
+
+/* ------------------------------------------------------------------ helpers */
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function md(s){return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>");}
+function $(sel,el){return (el||document).querySelector(sel);}
+function tid(p,k,i){return p.id+"-"+k+i;}
+
+/* ------------------------------------------------------------------ state */
+var LS="bdt-progress-v1", SS="bdt-slide";
+var embedded;
+try{embedded=JSON.parse(document.getElementById("progress-data").textContent);}catch(e){embedded={};}
+embedded=normalise(embedded);
+var local=null;
+try{local=normalise(JSON.parse(localStorage.getItem(LS)||"null"));}catch(e){local=null;}
+var state=embedded, dirty=false;
+if(local && local.updatedAt>embedded.updatedAt){state=local;dirty=true;}
+function normalise(s){s=s&&typeof s==="object"?s:{};return {v:1,updatedAt:+s.updatedAt||0,started:typeof s.started==="string"?s.started:"",done:s.done&&typeof s.done==="object"?s.done:{},notes:s.notes&&typeof s.notes==="object"?s.notes:{}};}
+
+function phaseStats(p){
+  var ids=[];p.tasks.forEach(function(_,i){ids.push(tid(p,"t",i));});p.exit.forEach(function(_,i){ids.push(tid(p,"x",i));});
+  var n=ids.filter(function(id){return state.done[id];}).length;
+  return {n:n,total:ids.length,status:n===0?"queued":(n===ids.length?"passed":"running")};
+}
+function totals(){var n=0,t=0,passed=0;PHASES.forEach(function(p){var s=phaseStats(p);n+=s.n;t+=s.total;if(s.status==="passed")passed++;});return {n:n,t:t,passed:passed};}
+function targetDate(p){
+  if(!state.started)return "";
+  var d=new Date(state.started+"T00:00:00");if(isNaN(d))return "";
+  d.setDate(d.getDate()+p.weeks[1]*7-1);
+  return d.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
+}
+function isLate(p){
+  if(!state.started||phaseStats(p).status==="passed")return false;
+  var d=new Date(state.started+"T00:00:00");d.setDate(d.getDate()+p.weeks[1]*7);
+  return Date.now()>d.getTime();
+}
+
+/* ------------------------------------------------------------------ saving */
+var artifactNs=null, canPublish=false, saveTimer=null, chipState="local";
+function persistLocal(){try{localStorage.setItem(LS,JSON.stringify(state));}catch(e){}}
+function change(){
+  state.updatedAt=Date.now();dirty=true;persistLocal();
+  setChip(canPublish?"unsaved":"local");
+  scheduleSave(15000);
+}
+function scheduleSave(ms){
+  clearTimeout(saveTimer);
+  if(!canPublish)return;
+  saveTimer=setTimeout(function(){
+    var a=document.activeElement;
+    if(a&&a.tagName==="TEXTAREA"){scheduleSave(8000);return;}
+    publishNow();
+  },ms);
+}
+function buildDoc(){
+  var css=document.getElementById("app-css").textContent;
+  var js=document.getElementById("app-js").textContent;
+  var json=JSON.stringify(state).replace(/</g,"\\u003c");
+  var S="scr"+"ipt";
+  return "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"+
+    "<title>Bashbop DevOps Track</title>"+
+    "<link id=\"fonts\" rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap\">"+
+    "<style id=\"app-css\">"+css+"</style></head><body><div id=\"root\"></div>"+
+    "<"+S+" type=\"application/json\" id=\"progress-data\">"+json+"</"+S+">"+
+    "<"+S+" id=\"app-js\">"+js+"</"+S+"></body></html>";
+}
+function publishNow(){
+  clearTimeout(saveTimer);
+  if(!artifactNs||!canPublish||!dirty)return;
+  try{sessionStorage.setItem(SS,String(cur));}catch(e){}
+  setChip("saving");
+  artifactNs.publish(buildDoc()).then(function(){dirty=false;setChip("saved");})
+  .catch(function(e){
+    var c=e&&e.code;
+    if(c==="not_writer"||c==="not_granted"||c==="not_declared"||c==="consent_required"){canPublish=false;setChip("local");}
+    else if(c==="conflict"){setChip("conflict");}
+    else if(c==="rate_limited"){setChip("unsaved");scheduleSave(60000);}
+    else{setChip("error");}
+  });
+}
+var CHIP={saved:"Progress saved to page",unsaved:"Unsaved changes",saving:"Saving…",local:"Saved in this browser",conflict:"Newer version loading",error:"Couldn’t save — try again"};
+function setChip(s){
+  chipState=s;var el=$("#chip");if(!el)return;
+  el.setAttribute("data-s",s);
+  var btn=(s==="unsaved"||s==="error")&&canPublish?"<button type=\"button\" id=\"savenow\">Save now</button>":"";
+  el.innerHTML="<b></b><span>"+CHIP[s]+"</span>"+btn;
+  var b=$("#savenow");if(b)b.onclick=publishNow;
+  var hs=$("#howsave");if(hs)hs.textContent=CHIP[s];
+}
+
+/* ------------------------------------------------------------------ slides */
+var SLIDES=[{type:"cover",label:"Run overview"},{type:"howto",label:"How this track works"},{type:"audit",label:"Baseline: the repos today"}];
+PHASES.forEach(function(p,pi){
+  SLIDES.push({type:"intro",pi:pi,label:"Why "+p.short.toLowerCase()});
+  SLIDES.push({type:"flow",pi:pi,label:p.flowTitle});
+  SLIDES.push({type:"lab",pi:pi,label:"Lab tasks"});
+  SLIDES.push({type:"check",pi:pi,label:"Checkpoint"});
+});
+SLIDES.push({type:"habits",label:"Weekly rhythm"});
+
+function eyebrowFor(p,pi,extra){
+  var s=phaseStats(p);
+  return "<div class=\"eyebrow\" data-a style=\"--i:0\"><span>job "+(pi+1)+"/7 · "+esc(p.short)+" · weeks "+p.weeks[0]+"–"+p.weeks[1]+"</span>"+
+    "<span class=\"pill "+s.status+" st\">"+s.status+"</span>"+(isLate(p)?"<span class=\"pill risk st\">behind target</span>":"")+(extra||"")+"</div>";
+}
+
+function renderSlide(i){
+  var sl=SLIDES[i], h="";
+  if(sl.type==="cover"){
+    var t=totals(), pct=t.t?Math.round(t.n/t.t*100):0;
+    h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>pipeline · bashbop-event-web + bashbop-api</span><span>"+(state.started?"started "+esc(new Date(state.started+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})):"not started")+"</span></div>";
+    h+="<h1 data-a style=\"--i:1\">Bashbop DevOps Track</h1>";
+    h+="<p class=\"lede\" data-a style=\"--i:2\">Seven jobs that take you from reading your own server to running bashbop with pipelines, containers, code-defined infrastructure and alerts. Every lab is real work on your repos.</p>";
+    h+="<div class=\"two\">";
+    h+="<div class=\"run\" data-a style=\"--i:3\">";
+    PHASES.forEach(function(p,pi){
+      var s=phaseStats(p), td=targetDate(p);
+      h+="<button class=\"runrow\" type=\"button\" data-go=\""+(3+pi*4)+"\"><span class=\"dot "+s.status+"\"></span><span><span class=\"nm\">"+esc(p.title)+"</span><div class=\"meta\">weeks "+p.weeks[0]+"–"+p.weeks[1]+(td?" · due "+esc(td):"")+(isLate(p)?" · behind":"")+"</div><div class=\"bar\"><span style=\"width:"+(s.total?s.n/s.total*100:0)+"%\"></span></div></span><span class=\"right\">"+s.n+"/"+s.total+"</span></button>";
+    });
+    h+="</div>";
+    h+="<div style=\"display:flex;flex-direction:column;gap:22px\">";
+    h+="<div class=\"stats\" data-a style=\"--i:4\"><div class=\"stat\"><div class=\"n\">"+pct+"%</div><div class=\"l\">complete</div></div><div class=\"stat\"><div class=\"n\">"+t.n+"<span class=\"muted\" style=\"font-size:22px\">/"+t.t+"</span></div><div class=\"l\">checks ticked</div></div><div class=\"stat\"><div class=\"n\">"+t.passed+"<span class=\"muted\" style=\"font-size:22px\">/7</span></div><div class=\"l\">jobs passed</div></div></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:5\"><div class=\"row\" style=\"justify-content:space-between\"><div class=\"field\"><label for=\"start\">Start date</label><input type=\"date\" id=\"start\" value=\""+esc(state.started)+"\"></div><button class=\"btn primary\" type=\"button\" id=\"resume\">"+(t.n?"Resume":"Start job 1")+" →</button></div><p class=\"small muted\" style=\"margin-top:12px\">Set a start date to get a due date per job. At a few hours a week, the full run is about six months.</p></div>";
+    h+="</div></div>";
+  }
+  else if(sl.type==="howto"){
+    h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>how this track works</span></div>";
+    h+="<h2 data-a style=\"--i:1\">Learn it, apply it to bashbop, prove it.</h2>";
+    h+="<div class=\"loop\" data-a style=\"--i:2\"><div><span class=\"k\">1 · learn</span><h3>Concepts & diagram</h3><p class=\"small muted\">Each job opens with the terms you need and a picture of how they fit bashbop.</p></div><div><span class=\"k\">2 · apply</span><h3>Lab tasks</h3><p class=\"small muted\">Concrete changes to bashbop-event-web and bashbop-api. Tick each one when it’s merged or done.</p></div><div><span class=\"k\">3 · prove</span><h3>Checkpoint</h3><p class=\"small muted\">Exit criteria, self-check questions and notes. A job passes when every box is ticked.</p></div></div>";
+    h+="<div class=\"two\">";
+    h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Moving around</h3><div class=\"keys\"><span><kbd>→</kbd> <kbd>space</kbd></span><span>Next slide</span><span><kbd>←</kbd></span><span>Previous slide</span><span><kbd>O</kbd></span><span>All slides overview</span><span><kbd>Home</kbd> <kbd>End</kbd></span><span>First / last slide</span><span>Top rail</span><span>Jump to any job; green is passed, amber is in progress</span></div></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:4\"><h3 style=\"margin-bottom:12px\">How progress is kept</h3><p class=\"small muted\">"+(window.claude?"Ticks, notes and your start date save into this page as a new version about 15 seconds after you stop — so they follow you to any device. If this view can’t save to the page, they stay in this browser.":"Ticks, notes and your start date save in this browser as you go. Come back in the same browser to pick up where you left off.")+"</p><p class=\"small\" style=\"margin-top:12px\">Right now: <strong id=\"howsave\">"+CHIP[chipState]+"</strong></p></div>";
+    h+="</div>";
+  }
+  else if(sl.type==="audit"){
+    h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>baseline · read from the repos on 13 Sep 2026</span></div>";
+    h+="<h2 data-a style=\"--i:1\">Where bashbop starts</h2>";
+    h+="<p class=\"lede\" data-a style=\"--i:2\">These findings are the first lab tasks — you learn each concept by fixing something real.</p>";
+    h+="<div class=\"findings\" data-a style=\"--i:3\">";
+    FINDINGS.forEach(function(f){h+="<div class=\"finding\"><span class=\"pill "+f[0]+"\">"+(f[0]==="risk"?"risk":f[0]==="warn"?"gap":"tidy")+"</span><span>"+md(f[1])+"</span><button class=\"fix\" type=\"button\" data-go=\""+(3+f[2]*4+2)+"\">job "+(f[2]+1)+" →</button></div>";});
+    h+="</div>";
+    h+="<div data-a style=\"--i:4\"><h3 style=\"margin-bottom:10px\">Already in good shape</h3><div class=\"strengths\">"+STRENGTHS.map(function(s){return "<span>"+esc(s)+"</span>";}).join("")+"</div></div>";
+  }
+  else if(sl.type==="habits"){
+    var tt=totals();
+    h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>after the run · "+tt.n+"/"+tt.t+" checks</span></div>";
+    h+="<h2 data-a style=\"--i:1\">A weekly rhythm that makes it stick</h2>";
+    h+="<div class=\"loop\" data-a style=\"--i:2\"><div><span class=\"k\">mon · 1h</span><h3>Read</h3><p class=\"small muted\">One concept from the current job, plus its docs. Write three lines in the job’s notes.</p></div><div><span class=\"k\">wed · 2h</span><h3>Build</h3><p class=\"small muted\">One lab task as a real PR with full checks green.</p></div><div><span class=\"k\">sat · 1h</span><h3>Break</h3><p class=\"small muted\">Break something on staging on purpose and recover it. Tick the task only once it’s proven.</p></div></div>";
+    h+="<div class=\"two\">";
+    h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Rules for the whole run</h3><ul class=\"res\" style=\"gap:10px\"><li>Anything you do twice, automate.</li><li>Every piece of infrastructure gets a README or runbook entry.</li><li>Main being red is information to raise, never something to filter out.</li><li>Practise on staging; production is for things you’ve already rehearsed.</li></ul></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:4\"><h3 style=\"margin-bottom:12px\">Where to go next</h3><ul class=\"res\"><li>roadmap.sh/devops — a checklist to find gaps</li><li>KodeKloud labs — timed practice for certifications</li><li>Google SRE Book & Workbook — free at sre.google</li><li>Gene Kim et al. — The Phoenix Project</li></ul></div>";
+    h+="</div>";
+  }
+  else{
+    var p=PHASES[sl.pi], pi=sl.pi, s=phaseStats(p);
+    if(sl.type==="intro"){
+      var td=targetDate(p);
+      h+=eyebrowFor(p,pi,td?"<span>due "+esc(td)+"</span>":"");
+      h+="<h2 data-a style=\"--i:1\">"+esc(p.title)+"</h2>";
+      h+="<p class=\"lede\" data-a style=\"--i:2\">"+md(p.why)+"</p>";
+      h+="<div data-a style=\"--i:3\"><h3 style=\"margin-bottom:10px\">Concepts to learn</h3><div class=\"terms\">"+p.terms.map(function(t){return "<div class=\"term\"><b>"+md(t[0])+"</b><span>"+md(t[1])+"</span></div>";}).join("")+"</div></div>";
+    }
+    else if(sl.type==="flow"){
+      h+=eyebrowFor(p,pi);
+      h+="<h2 data-a style=\"--i:1\">"+esc(p.flowTitle)+"</h2>";
+      h+="<div class=\"flow\" data-a style=\"--i:2\">"+p.flow.map(function(n,k){return (k?"<span class=\"link\" aria-hidden=\"true\"></span>":"")+"<div class=\"node"+(k===p.hot?" hot":"")+"\"><span class=\"tag\">"+esc(n[0])+"</span><span class=\"t\">"+md(n[1])+"</span><span class=\"s\">"+md(n[2])+"</span></div>";}).join("")+"</div>";
+      h+="<div class=\"callouts\" data-a style=\"--i:3\">"+p.callouts.map(function(c){return "<div class=\"callout "+(c[0]==="info"?"info":"")+"\">"+md(c[1])+"</div>";}).join("")+"</div>";
+    }
+    else if(sl.type==="lab"){
+      var ln=p.tasks.filter(function(_,k){return state.done[tid(p,"t",k)];}).length;
+      h+=eyebrowFor(p,pi);
+      h+="<div class=\"labhead\" data-a style=\"--i:1\"><h2>Lab: "+esc(p.short.toLowerCase())+" on bashbop</h2><div class=\"count\" id=\"labcount\">"+ln+"<small>/ "+p.tasks.length+" tasks</small></div></div>";
+      h+="<ul class=\"tasks\" data-a style=\"--i:2\">"+p.tasks.map(function(t,k){var id=tid(p,"t",k),on=!!state.done[id];return "<li class=\"task"+(on?" done":"")+"\"><label><input type=\"checkbox\" class=\"settled\" data-task=\""+id+"\""+(on?" checked":"")+"><span class=\"tx\"><span class=\"main\">"+md(t[0])+"</span>"+(t[1]?"<span class=\"why\">"+md(t[1])+"</span>":"")+"</span></label></li>";}).join("")+"</ul>";
+    }
+    else if(sl.type==="check"){
+      h+=eyebrowFor(p,pi);
+      h+="<h2 data-a style=\"--i:1\">Checkpoint: is job "+(pi+1)+" green?</h2>";
+      h+="<div class=\"two\">";
+      h+="<div style=\"display:flex;flex-direction:column;gap:22px\">";
+      h+="<div data-a style=\"--i:2\"><h3 style=\"margin-bottom:10px\">Exit criteria</h3><ul class=\"tasks\">"+p.exit.map(function(t,k){var id=tid(p,"x",k),on=!!state.done[id];return "<li class=\"task"+(on?" done":"")+"\"><label><input type=\"checkbox\" class=\"settled\" data-task=\""+id+"\""+(on?" checked":"")+"><span class=\"tx\"><span class=\"main\">"+md(t)+"</span></span></label></li>";}).join("")+"</ul></div>";
+      h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Self-check</h3>"+p.quiz.map(function(q){return "<details class=\"q\"><summary>"+md(q[0])+"</summary><p>"+md(q[1])+"</p></details>";}).join("")+"</div>";
+      h+="</div>";
+      h+="<div style=\"display:flex;flex-direction:column;gap:22px\">";
+      h+="<div data-a style=\"--i:4\"><div class=\"field\"><label for=\"notes-"+p.id+"\">Notes for job "+(pi+1)+"</label><textarea id=\"notes-"+p.id+"\" data-notes=\""+p.id+"\" placeholder=\"What surprised you, commands worth keeping, links to PRs…\">"+esc(state.notes[p.id]||"")+"</textarea></div></div>";
+      h+="<div class=\"panel\" data-a style=\"--i:5\"><h3 style=\"margin-bottom:12px\">Resources</h3><ul class=\"res\">"+p.res.map(function(r){return "<li>"+md(r)+"</li>";}).join("")+"</ul></div>";
+      h+="</div></div>";
+    }
+  }
+  return "<div class=\"inner\">"+h+"</div>";
+}
+
+/* ------------------------------------------------------------------ shell */
+var cur=0;
+function initialSlide(){
+  var n=NaN;
+  try{var ss=sessionStorage.getItem(SS);if(ss!==null){n=parseInt(ss,10);sessionStorage.removeItem(SS);}}catch(e){}
+  if(isNaN(n)){var m=location.hash.match(/^#s-(\d+)$/);if(m)n=parseInt(m[1],10)-1;}
+  return isNaN(n)?0:Math.max(0,Math.min(SLIDES.length-1,n));
+}
+
+document.getElementById("root").innerHTML=
+  "<div class=\"app\">"+
+   "<header class=\"top\"><div class=\"brand\"><i></i>DevOps Track</div><nav class=\"rail\" id=\"rail\" aria-label=\"Jobs\"></nav><div class=\"chip\" id=\"chip\" role=\"status\"></div></header>"+
+   "<main class=\"stage\" id=\"stage\"></main>"+
+   "<footer class=\"bottom\"><div class=\"nav\"><button type=\"button\" id=\"prev\" aria-label=\"Previous slide\">←</button><button type=\"button\" id=\"next\" aria-label=\"Next slide\">→</button></div><div class=\"where\"><span class=\"lbl\" id=\"lbl\"></span><div class=\"track\"><span id=\"track\"></span></div></div><button class=\"ovbtn\" type=\"button\" id=\"ovbtn\">All slides <kbd>O</kbd></button></footer>"+
+  "</div><div class=\"overview\" id=\"overview\" hidden></div>";
+
+function renderRail(){
+  var r="";
+  PHASES.forEach(function(p,pi){
+    var s=phaseStats(p), here=SLIDES[cur].pi===pi;
+    if(pi)r+="<span class=\"wire"+(phaseStats(PHASES[pi-1]).status==="passed"?" lit":"")+"\"></span>";
+    r+="<button type=\"button\" class=\"job"+(here?" here":"")+"\" data-go=\""+(3+pi*4)+"\" title=\""+esc(p.title)+" — "+s.n+"/"+s.total+"\"><span class=\"dot "+s.status+"\"></span><span class=\"jl\">"+esc(p.short)+"</span></button>";
+  });
+  $("#rail").innerHTML=r;
+}
+function renderChrome(){
+  var sl=SLIDES[cur];
+  var ctx=sl.pi!=null?"Job "+(sl.pi+1)+" · "+PHASES[sl.pi].short+" — "+sl.label:sl.label;
+  $("#lbl").textContent=(cur+1)+" / "+SLIDES.length+"  ·  "+ctx;
+  $("#track").style.width=((cur+1)/SLIDES.length*100)+"%";
+  $("#prev").disabled=cur===0;$("#next").disabled=cur===SLIDES.length-1;
+  renderRail();
+}
+function show(i,dir,animate){
+  i=Math.max(0,Math.min(SLIDES.length-1,i));
+  var stage=$("#stage");
+  var el=document.createElement("section");
+  el.className="slide"+(animate?" animate "+(dir<0?"in-prev":"in-next"):"");
+  el.setAttribute("aria-label",SLIDES[i].label);
+  cur=i;
+  el.innerHTML=renderSlide(i);
+  stage.innerHTML="";stage.appendChild(el);
+  try{history.replaceState(null,"","#s-"+(i+1));}catch(e){}
+  renderChrome();
+}
+function go(i){if(i===cur)return;show(i,i>cur?1:-1,true);closeOverview();}
+
+function openOverview(){
+  var o=$("#overview"),h="<div class=\"ovgrid\"><div class=\"row\" style=\"justify-content:space-between\"><h2>All slides</h2><button class=\"btn\" type=\"button\" id=\"ovclose\">Close <kbd>Esc</kbd></button></div>";
+  var groups=[{name:"Start",idx:[0,1,2]}];
+  PHASES.forEach(function(p,pi){groups.push({name:"Job "+(pi+1)+" · "+p.title,pi:pi,idx:[3+pi*4,4+pi*4,5+pi*4,6+pi*4]});});
+  groups.push({name:"Finish",idx:[SLIDES.length-1]});
+  groups.forEach(function(g){
+    h+="<div class=\"ovgroup\"><h3>"+(g.pi!=null?"<span class=\"dot "+phaseStats(PHASES[g.pi]).status+"\"></span>":"")+esc(g.name)+"</h3><div class=\"ovcards\">"+g.idx.map(function(k){return "<button type=\"button\" class=\"ovcard"+(k===cur?" cur":"")+"\" data-go=\""+k+"\"><span>"+(k+1)+"</span>"+esc(SLIDES[k].label)+"</button>";}).join("")+"</div></div>";
+  });
+  o.innerHTML=h+"</div>";o.hidden=false;
+  var c=o.querySelector(".ovcard.cur");if(c)c.focus();
+}
+function closeOverview(){var o=$("#overview");if(!o.hidden){o.hidden=true;o.innerHTML="";}}
+
+/* ------------------------------------------------------------------ events */
+document.addEventListener("click",function(e){
+  var g=e.target.closest("[data-go]");
+  if(g){go(parseInt(g.getAttribute("data-go"),10));return;}
+  if(e.target.closest("#prev"))go(cur-1);
+  else if(e.target.closest("#next"))go(cur+1);
+  else if(e.target.closest("#ovbtn"))openOverview();
+  else if(e.target.closest("#ovclose"))closeOverview();
+  else if(e.target.closest("#resume")){
+    var target=PHASES.findIndex(function(p){return phaseStats(p).status!=="passed";});
+    if(target<0)target=6;
+    go(3+target*4+(phaseStats(PHASES[target]).n?2:0));
+  }
+});
+document.addEventListener("change",function(e){
+  var t=e.target;
+  if(t.matches("input[data-task]")){
+    t.classList.remove("settled");
+    var id=t.getAttribute("data-task");
+    if(t.checked)state.done[id]=true;else delete state.done[id];
+    var li=t.closest(".task");if(li)li.classList.toggle("done",t.checked);
+    var sl=SLIDES[cur];
+    if(sl.type==="lab"){var p=PHASES[sl.pi];var n=p.tasks.filter(function(_,k){return state.done[tid(p,"t",k)];}).length;var lc=$("#labcount");if(lc)lc.innerHTML=n+"<small>/ "+p.tasks.length+" tasks</small>";}
+    var eb=document.querySelector(".slide .eyebrow .st");
+    if(eb&&sl.pi!=null){var st=phaseStats(PHASES[sl.pi]).status;eb.className="pill "+st+" st";eb.textContent=st;}
+    renderRail();change();
+  } else if(t.id==="start"){
+    state.started=t.value||"";change();show(cur,0,false);
+  }
+});
+var noteTimer;
+document.addEventListener("input",function(e){
+  var t=e.target;
+  if(t.matches("textarea[data-notes]")){
+    state.notes[t.getAttribute("data-notes")]=t.value;
+    clearTimeout(noteTimer);noteTimer=setTimeout(change,600);
+  }
+});
+document.addEventListener("focusout",function(e){
+  if(e.target.matches&&e.target.matches("textarea[data-notes]")&&dirty&&canPublish)scheduleSave(4000);
+});
+document.addEventListener("keydown",function(e){
+  var tag=(e.target.tagName||"");
+  if(tag==="TEXTAREA"||tag==="INPUT"){return;}
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  var ov=!$("#overview").hidden;
+  if(e.key==="Escape"&&ov){closeOverview();return;}
+  if(e.key==="o"||e.key==="O"){ov?closeOverview():openOverview();e.preventDefault();return;}
+  if(ov)return;
+  if(e.key==="ArrowRight"||e.key==="PageDown"||(e.key===" "&&tag!=="BUTTON"&&tag!=="SUMMARY")){go(cur+1);e.preventDefault();}
+  else if(e.key==="ArrowLeft"||e.key==="PageUp"){go(cur-1);e.preventDefault();}
+  else if(e.key==="Home"){go(0);e.preventDefault();}
+  else if(e.key==="End"){go(SLIDES.length-1);e.preventDefault();}
+});
+var tx=null;
+document.addEventListener("touchstart",function(e){if(e.touches.length===1)tx=[e.touches[0].clientX,e.touches[0].clientY];},{passive:true});
+document.addEventListener("touchend",function(e){
+  if(!tx)return;var dx=e.changedTouches[0].clientX-tx[0],dy=e.changedTouches[0].clientY-tx[1];tx=null;
+  if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)go(cur+(dx<0?1:-1));
+},{passive:true});
+window.addEventListener("beforeunload",function(){persistLocal();});
+
+/* ------------------------------------------------------------------ boot */
+show(initialSlide(),0,false);
+setChip(dirty?"local":"local");
+if(window.claude&&typeof window.claude.use==="function"){
+  window.claude.use("artifact").then(function(ns){
+    if(!ns){setChip("local");return;}
+    artifactNs=ns;canPublish=true;
+    setChip(dirty?"unsaved":"saved");
+  }).catch(function(){setChip("local");});
+}
+})();
+</script>
+</body>
+</html>
