@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bashbop DevOps Track</title>
-<meta name="description" content="A nine-job, progress-tracked DevOps learning path across bashbop and Brain Boost Buddy, with architecture diagrams and worked examples.">
+<meta name="description" content="An in-depth, progress-tracked DevOps track across bashbop and Brain Boost Buddy: eleven jobs and a capstone with mechanism diagrams, worked examples, break-fix drills and labs.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚦</text></svg>">
 <link id="fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -31,7 +31,7 @@ body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.55 var(--bod
 button,input,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 code{font:0.86em/1.4 var(--mono);background:var(--sunk);border:1px solid var(--line);padding:.05em .38em;border-radius:4px;word-break:break-word}
-.app{display:grid;grid-template-rows:auto 1fr auto;height:100vh;height:100dvh}
+.app{display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);height:100vh;height:100dvh}
 
 /* top bar */
 .top{display:flex;align-items:center;gap:20px;padding:10px 20px;border-bottom:1px solid var(--line);background:var(--surface)}
@@ -113,7 +113,7 @@ input[type=date]{background:var(--surface);border:1px solid var(--line);border-r
 .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 
 /* loop */
-.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
 .loop>div{padding:20px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
 .loop>div:first-child{border-left:0}
 .loop .k{font:600 12px var(--mono);color:var(--accent)}
@@ -171,14 +171,14 @@ kbd{font:600 12px var(--mono);border:1px solid var(--line);border-bottom-width:2
 /* check */
 details.q{border-top:1px solid var(--line);padding:12px 0}
 details.q:first-of-type{border-top:0;padding-top:0}
-details.q summary{cursor:pointer;font-weight:600;list-style:none;display:grid;grid-template-columns:18px 1fr;gap:10px}
+details.q summary{cursor:pointer;font-weight:600;list-style:none;display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px}
 details.q summary::before{content:"+";font:600 16px/1.4 var(--mono);color:var(--accent)}
 details.q[open] summary::before{content:"−"}
 details.q summary::-webkit-details-marker{display:none}
 details.q p{margin:8px 0 0 28px;color:var(--ink-2);font-size:15px}
 textarea{width:100%;min-height:120px;resize:vertical;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:12px;font:14px/1.5 var(--mono)}
 .res{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;font-size:14.5px}
-.res li{display:grid;grid-template-columns:auto 1fr;gap:10px}
+.res li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px}
 .res li::before{content:"↗";color:var(--accent);font-family:var(--mono)}
 
 /* architecture */
@@ -199,6 +199,7 @@ textarea{width:100%;min-height:120px;resize:vertical;background:var(--sunk);bord
 .arch .ah{fill:var(--ink-3)}
 .arch .al{font:11px var(--mono);fill:var(--ink-2);paint-order:stroke;stroke:var(--sunk);stroke-width:4px;stroke-linejoin:round}
 .arch .al.gapt{fill:var(--run)}
+.arch .al.w{stroke:var(--surface)}
 .jobchips{display:flex;flex-wrap:wrap;gap:8px}
 .jobchips button{font-size:14px;border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--surface);cursor:pointer;display:flex;gap:8px;align-items:center}
 .jobchips button:hover{border-color:var(--accent)}
@@ -216,6 +217,54 @@ pre.code .c{color:var(--ink-3)}
 .steps li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:15px;color:var(--ink-2)}
 .steps li::before{counter-increment:s;content:counter(s);font:600 12px/22px var(--mono);width:22px;height:22px;text-align:center;border-radius:50%;background:var(--accent-soft);color:var(--accent)}
 .steps li b{color:var(--ink);font-weight:600;display:block}
+
+/* how it works */
+.how{display:flex;flex-direction:column;gap:22px}
+.how .explain{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px 24px}
+.how .explain div{display:flex;flex-direction:column;gap:4px}
+.how .explain b{font:700 15px/1.3 var(--display);font-stretch:106%}
+.how .explain span{font-size:15px;color:var(--ink-2)}
+.arch .lane{stroke:var(--line);stroke-width:1.5;stroke-dasharray:3 4}
+.arch .lh{fill:var(--surface);stroke:var(--ink-3);stroke-width:1.5}
+.arch .note{fill:var(--accent-soft);stroke:none}
+.arch .nt{font:11px var(--mono);fill:var(--ink)}
+.arch .ln.hot{stroke:var(--accent);stroke-width:2}
+.arch .ln.fail{stroke:var(--fail);stroke-width:2}
+.arch .al.hott{fill:var(--accent)}
+.arch .al.failt{fill:var(--fail)}
+.arch .tbar{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.arch .tbar.gap{fill:var(--run-soft);stroke:var(--run)}
+.arch .tbar.fail{fill:var(--fail-soft);stroke:var(--fail)}
+.arch .tbar.pass{fill:var(--pass-soft);stroke:var(--pass)}
+.arch .tick{stroke:var(--line);stroke-width:1}
+.arch .mark{stroke:var(--fail);stroke-width:2;stroke-dasharray:4 3}
+.arch .dotf{fill:var(--accent)}
+
+/* drill */
+.drill{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:18px;align-items:start}
+.drill .panel h3{margin-bottom:10px;display:flex;gap:8px;align-items:center}
+.drill .panel h3 .pill{font-size:10px}
+.symptoms{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.symptoms li{display:grid;grid-template-columns:14px minmax(0,1fr);gap:10px;color:var(--ink-2)}
+.symptoms li::before{content:"";width:8px;height:8px;margin-top:8px;border-radius:50%;background:var(--fail)}
+details.hint{border-top:1px solid var(--line);padding:10px 0}
+details.hint:first-of-type{border-top:0;padding-top:0}
+details.hint summary{cursor:pointer;font:600 13px var(--mono);color:var(--accent);list-style:none}
+details.hint summary::-webkit-details-marker{display:none}
+details.hint[open] summary{margin-bottom:6px}
+details.hint p{font-size:14.5px;color:var(--ink-2)}
+details.reveal{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:14px 18px}
+details.reveal[open]{border-style:solid}
+details.reveal summary{cursor:pointer;font:700 15px var(--display);list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.reveal summary::after{content:"reveal";font:600 11px var(--mono);color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+details.reveal[open] summary::after{content:"hide"}
+details.reveal summary::-webkit-details-marker{display:none}
+.reveal-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:14px}
+.reveal-body h4{margin:0 0 6px;font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.reveal-body p{font-size:14.5px;color:var(--ink-2)}
+.verify{font:12px/1.5 var(--mono);color:var(--ink-3);border-left:2px solid var(--pass);padding-left:10px}
+
+@media (max-width:1300px){.job .jl{display:none}.job.here .jl{display:inline}}
 
 /* bottom */
 .bottom{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:10px 20px;border-top:1px solid var(--line);background:var(--surface)}
@@ -245,6 +294,7 @@ pre.code .c{color:var(--ink-3)}
   .job .jl{display:none}
   .finding{grid-template-columns:1fr}
   .flow{flex-direction:column}
+  .node{flex:0 0 auto}
   .link{flex:0 0 26px;width:2px;height:auto;align-self:center;background-image:linear-gradient(180deg,var(--accent) 50%,transparent 50%);background-size:2px 12px}
   .link::after{right:-4px;top:auto;bottom:-1px;border:5px solid transparent;border-top-color:var(--accent);border-bottom:0}
   .ovbtn{display:none}
@@ -347,7 +397,7 @@ var PHASES=[
   flowTitle:"What your Dockerfile already does",
   flow:[["stage 1","deps","`yarn install --immutable` on node:20-alpine"],["stage 2","builder","copies source, `yarn build` → `.next/standalone`"],["stage 3","runner","non-root `nextjs`, only standalone + static + public"],["run","node server.js","listens on PORT=80"]],
   hot:2,
-  callouts:[["info","Port 80 as a non-root user works in Docker 20.10+ because it lowers the unprivileged-port floor inside the container. Other runtimes may not — decide whether 3000 is safer."],["warn","`NEXT_PUBLIC_*` values are inlined at build time. An image built for staging will carry staging URLs into production. You’ll solve this in job 5."]],
+  callouts:[["info","Port 80 as a non-root user works in Docker 20.10+ because it lowers the unprivileged-port floor inside the container. Other runtimes may not — decide whether 3000 is safer."],["warn","`NEXT_PUBLIC_*` values are inlined at build time. An image built for staging will carry staging URLs into production. You’ll solve this in {job:p4}."]],
   tasks:[
     ["Build locally with `docker build -t bashbop-web .` and record the image size from `docker image ls`.",""],
     ["Run `docker history bashbop-web` and identify the largest layer and why it’s there.",""],
@@ -364,7 +414,34 @@ var PHASES=[
         ["What does `output: 'standalone'` give you?","A minimal `server.js` plus only the `node_modules` files the app actually needs, so the runtime image doesn’t need a full install."]],
   res:["Docker Docs — Multi-stage builds and build cache","Next.js Docs — `output: 'standalone'`","Trivy — trivy.dev","TechWorld with Nana — Docker tutorial (free, YouTube)"]
 },
-{ id:"p4", short:"Delivery", title:"Continuous delivery: merge is the only way to prod", weeks:[12,14],
+{ id:"p10", short:"Cloud", title:"Cloud fundamentals: networks, identity and cost", weeks:[12,14],
+  why:"Delivery, Terraform and Kubernetes all assume you can reason about a cloud account: which network a service sits in, what may talk to what, which identity may do which action — and what it all costs each month. Learn it on one provider (AWS has the most jobs) in a sandbox account with a hard budget.",
+  terms:[["Regions & AZs","Independent locations. Spread across two Availability Zones so one data-centre failure isn’t an outage."],["VPC & CIDR","Your private network, e.g. `10.0.0.0/16`, carved into subnets such as `10.0.1.0/24`."],["Public vs private subnets","Public routes `0.0.0.0/0` to an internet gateway; private sends it through a NAT gateway."],["Security groups","Stateful firewalls on each resource — allow the app’s group, never `0.0.0.0/0` to a database."],["IAM evaluation","An explicit deny beats any allow; anything not allowed is denied."],["Roles, not users","Workloads and CI assume short-lived roles. No access keys on laptops."],["Cost drivers","NAT data processing, egress, idle databases and forgotten load balancers — often more than compute."]],
+  flowTitle:"A request inside a VPC",
+  flow:[["edge","Cloudflare","proxies to the load balancer"],["public subnet","Load balancer","TLS, health checks, two AZs"],["private subnet","API tasks","security group: from the LB only"],["isolated subnet","PostgreSQL","security group: from the API only"],["egress","NAT gateway","calls to Stripe, Paystack, OpenAI"]],
+  hot:2,
+  callouts:[["warn","A NAT gateway bills per hour and per GB processed. An API calling OpenAI and Stripe through it all day is a real line on the bill."],["info","Security groups can reference other security groups. ‘Allow 5432 from the API’s group’ keeps working when task IPs change on every deploy."]],
+  tasks:[
+    ["Create a sandbox AWS account (or an Organizations member account), put MFA on the root user, and stop using root.",""],
+    ["Set an AWS Budget with email alerts at 50%, 80% and 100% of a small monthly limit before building anything.",""],
+    ["Build a VPC by hand once: two public and two private subnets across two AZs, an internet gateway, a NAT gateway and route tables. Then delete it.","Doing it by hand once makes the Terraform in {job:p5} readable."],
+    ["Run a container on ECS Fargate in a private subnet behind an Application Load Balancer, reachable only through the ALB.",""],
+    ["Chain security groups ALB → app → database, and prove with `nc -vz` from inside the task that nothing else gets through.",""],
+    ["Write a least-privilege IAM policy for a task that reads one S3 bucket, and test it in the IAM Policy Simulator.",""],
+    ["Set up GitHub OIDC with a role only `BASHBOP/bashbop-event-web` jobs in the `production` environment can assume.","See this job’s worked example."],
+    ["Build a monthly cost sheet for both products: hosting, Cloudflare, GitHub Actions minutes, Apple Developer, Lemon Squeezy fees, email and SMS, OpenAI.","Put the total next to monthly revenue."],
+    ["Tag every resource with `product` and `env`, and activate them as cost allocation tags.",""],
+    ["Tear the sandbox down and confirm the next day’s bill is close to zero.",""]
+  ],
+  exit:["I can draw a two-AZ VPC and explain every route table and security group.","CI reaches the cloud through OIDC; no long-lived access keys exist.","I know what both products cost per month, line by line."],
+  quiz:[["Your API task in a private subnet can’t call Stripe, but load balancer health checks pass. What’s missing?","Outbound internet. The private subnet’s route table needs `0.0.0.0/0 → NAT gateway` (the NAT gateway itself sits in a public subnet). Inbound works because it arrives through the ALB."],
+        ["An identity policy allows `s3:*`, but the permissions boundary doesn’t include `s3:DeleteObject`. Can the role delete objects?","No. Effective permissions are the intersection of the identity policy and the boundary; anything outside the boundary is implicitly denied."],
+        ["Why reference a security group instead of an IP range?","Task and instance IPs change on every deploy. A group reference follows membership, so the rule stays both correct and narrow."],
+        ["Which costs more if forgotten: a stopped EC2 instance or an idle NAT gateway?","The NAT gateway — it bills hourly whether or not traffic flows. A stopped instance mainly bills for its disk (and any public IPv4 address kept attached)."],
+        ["What does the `sub` condition in a GitHub OIDC trust policy protect against?","Without it, workflows in any repository could try to assume your role. `sub` pins it to your repository — and ideally to one environment or branch."]],
+  res:["AWS Skill Builder — Cloud Practitioner Essentials (free)","AWS Docs — VPC with public and private subnets","AWS Docs — Policy evaluation logic","GitHub Docs — Configuring OpenID Connect in Amazon Web Services","AWS Well-Architected — Cost Optimization pillar"]
+},
+{ id:"p4", short:"Delivery", title:"Continuous delivery: merge is the only way to prod", weeks:[15,17],
   why:"Release Please already versions bashbop on merge to main. Right now that version never turns into a deploy. This job connects the two: an immutable image per release, automatic staging, a gated production step, and a rollback you’ve actually practised.",
   terms:[["Immutable tags","Deploy `:<git-sha>`, never a moving `:latest`."],["Registry","GHCR or ECR — where built images live."],["Environments","GitHub staging / production with required reviewers."],["OIDC","Short-lived cloud credentials for CI instead of stored keys."],["Rolling / blue-green","Replacing versions without dropping requests."],["Expand–contract migrations","Schema changes that both old and new app versions tolerate."],["Feature flags","Ship code dark; the API already has `FEATURE_FLAGS_ENABLED`."]],
   flowTitle:"From merge to production",
@@ -378,7 +455,7 @@ var PHASES=[
     ["Create GitHub Environments `staging` and `production`; require a reviewer for production.",""],
     ["Deploy to staging automatically after the image is pushed, then run the sanity Playwright suite against it.",""],
     ["Authenticate CI to your cloud with OIDC; delete any long-lived deploy keys.",""],
-    ["Replace PM2 on the API with the container from job 4, deployed by the same pipeline.",""],
+    ["Replace PM2 on the API with the container from {job:p3}, deployed by the same pipeline.",""],
     ["Run database migrations as a gated step before the new API version starts.",""],
     ["Practise one expand–contract change on a harmless column (add → backfill → switch → remove).",""],
     ["Rollback drill: redeploy the previous sha on staging, time it, and write the steps down.",""]
@@ -389,7 +466,7 @@ var PHASES=[
         ["Why OIDC instead of an access key in GitHub secrets?","Credentials are minted per run, expire in minutes and can be scoped to a repo and branch, so there’s no long-lived key to leak."]],
   res:["GitHub Docs — Using environments for deployment","GitHub Docs — Security hardening with OpenID Connect","Martin Fowler — BlueGreenDeployment","release-please — github.com/googleapis/release-please"]
 },
-{ id:"p9", short:"Edge", title:"Edge & serverless on Cloudflare", weeks:[15,17],
+{ id:"p9", short:"Edge", title:"Edge & serverless on Cloudflare", weeks:[18,20],
   why:"Both products lean on Cloudflare: bashbop for DNS, proxying, R2 storage, AI and organiser custom domains; Brain Boost Buddy for its update feed and the Worker that guards trials and licences with KV and D1. Serverless removes servers, not operations — deploys, secrets, migrations, limits and logs are still yours.",
   terms:[["Workers","JavaScript at Cloudflare’s edge, started per request, with no server to patch."],["Bindings","How a Worker reaches KV, D1, R2 or secrets — declared in `wrangler.toml`."],["KV","Eventually consistent key-value store — fine for rough counters, wrong for exact ones."],["D1","SQLite at the edge, changed through versioned migrations."],["R2","S3-compatible object storage with no egress fees."],["Secrets","`wrangler secret put` — never in `wrangler.toml` or Git."],["Environments","Separate staging and production Workers, KV namespaces and D1 databases."]],
   flowTitle:"A trial activation, end to end",
@@ -407,13 +484,13 @@ var PHASES=[
     ["Add R2 lifecycle rules so old installers and temporary uploads don’t pile up.",""],
     ["Load-test `/status` on staging to see how launch-time re-checks behave in a spike.",""]
   ],
-  exit:["The Worker deploys from CI to staging and production, never from a laptop.","D1 changes are versioned migrations.","I know which Cloudflare settings live only in the dashboard — job 7 moves them to code."],
+  exit:["The Worker deploys from CI to staging and production, never from a laptop.","D1 changes are versioned migrations.","I know which Cloudflare settings live only in the dashboard — {job:p5} moves them to code."],
   quiz:[["Why is KV a poor fit for an exact per-IP request limit?","KV is eventually consistent across locations: two edges can read the same old count and both allow the request. Use a Rate Limiting rule or Durable Objects for strict limits."],
         ["Where does `LS_API_KEY` live, and why not in `wrangler.toml`?","As a Worker secret (`wrangler secret put`), because `wrangler.toml` is committed. The desktop app never sees it — that’s why the Worker exists."],
         ["What does a staging Worker need to be a real test?","Its own KV namespace, D1 database and secrets (a Lemon Squeezy test-mode key). Sharing production bindings means tests change real data."]],
   res:["Cloudflare Docs — Wrangler configuration and environments","Cloudflare Docs — D1 migrations","Cloudflare Docs — Workers Vitest integration","Cloudflare Docs — R2 object lifecycles"]
 },
-{ id:"p5", short:"IaC", title:"Infrastructure as code & secrets", weeks:[18,21],
+{ id:"p5", short:"IaC", title:"Infrastructure as code & secrets", weeks:[21,24],
   why:"If staging disappeared tomorrow, how long would it take to rebuild — and would it match production? Terraform (or OpenTofu) turns DNS, R2 buckets, servers and databases into reviewed pull requests, and a secrets manager ends `.env` files on servers.",
   terms:[["Declarative state","Describe what should exist; the tool works out the changes."],["plan / apply","A reviewable diff before anything changes."],["Remote state & locking","Shared state that two people can’t corrupt at once."],["Import","Bringing resources you made by hand under management."],["Drift","When reality no longer matches the code."],["Modules","Reusable building blocks — one for staging and production."],["Least privilege","Every token and role can do only its job."]],
   flowTitle:"The change workflow",
@@ -438,7 +515,35 @@ var PHASES=[
         ["Why import before creating?","Creating a duplicate of something that already exists either fails or silently splits ownership; import puts the real resource under management."]],
   res:["HashiCorp Developer — Terraform tutorials","OpenTofu documentation — opentofu.org","Cloudflare Terraform provider documentation","Yevgeniy Brikman — Terraform: Up & Running"]
 },
-{ id:"p6", short:"Observe", title:"Observability: hear about outages before users do", weeks:[22,24],
+{ id:"p11", short:"Security", title:"Security & supply chain: every hop from laptop to production", weeks:[25,27],
+  why:"Both products handle money or licence keys, run third-party code in CI, and ship binaries to families’ computers. Security isn’t a final audit — it’s a control on every hop. In March 2025 the popular `tj-actions/changed-files` action had its version tags repointed to code that dumped CI secrets into logs; workflows pinned to a commit SHA were unaffected.",
+  terms:[["Threat model","Who would attack this, what they want, and the cheapest path — written down per product."],["Least privilege","Every token, role and workflow job gets only the permissions its task needs."],["Secret lifecycle","Store, scope, rotate, revoke — and treat anything ever committed as compromised."],["Dependency risk","Lockfiles, `yarn npm audit`, Dependabot, and a look at every new package."],["Pinned actions","`uses: owner/action@<commit-sha>` — tags can move, SHAs can’t."],["SBOM & provenance","What’s inside a build, and a signed record of how and where it was built."],["OWASP Top 10","The web risks that matter most for bashbop: broken access control, injection, authentication failures, SSRF."]],
+  flowTitle:"Every hop is an attack path",
+  flow:[["laptop","Developer","MFA, disk encryption"],["source","GitHub","rulesets, push protection"],["ci","Actions","pinned SHAs, OIDC, scoped tokens"],["build","Artifact","SBOM + provenance attestation"],["run","Production","secrets manager, minimal image"]],
+  hot:2,
+  callouts:[["warn","bashbop-event-web workflows use tags such as `actions/checkout@v6` and run `npx -y @nugehs/bouncer@latest` — a moved tag or a bad publish runs with that job’s permissions."],["info","Brain Boost Buddy already keeps the Lemon Squeezy API key in the Worker, never in the desktop app. That’s the pattern to repeat: secrets stay server-side."]],
+  tasks:[
+    ["Write a one-page threat model per product: assets (payments, licence keys, children’s progress data), likely attackers, and the top five risks.","Brain Boost Buddy is used by children — weigh its data accordingly."],
+    ["Turn on secret scanning and push protection for every repository in both GitHub accounts.",""],
+    ["Pin every third-party action to a commit SHA with the version as a comment, and let Dependabot keep them updated.",""],
+    ["Set `permissions: {}` at the top of every workflow and grant each job only what it uses.",""],
+    ["Replace `@latest` installs in CI (for example `@nugehs/bouncer@latest`) with pinned versions.",""],
+    ["Enable Dependabot security updates and add `actions/dependency-review-action` to PR checks.",""],
+    ["Run `zizmor` on `.github/workflows` in every repo and fix the high-severity findings.","zizmor is a static analyser for GitHub Actions workflows."],
+    ["Generate an SBOM and build provenance for the web image, and verify it with `gh attestation verify` before deploy.",""],
+    ["Rotate every secret that was ever committed — starting with the web `.env.test` `CSRF_SECRET` — and record rotation dates.",""],
+    ["Test bashbop for broken access control on staging: with two accounts you own, can organiser A read or change organiser B’s events, guests or payouts by editing an id?",""],
+    ["Review the licence Worker for abuse: rate limits, email enumeration through `/status`, and what an error response reveals.",""]
+  ],
+  exit:["No workflow can run a moved tag or hold an unscoped token.","Every secret has an owner, a location and a last-rotated date.","I’ve tested the top access-control risks on both products and fixed what I found."],
+  quiz:[["A third-party action you use as `@v4` is compromised. What’s the blast radius, and what limits it?","It runs with that job’s `GITHUB_TOKEN` permissions and any secrets passed to the job. SHA pinning prevents the swap; scoped `permissions` and OIDC-only cloud access limit the damage."],
+        ["You find a live API key in Git history. Order these: purge history, rotate the key, check usage logs.","Rotate first (it was compromised the moment it was pushed), then check the provider’s logs for misuse, then purge history as hygiene."],
+        ["What’s the difference between an SBOM and provenance?","An SBOM lists the components inside an artifact; provenance attests which source commit and workflow built it. Together they answer ‘is this exactly what we built, from what?’"],
+        ["An organiser edits `/events/123/guests` to `/events/124/guests` and sees another organiser’s guests. Which OWASP category, and where’s the fix?","Broken Access Control (A01). The fix is a server-side ownership check on every request — hiding the link in the UI changes nothing."],
+        ["Why is `pull_request_target` combined with checking out the PR’s code dangerous?","It runs with the base repository’s secrets and a write-capable token while executing untrusted fork code — a direct path to stealing secrets."]],
+  res:["OWASP — Top 10 and ASVS","GitHub Docs — Security hardening for GitHub Actions","OpenSSF Scorecard","zizmor — docs.zizmor.sh","SLSA — slsa.dev"]
+},
+{ id:"p6", short:"Observe", title:"Observability: hear about outages before users do", weeks:[28,30],
   why:"Bashbop takes money through Stripe, Paystack and MTN MoMo. The September 2025 booking and payment recovery left a trail of hand-written SQL in the API repo — a sign the problem was found late and fixed by hand. This job makes the next one visible in minutes.",
   terms:[["Logs, metrics, traces","What happened, how much, and where the time went."],["Structured logs","JSON lines with a request id you can search on."],["OpenTelemetry","Vendor-neutral instrumentation for NestJS, Prisma and Next.js."],["SLI / SLO","The measurement, and the target you promise."],["Error budget","How much failure the SLO allows before you stop shipping features."],["Symptom alerts","Page on ‘checkouts failing’, not ‘CPU 80%’."],["Runbook & postmortem","What to do now; what we learned after."]],
   flowTitle:"Follow one paid booking",
@@ -463,11 +568,11 @@ var PHASES=[
         ["What makes a postmortem ‘blameless’?","It asks how the system allowed the failure, not who caused it — so people share what really happened and the fixes target process and tooling."]],
   res:["Google — Site Reliability Engineering, ch. 4 ‘Service Level Objectives’ (sre.google)","OpenTelemetry — JavaScript getting started","Next.js Docs — OpenTelemetry","Grafana Labs — Prometheus and Loki getting started"]
 },
-{ id:"p7", short:"Scale", title:"Reliability drills, then Kubernetes", weeks:[25,32],
+{ id:"p7", short:"Scale", title:"Reliability drills, then Kubernetes", weeks:[31,36],
   why:"Prove the system survives failure — restore a backup, find the breaking point, kill a dependency on purpose. Only then learn Kubernetes: bashbop probably doesn’t need it yet, but the job market does, and you’ll understand it far better with everything above in place.",
   terms:[["RPO / RTO","How much data you can lose; how long you can be down."],["Restore testing","A backup you haven’t restored is a hope, not a backup."],["Load testing","k6 scripts that find the traffic level where things break."],["Game days","Planned failure in staging to test alerts and runbooks."],["Pod, Deployment, Service","Kubernetes’ unit of work, rollout controller and stable address."],["Probes","Readiness gates traffic; liveness restarts stuck pods."],["Helm & GitOps","Packaged manifests, synced from Git by Argo CD."]],
   flowTitle:"GitOps on Kubernetes",
-  flow:[["ci","Image :sha","from job 5’s pipeline"],["git","Manifests repo","PR bumps the image tag"],["sync","Argo CD","notices the change"],["cluster","Deployment","rolling update, probes gate traffic"],["edge","Ingress","routes bashbop traffic"]],
+  flow:[["ci","Image :sha","from {job:p4}’s pipeline"],["git","Manifests repo","PR bumps the image tag"],["sync","Argo CD","notices the change"],["cluster","Deployment","rolling update, probes gate traffic"],["edge","Ingress","routes bashbop traffic"]],
   hot:2,
   callouts:[["info","Use `k3d` or `kind` locally first. A managed cluster costs real money every hour it runs."],["warn","The API repo has a `database-backups/` folder. Manual dumps in a repo are not a backup strategy — automate and test restores."]],
   tasks:[
@@ -476,7 +581,7 @@ var PHASES=[
     ["Write a k6 load test for the public event page and the booking API; record the breaking point on staging.",""],
     ["Run a game day: stop Redis on staging, check alerts fire and the runbook works.",""],
     ["Create a local cluster with `k3d` and deploy the web image with a Deployment, Service and Ingress.",""],
-    ["Add readiness and liveness probes using the health route from job 4.",""],
+    ["Add readiness and liveness probes using the health route from {job:p3}.",""],
     ["Package web and API as Helm charts.",""],
     ["Install Argo CD and sync a staging namespace from a GitOps repo.",""],
     ["Write an honest ADR: does bashbop need Kubernetes in production this year?",""],
@@ -488,8 +593,65 @@ var PHASES=[
         ["Readiness vs liveness probe?","A failing readiness probe removes the pod from traffic but leaves it running; a failing liveness probe restarts the container."],
         ["Why deploy through Git (Argo CD) instead of `kubectl apply` from CI?","The cluster continuously matches Git, drift is corrected, every change is a reviewed commit, and rollback is a revert."]],
   res:["Kubernetes Docs — Tutorials (kubernetes.io)","Burns, Beda, Hightower & Evenson — Kubernetes: Up & Running","Grafana k6 documentation","Argo CD — Getting Started","CNCF — CKA curriculum"]
+},
+{ id:"p12", short:"Capstone", title:"Capstone: a game day and a case study", weeks:[37,38],
+  why:"Prove it end to end. Someone else breaks staging for both products without telling you what or when; you detect it from alerts, run the incident, recover and write it up. Then turn the whole track into a case study with real numbers — for a hiring manager, an investor or your own next decision.",
+  terms:[["Game day","A planned, time-boxed exercise that injects real failures into a safe environment."],["Fault script","Scripted, reversible faults, so every break is repeatable and every undo is known."],["TTD / TTM","Time to detect and time to mitigate. Measure them from timestamps; don’t estimate."],["Incident roles","Commander decides and communicates; operators investigate. One person may hold two, on purpose."],["Blameless review","Asks how the system allowed the failure, not who caused it."],["Case study","Problem, constraints, decisions, results with numbers, and what you’d change."],["Evidence","PR links, dashboards and before/after metrics — claims a reader can check."]],
+  flowTitle:"The game day",
+  flow:[["prep","Facilitator","chooses three faults and times"],["inject","Faults go live","unannounced, staging only"],["detect","Alerts fire","time to detect starts here"],["respond","Run the incident","roles, runbooks, updates"],["learn","Review","postmortems, tracked fixes"]],
+  hot:3,
+  callouts:[["warn","Staging only, with a written undo for every fault and a hard stop time. A game day that damages production is an incident, not an exercise."],["info","If nobody else can facilitate, let a script pick the faults and times at random and write them to a log you don’t open until the end."]],
+  tasks:[
+    ["Write the game-day plan: date, time box, facilitator, abort criteria, and the undo for every fault.",""],
+    ["Prepare at least three faults across both products — for example a wrong webhook secret on bashbop staging, a test feed whose `latest-mac.yml` names a missing file, and a staging Worker without its secret.",""],
+    ["Confirm beforehand that each fault triggers an alert, so the day tests detection rather than luck.",""],
+    ["Run the game day and record timestamps: injected, alert fired, incident declared, mitigated, resolved.",""],
+    ["Post status updates at a fixed cadence during the incident, written as if customers were reading.",""],
+    ["Write a blameless postmortem per fault using the template in this job’s worked example.",""],
+    ["Turn every action item into a tracked issue with an owner and a due date.",""],
+    ["Write the case study: before/after architecture diagrams, key decisions linked to ADRs, and metrics — CI time, deploy frequency, rollback time, time to detect, time to mitigate, monthly cost.",""],
+    ["Publish the case study and walk one person who will ask hard questions through it.",""],
+    ["Book the certification that matches your next step: AWS Solutions Architect Associate, HashiCorp Terraform Associate or CKA.",""]
+  ],
+  exit:["Every fault was detected by an alert, not by me looking.","Each fault has a postmortem with tracked action items.","The case study shows real before/after numbers from both products."],
+  quiz:[["An alert fires 22 minutes after the fault and you mitigate 10 minutes later. Which do you improve first?","Detection — 22 of the 32 minutes of impact happened before anyone knew. Tighten the alert (burn-rate windows, a synthetic check) before speeding up the fix."],
+        ["Mid-incident you find the root cause, but the proper fix needs a code change. What now?","Mitigate first: roll back, flip a flag or restore known-good config. The root-cause fix follows once users are no longer affected."],
+        ["What makes a postmortem action item good?","Specific, owned, dated and preventive — ‘alert when webhook 4xx rate exceeds 5% for 10 minutes, owner: you, due 30 Sep’ — never ‘be more careful’."],
+        ["What turns a case study from a list of tools into evidence?","Numbers against a baseline (CI 14 → 6 minutes), decisions with their trade-offs, links to the actual PRs and dashboards, and an honest ‘what I’d change’."],
+        ["Why confirm alerts fire before the game day?","Otherwise a silent fault can’t be told apart from a broken exercise, and you learn nothing about your monitoring."]],
+  res:["Google SRE Workbook — ‘Incident Response’ (sre.google)","PagerDuty — Incident Response documentation (response.pagerduty.com)","AWS — Fault Injection Service and game days","Atlassian — Incident postmortem templates"]
 }
 ];
+
+/* additions to the original jobs: appended, so saved task ids stay stable */
+var EXTRA={
+  p1:{title:"Linux, networking & scripting on your own stack",
+    terms:[["Bash safety","`set -euo pipefail`, quoted variables and `trap` for clean-up."],["Python for glue","Parsing logs and calling APIs once Bash gets awkward."],["systemd timers","Scheduled scripts with logs you can find via `journalctl`."]],
+    tasks:[["Write `scripts/ops/check-stack.sh` that checks the web app, the API’s `/api/v1/health` and the Brain Boost Buddy update feed, exiting non-zero on any failure.","The second file in this job’s worked example is a starting point."],["Write a Python script that reads an Nginx access log and prints the ten paths returning the most 5xx responses.",""],["Run `check-stack.sh` every five minutes from a systemd timer and find its output with `journalctl -u`.",""]],
+    exit:["I automate repeated checks with scripts instead of doing them by hand."],
+    quiz:[["Your Bash script ‘succeeded’, but a `curl` inside it failed. What was probably missing?","`curl -f` (treat HTTP errors as failures) and `set -e`, plus `set -o pipefail` if the output was piped — otherwise a pipeline’s status is its last command’s."],["What does Cloudflare error 521 tell you that a plain 502 doesn’t?","521 means Cloudflare couldn’t connect to your origin at all. A 502 can come from Cloudflare or from your own Nginx — the error page and the `server` header show which."]]},
+  p2:{quiz:[["Your required check is named `checks`. You rename the job to `quality`. What happens to PRs?","The ruleset keeps waiting for a `checks` status that never reports (‘Expected — waiting for status’), so merges block. Update the ruleset in the same change."],["A job is skipped by an `if:` condition; a whole workflow is skipped by a `paths` filter. How does each affect a required check?","A job skipped by `if:` reports success. A workflow that never starts reports nothing, so a required check from it stays pending."]]},
+  p8:{quiz:[["The mac job was green on v2.3.1 and red from v2.4.0. What do you compare before touching the certificate?","The runner image version at the top of both logs, and `electron-builder` in `package-lock.json` between the tags — and whether v2.3.1 signed at all or skipped signing."],["A parent on 2.5.0 never gets 2.5.2, but fresh installs work. Where do you look?","The feed URL and channel that 2.5.0 was built with, the `version` and `sha512` in the `latest*.yml` it reads, and 2.5.0’s own updater code — old builds only ever run the update logic they shipped with."]]},
+  p3:{quiz:[["A container restarts every few seconds with exit code 137. What happened?","It received SIGKILL (128 + 9), usually from the out-of-memory killer at the memory limit. `docker inspect` shows `OOMKilled: true`."],["Why does editing app code rebuild in seconds, but editing `package.json` takes minutes?","Only layers from the first changed instruction onward rebuild. Dependencies install in an early layer keyed on `package.json` and the lockfile, so only dependency changes invalidate it."]]},
+  p4:{quiz:[["Production breaks after a release that included a migration. Roll back or roll forward?","Roll the app back only if the migration is backward compatible. If it dropped or renamed something the old version needs, roll forward with a fix — the reason for expand–contract."],["What does a canary release give you that blue-green doesn’t?","Gradual exposure: a small share of real traffic hits the new version first, so a bad release hurts fewer users. Blue-green switches everyone at once, but switches back just as fast."]]},
+  p9:{quiz:[["`startTrial` uses one `INSERT OR IGNORE … WHERE NOT EXISTS` statement. What bug does that prevent?","A race. With a separate ‘check this device’ query followed by an insert, two parallel activations could both see no trial and both insert. One statement makes check and insert atomic."],["A Worker works in `wrangler dev` but throws on an undefined binding after `wrangler deploy --env production`. Why?","Bindings don’t inherit into environments. The `[env.production]` block has to redeclare every KV, D1 and R2 binding, and secrets must be set per environment."]]},
+  p5:{quiz:[["After renaming a resource block, `plan` wants to destroy and recreate a DNS record. How do you rename safely?","Add a `moved` block from the old address to the new one (or run `terraform state mv`), then re-plan until it shows no changes."],["What should never go in committed Terraform variables — and what still needs protecting even then?","Secrets such as API tokens and database passwords; pass them via environment variables or a secrets manager. State can still contain secret values, so the state bucket must be private too."]]},
+  p6:{title:"Observability & on-call: hear about outages before users do",
+    terms:[["Severity levels","SEV1 payments down for everyone, SEV2 degraded, SEV3 minor — each with a response time."],["Incident commander","One person coordinates and decides while others fix. Even solo, name the role."],["Status page","Where customers see what’s happening without emailing you."]],
+    tasks:[["Write a severity matrix for both products with example incidents and target response times.",""],["Route alerts by severity: SEV1 reaches your phone at any hour; SEV3 waits for working hours.",""],["Set up a status page for bashbop and Brain Boost Buddy and practise posting an update.",""],["Run a 30-minute tabletop exercise: ‘Paystack webhooks failing on a Friday night’, using your runbook.",""]],
+    exit:["Every alert has a severity, and a SEV1 reaches me within five minutes."],
+    quiz:[["Payments fail for 3% of customers in one country. Which severity?","Probably SEV2: a real, revenue-affecting degradation for a segment, not a full outage. Severity follows customer impact, not how hard the bug looks."],["Why define incident roles for a one-person team?","Under stress you’ll switch between fixing and communicating and do both badly. Deciding in advance when to post updates and who else to call is the point."]]},
+  p7:{title:"Data, reliability, then Kubernetes",
+    terms:[["WAL & PITR","Postgres logs every change to a write-ahead log; replaying it restores to a chosen second."],["Connection pooling","PgBouncer or Prisma’s pool stops hundreds of requests opening hundreds of connections."],["Read replicas","Copies for reporting and dashboards, slightly behind the primary."],["pg_stat_statements","Shows which queries consume the most total time."]],
+    tasks:[["Enable point-in-time recovery on the production database, and restore staging to a chosen second.",""],["Enable `pg_stat_statements`, list the ten queries with the highest total time, and fix one.",""],["Size Prisma’s `connection_limit` against Postgres `max_connections` for your peak number of API instances, including during deploys.",""],["Replace ad-hoc production SQL with reviewed, transactional runbooks and a read-only role for investigation.","The September 2025 recovery scripts show why."]],
+    exit:["Nobody runs unreviewed writes against production; investigation uses a read-only role."],
+    quiz:[["Four API instances each use a pool of 20, and Postgres allows 100 connections. What breaks during a rolling deploy?","Old and new instances overlap — up to eight × 20 = 160 connections — so new ones fail with ‘too many connections’. Lower the pool size, add PgBouncer, or raise the limit."],["Why restore point-in-time into a new database instead of over production?","You keep the good writes made after the incident, can compare safely, and copy back only what was lost. Restoring over production destroys newer data."]]}
+};
+PHASES.forEach(function(p){
+  var e=EXTRA[p.id];if(!e)return;
+  if(e.title)p.title=e.title;
+  ["terms","tasks","exit","quiz"].forEach(function(k){if(e[k])p[k]=p[k].concat(e[k]);});
+});
 
 var FINDINGS=[
   ["risk","bashbop","Type check (`tsc`) only runs on PRs into main — and `next.config.mjs` sets `ignoreBuildErrors: true`, so the build won’t catch type errors on develop PRs either.","p2"],
@@ -507,6 +669,117 @@ var FINDINGS=[
 ];
 var STRENGTHS=["Postgres + Redis service containers in API CI","gitleaks in bashbop-api","Release Please versioning","Migration check & deploy workflows","Multi-stage, non-root web Dockerfile","Compliance checks (bouncer) on PRs","BBB release gate: smoke, icon and SVG checks","Licence API key kept server-side in a Worker","Parent-approved auto-updates"];
 
+/* how it works: mechanism diagrams per job */
+function txt(x,y,cls,s,anchor){return "<text class=\""+cls+"\" x=\""+x+"\" y=\""+y+"\""+(anchor?" text-anchor=\""+anchor+"\"":"")+">"+esc(s)+"</text>";}
+function seq(id,lanes,steps,label){
+  var W=1000,top=78,gap=34,n=lanes.length,m=90,sp=(W-2*m)/(n-1),H=top+steps.length*gap+18;
+  var X=function(k){return m+k*sp;};
+  var h=svgOpen(id,W,H,label);
+  lanes.forEach(function(l,k){var x=X(k);h+="<line class=\"lane\" x1=\""+x+"\" y1=\"50\" x2=\""+x+"\" y2=\""+(H-6)+"\"/><rect class=\"lh\" x=\""+(x-78)+"\" y=\"12\" width=\"156\" height=\"38\" rx=\"8\"/>"+txt(x,36,"bt",l,"middle");});
+  steps.forEach(function(s,k){
+    var y=top+k*gap,a=X(s[0]),b=X(s[1]),c=s[3]||"";
+    if(s[0]===s[1]){var w=Math.round(s[2].length*6.7+18),nx=(a+10+w>W-6)?a-10-w:a+10;h+="<rect class=\"note\" x=\""+nx+"\" y=\""+(y-14)+"\" width=\""+w+"\" height=\"22\" rx=\"5\"/>"+txt(nx+9,y+1,"nt",s[2]);}
+    else{var d=b>a?1:-1;h+="<path class=\"ln"+(c?" "+c:"")+"\" d=\"M"+(a+d*4)+" "+y+" H"+(b-d*6)+"\" marker-end=\"url(#"+id+")\"/>"+txt((a+b)/2,y-6,"al w"+(c?" "+c+"t":""),s[2],"middle");}
+  });
+  return h+"</svg>";
+}
+function timeline(id,rows,bars,ticks,marks,label){
+  var W=1000,L=180,R=W-24,top=50,rh=46,H=top+rows.length*rh+36;
+  var X=function(t){return L+(R-L)*t/100;};
+  var h=svgOpen(id,W,H,label);
+  ticks.forEach(function(t){var x=X(t[0]);h+="<line class=\"tick\" x1=\""+x+"\" y1=\""+(top-4)+"\" x2=\""+x+"\" y2=\""+(top+rows.length*rh)+"\"/>"+txt(x,H-12,"bs",t[1],t[0]<3?"start":t[0]>97?"end":"middle");});
+  marks.forEach(function(m){var x=X(m[0]);h+="<line class=\"mark\" x1=\""+x+"\" y1=\""+(top-12)+"\" x2=\""+x+"\" y2=\""+(top+rows.length*rh)+"\"/>"+txt(x,top-18,"al w failt",m[1],m[0]<8?"start":m[0]>88?"end":"middle");});
+  rows.forEach(function(r,k){h+=txt(12,top+k*rh+27,"bt",r);});
+  bars.forEach(function(b){var x=X(b[1]),w=X(b[2])-x,y=top+b[0]*rh+8;h+="<rect class=\"tbar"+(b[4]?" "+b[4]:"")+"\" x=\""+x+"\" y=\""+y+"\" width=\""+w+"\" height=\"28\" rx=\"5\"/>"+txt(x+8,y+18,"nt",b[3]);});
+  return h+"</svg>";
+}
+var HOW={
+  p1:{title:"What happens between a click and a 200",
+    caption:"Eleven messages for one API call. Every lane is a place the request can fail — and a place you can test on its own with `dig`, `curl --resolve` or `curl http://127.0.0.1`.",
+    points:[["DNS answers with Cloudflare, not you","A proxied record returns edge IPs, so `dig` never shows your server. If your origin IP leaks, attackers can skip Cloudflare entirely."],["Two TLS connections, not one","Browser to edge uses Cloudflare’s certificate; edge to origin uses yours. ‘Full (strict)’ makes Cloudflare verify the second one."],["Nginx is a second client","It opens its own connection to the app. A 502 means that hop failed, even when DNS and TLS are fine."],["Every hop leaves evidence","`cf-ray` identifies the edge request; `CF-Connecting-IP` carries the real client IP into your logs."]],
+    svg:function(){return seq("hw1",["Browser","DNS resolver","Cloudflare edge","Nginx","bashbop-api"],[[0,1,"A? api host"],[1,0,"Cloudflare edge IPs"],[0,2,"TCP + TLS 1.3 handshake"],[2,2,"edge certificate"],[0,2,"GET /api/v1/events"],[2,3,"new TLS to origin (Full strict)","hot"],[3,4,"proxy_pass 127.0.0.1:9999"],[4,4,"auth, query Postgres"],[4,3,"200 JSON"],[3,2,"200"],[2,0,"200 + cf-ray"]],"Sequence of one API request: DNS returns Cloudflare, the browser does TLS with the edge, the edge opens a second TLS connection to Nginx, Nginx proxies to the API on localhost, and the response returns the same way.");}},
+  p2:{title:"What a workflow run really is",
+    caption:"Each job starts on a clean virtual machine. Nothing survives between jobs except what goes into the cache or an artifact, and only a job’s reported status — matched by name — reaches branch protection.",
+    points:[["Jobs don’t share disks","`node_modules` from one job isn’t there in the next. That’s why every job installs again — and why caching matters."],["Cache keys decide hits","A key built from `yarn.lock`’s hash misses only when dependencies change; `restore-keys` fall back to the closest older cache."],["Skips aren’t all equal","A job skipped by `if:` reports success. A workflow skipped by a `paths` filter never reports, so its required check stays pending."],["Forks don’t get secrets","PRs from forks run with a read-only token and no secrets, so steps that need them fail there by design."]],
+    svg:function(){var i="hw2";return svgOpen(i,1000,380,"A pull_request event starts three jobs on separate fresh runners; the checks job saves and restores a cache, the build job uploads artifacts, and only the checks job's status satisfies the branch ruleset that enables merging.")+
+      zone(190,30,300,340,"RUNNERS · A FRESH VM PER JOB")+
+      box(20,170,140,56,"pull_request","opened or pushed")+
+      box(215,70,250,56,"job: checks","lint · types · tests")+box(215,170,250,56,"job: e2e","Playwright sanity")+box(215,270,250,56,"job: bundle-size","build + compare")+
+      box(560,70,170,56,"Cache store","key: yarn.lock hash")+box(560,270,170,56,"Artifacts","files between jobs")+
+      box(780,170,200,56,"Branch ruleset","requires: checks","hot")+box(780,290,200,56,"Merge button","enabled when green")+
+      arw(i,"M160 198 H188 V98 H215")+arw(i,"M160 198 H215")+arw(i,"M160 198 H188 V298 H215")+
+      arw(i,"M465 98 H560","save/restore",512,90)+arw(i,"M465 298 H560","upload",512,290)+
+      arw(i,"M465 112 H500 V198 H780","status: success",640,190,"middle","hot")+
+      arw(i,"M880 226 V290","allows merge",888,262,"start")+"</svg>";}},
+  p8:{title:"Signing, notarisation and the update check",
+    caption:"Two trust chains. Apple vouches for the binary through signing and notarisation; the feed tells every installed copy what to download and how to verify it.",
+    points:[["The keychain step is where CI breaks","A runner has no keychain holding your certificate. electron-builder creates a temporary one, imports `CSC_LINK` and must unlock it — your failing step."],["Notarisation needs the hardened runtime","Apple rejects signed apps without it. Stapling attaches the ticket so Gatekeeper can check it offline."],["The feed is a contract","The app trusts `latest-mac.yml`: version, file name, size and `sha512`. Any mismatch is a failed or rejected update."],["Old versions run old updaters","2.5.0 checks for updates with the code 2.5.0 shipped. Test updates from real old builds, not just fresh installs."]],
+    svg:function(){return seq("hw3",["CI runner","Apple notary","R2 update feed","Parent’s Mac"],[[0,0,"import .p12 into temp keychain"],[0,0,"codesign with hardened runtime"],[0,1,"notarytool submit"],[1,1,"scan + verify signature"],[1,0,"accepted"],[0,0,"stapler staple"],[0,2,"upload dmg, zip, blockmaps"],[0,2,"upload latest-mac.yml last","hot"],[3,2,"GET latest-mac.yml"],[3,3,"2.5.3 > 2.5.2: show ‘Update’"],[3,2,"GET zip (blockmap diff)"],[3,3,"verify sha512, install on quit"]],"Sequence: the CI runner signs with a temporary keychain, submits to Apple for notarisation, staples the ticket and uploads installers then the feed; the installed app fetches the feed, compares versions, downloads the zip and verifies its hash.");}},
+  p3:{title:"How a container is isolated",
+    caption:"Containers are ordinary processes that the shared kernel fences in with namespaces and limits with cgroups. The image is a stack of read-only layers with one thin writable layer on top.",
+    points:[["No kernel of its own","Both containers make system calls to the same host kernel — much lighter than a VM, which is also why a kernel bug can cross containers."],["Namespaces decide what a process sees","Its own process tree, network interface, hostname and mounts. Inside, `ps` shows `node` as PID 1."],["cgroups decide what it can use","Exceed the memory limit and the kernel kills the process: exit code 137, `OOMKilled: true`."],["Layers are cached and shared","Every image built on `node:20-alpine` shares that layer on disk. Runtime writes land in the writable layer and vanish with the container."]],
+    svg:function(){var i="hw4",h=svgOpen(i,1000,400,"Two containers, bashbop-web and bashbop-api, each with pid, net and mount namespaces and a cgroup limit, share one host kernel; the web image is a stack of read-only layers under a writable layer.");
+      h+=zone(30,40,270,280,"CONTAINER · bashbop-web")+zone(320,40,270,280,"CONTAINER · bashbop-api");
+      [["pid namespace","sees only its processes"],["net namespace","own interface, :80"],["mnt namespace","own root filesystem"],["cgroup","memory limit 1 GiB"]].forEach(function(b,k){h+=box(45,70+k*60,240,48,b[0],b[1]);});
+      [["pid namespace","PID 1 is node"],["net namespace","own interface, :9999"],["mnt namespace","its own image layers"],["cgroup","CPU and memory limits"]].forEach(function(b,k){h+=box(335,70+k*60,240,48,b[0],b[1]);});
+      h+=box(30,344,560,48,"Host Linux kernel — shared","namespaces and cgroups are kernel features")+arw(i,"M165 320 V344","syscalls",172,336,"start")+arw(i,"M455 320 V344","syscalls",462,336,"start");
+      h+=zone(630,40,350,352,"IMAGE · web runner stage");
+      [["Writable layer","runtime writes, lost on removal","hot"],["COPY .next/static","hashed JS and CSS"],["COPY .next/standalone","server.js + traced node_modules"],["COPY public/","images, fonts"],["RUN adduser nextjs","uid 1001"],["FROM node:20-alpine","shared by images built on it"]].forEach(function(b,k){h+=box(650,70+k*52,310,44,b[0],b[1],b[2]);});
+      return h+"</svg>";}},
+  p10:{title:"Inside a two-AZ VPC",
+    caption:"Only the load balancer and NAT gateway sit in public subnets. The API and database have no public addresses, and each security group admits traffic only from the group in front of it.",
+    points:[["Public by route, not by name","A subnet is public because its route table sends `0.0.0.0/0` to an internet gateway. Private subnets send it to a NAT gateway."],["Security groups chain","ALB group → app group → database group. Nothing else reaches port 5432, even from inside the VPC."],["Two AZs or it isn’t highly available","Load balancer nodes, tasks and the database standby span both zones, so losing one data centre costs capacity, not the service."],["Egress is metered","Every call to Stripe or OpenAI leaves through the NAT gateway, which charges per GB processed on top of its hourly fee."]],
+    svg:function(){var i="hw5";return svgOpen(i,1000,470,"A VPC across two availability zones: Cloudflare reaches load balancer nodes in public subnets, which reach API tasks in private subnets, which reach Postgres in isolated subnets; API egress goes through a NAT gateway to Stripe and OpenAI.")+
+      zone(150,30,700,420,"VPC 10.0.0.0/16 · eu-west-2")+"<line class=\"lane\" x1=\"500\" y1=\"60\" x2=\"500\" y2=\"440\"/>"+txt(170,74,"zl","AZ A")+txt(520,74,"zl","AZ B")+
+      box(10,86,120,56,"Cloudflare","proxied DNS")+box(870,216,120,56,"Stripe · OpenAI","internet")+
+      box(170,86,150,56,"ALB node","public subnet")+box(335,86,150,56,"NAT gateway","public subnet")+box(520,86,150,56,"ALB node","public subnet")+
+      box(170,216,150,56,"API task","private subnet")+box(520,216,150,56,"API task","private subnet")+
+      box(170,346,150,56,"Postgres primary","isolated · :5432")+box(520,346,150,56,"Postgres standby","isolated · :5432")+
+      txt(690,108,"zl","PUBLIC")+txt(690,126,"bs","10.0.1.0/24, .2.0/24")+txt(690,238,"zl","PRIVATE")+txt(690,256,"bs","10.0.11.0/24, .12.0/24")+txt(690,368,"zl","ISOLATED")+txt(690,386,"bs","10.0.21.0/24, .22.0/24")+
+      arw(i,"M130 114 H170","HTTPS",150,106)+
+      arw(i,"M245 142 V216","SG: from ALB",238,184,"end")+arw(i,"M595 142 V216","SG: from ALB",588,184,"end")+
+      arw(i,"M245 272 V346","SG: from API",238,314,"end")+arw(i,"M595 272 V346","SG: from API",588,314,"end")+
+      arw(i,"M320 374 H520","replication",420,366)+
+      arw(i,"M300 216 V180 H410 V142","egress",355,174)+arw(i,"M410 86 V52 H930 V216","to the internet",670,46)+"</svg>";}},
+  p4:{title:"Expand–contract: renaming a column with zero downtime",
+    caption:"Renaming a column safely takes four releases. At every step the version being deployed and the one it replaces both work with the schema that exists, so a rollback never meets a missing column.",
+    points:[["Rolling deploys run two versions","For a few minutes old and new pods serve traffic against one database, so every schema change must suit both."],["Expand, migrate, contract","Add the new shape, dual-write, backfill, switch reads, stop the old writes — and only then drop the old column."],["Rollback stays safe","Until the final release, rolling back one step never meets a column that isn’t there."],["Migrations run before the app","`prisma migrate deploy` in a gated step, so new code never starts against an older schema."]],
+    svg:function(){return timeline("hw6",["Schema","Writes","Reads","Backfill"],[[0,0,15,"venue"],[0,15,85,"venue + location_name"],[0,85,100,"new only","pass"],[1,0,15,"venue"],[1,15,65,"both columns"],[1,65,100,"location_name"],[2,0,40,"venue"],[2,40,100,"location_name"],[3,18,38,"copy old rows","gap"]],[[0,"before"],[15,"R1"],[40,"R2"],[65,"R3"],[85,"R4"],[100,"done"]],[[15,"R1 add column"],[40,"R2 read new"],[65,"R3 stop old writes"],[85,"R4 drop venue"]],"Timeline of renaming venue to location_name over four releases: add the column and dual-write, backfill, switch reads, stop writing the old column, then drop it.");}},
+  p9:{title:"Why KV counters drift at the edge",
+    caption:"Two locations read the same cached counter, both allow the request, and both write 10. That’s why the Worker treats its KV throttle as best-effort and relies on a Rate Limiting rule as the hard cap.",
+    points:[["A Worker is an isolate, not a server","Each request runs in a V8 isolate at the nearest location, started in milliseconds. Memory isn’t shared between locations."],["KV reads can be stale","Reads come from caches near the user and can lag a write made elsewhere by up to about a minute."],["KV has no atomic increment","Get-then-put loses concurrent updates. Use a Rate Limiting rule or Durable Objects when a limit must be exact."],["D1 is where correctness lives","`startTrial` does the device check and the insert in one SQL statement, so parallel activations can’t both create a trial."]],
+    svg:function(){return seq("hw7",["Request A","Edge London","Workers KV","Edge Lagos","Request B"],[[0,1,"POST /start"],[4,3,"POST /start"],[1,2,"get rl:key"],[2,1,"9"],[3,2,"get rl:key"],[2,3,"9 (cached copy)"],[1,1,"9 < 10: allow"],[3,3,"9 < 10: allow","fail"],[1,2,"put rl:key = 10"],[3,2,"put rl:key = 10","fail"],[2,2,"stored 10 — 11 got through"]],"Sequence: two Worker locations read the same KV counter value 9 at the same time, both allow their request and both write 10, so one request beyond the limit gets through.");}},
+  p5:{title:"What plan and apply actually compare",
+    caption:"Plan compares three things — your code, the last recorded state and what really exists — and apply changes the world to match the reviewed plan, then records the result.",
+    points:[["State is Terraform’s memory","It maps every resource address to a real ID. Lose it and Terraform thinks nothing exists; share it without locking and two applies corrupt it."],["Refresh finds drift","Plan reads the real resources first, so a dashboard edit shows up as a change to undo."],["Addresses are identity","Rename a resource block and Terraform sees a delete plus a create — unless you add a `moved` block."],["Apply what you reviewed","`terraform plan -out=tfplan` then `terraform apply tfplan` makes CI apply exactly what the PR showed."]],
+    svg:function(){var i="hw8";return svgOpen(i,1000,360,"terraform plan reads the .tf files, the state and a refresh of the Cloudflare API to produce a plan; terraform apply executes the saved plan against the API and writes the new state.")+
+      box(20,60,200,56,".tf files","desired state, in Git")+box(20,260,200,56,"State","last known · locked")+
+      box(300,160,190,56,"terraform plan","refresh + diff","hot")+box(570,160,190,56,"terraform apply","runs the saved plan")+box(790,60,190,56,"Cloudflare API","what actually exists")+
+      arw(i,"M220 88 H260 V178 H300","reads",240,80)+arw(i,"M220 288 H260 V198 H300","reads",240,306)+
+      arw(i,"M885 116 V136 H395 V160","refresh",640,128)+arw(i,"M490 188 H570","saved plan",530,180)+
+      arw(i,"M665 160 V88 H790","create / update / delete",782,80,"end")+arw(i,"M665 216 V340 H120 V316","writes new state",392,334)+"</svg>";}},
+  p11:{title:"Where the supply chain gets attacked",
+    caption:"Attackers take the cheapest hop. Each red line is a real path into bashbop or Brain Boost Buddy; the grey line under it is the control that closes it.",
+    points:[["Tags are mutable","`@v4` is a pointer its owner — or anyone holding their token — can move. A 40-character commit SHA can’t be."],["The token is the blast radius","Whatever `permissions:` and secrets a job holds, a compromised step holds too. Start from `permissions: {}`."],["Lockfiles make installs repeatable","`yarn install --immutable` fails if the lockfile would change, so CI installs exactly what was reviewed."],["Provenance closes the loop","An attestation ties the image digest to the commit and workflow that built it; verify it before deploying."]],
+    svg:function(){var i="hw9",h=svgOpen(i,1000,310,"Supply chain from laptop to GitHub to the Actions runner, which installs dependencies, publishes to a registry and deploys to production; each hop lists its main attack and control.");
+      var cols=[["Your laptop","commits, tokens","stolen session","MFA, disk encryption"],["GitHub","source and PRs","secret committed","push protection"],["Actions runner","builds and deploys","moved action tag","pin SHA, perms: {}"],["Registry","image + attestation","swapped image","attest and verify"],["Production","runs the image","long-lived keys","OIDC, rotation"]];
+      cols.forEach(function(c,k){var x=20+k*205;h+=box(x,70,150,56,c[0],c[1],k===2?"hot":"")+txt(x+8,150,"al w failt",c[2])+txt(x+8,168,"bs",c[3]);if(k<4)h+=arw(i,"M"+(x+150)+" 98 H"+(x+205),["push","triggers","publishes","deploys"][k],x+177,62);});
+      h+=box(225,200,150,56,"Dependencies","npm, actions, images")+txt(233,280,"al w failt","compromised package")+txt(233,298,"bs","lockfile, review, audit")+arw(i,"M375 228 H402 V112 H430","installed",410,196,"start");
+      return h+"</svg>";}},
+  p6:{title:"One trace across web, API and a webhook",
+    caption:"The checkout is one trace across web, API and Postgres. Stripe’s webhook arrives later as a separate trace, joined only by the booking id you record on both.",
+    points:[["A trace is a tree of spans","Each hop records start, duration and attributes under one trace id, so a slow checkout shows exactly which hop was slow."],["`traceparent` carries the context","`00-<trace-id>-<parent-span-id>-01` — instrumented clients add it, instrumented servers continue it."],["Webhooks break the chain","Stripe’s callback isn’t a child of your request. Put `booking_id` on both traces, or add a span link, to join them."],["Measure the gap","Time from payment intent to confirmed booking is your webhook-lag SLI. Alert when its p95 climbs."]],
+    svg:function(){return seq("hw10",["Browser","bashbop-web","bashbop-api","PostgreSQL","Stripe"],[[0,1,"POST checkout: trace starts"],[1,2,"traceparent: 00-4bf9…-01","hot"],[2,3,"span: insert booking (pending)"],[2,4,"span: create PaymentIntent"],[2,0,"client secret"],[0,4,"confirm payment (Stripe.js)"],[4,2,"webhook: payment_intent.succeeded"],[2,2,"new trace · booking_id links it"],[2,3,"span: booking → confirmed"]],"Sequence: a checkout trace flows from browser to web to API with a traceparent header, creating spans for the database insert and the Stripe payment intent; the Stripe webhook later starts a new trace linked by booking id.");}},
+  p7:{title:"Point-in-time recovery, and the loop behind Kubernetes",
+    caption:"Point-in-time recovery starts from the last base backup and replays the write-ahead log to just before the mistake — into a new instance, so nothing written since is lost.",
+    points:[["Backups alone lose a day","A 02:00 dump can’t bring back twelve hours of bookings before a 14:32 mistake. Replaying the WAL can."],["RPO and RTO are measured","RPO is how far back the last recoverable point is; RTO is how long your last real restore took."],["Pools protect Postgres","Each connection is a server process. A pool caps them, so a traffic spike queues instead of exhausting `max_connections`."],["Kubernetes is a control loop","You declare desired state; controllers keep comparing it with reality and act — the same idea as Terraform, running forever."]],
+    svg:function(){return timeline("hw11",["Base backups","WAL archive","Production data","Restore target"],[[0,0,12,"Mon 02:00","pass"],[0,35,47,"Tue 02:00","pass"],[1,0,100,"every committed change, continuously"],[2,0,70,"healthy"],[2,70,100,"rows deleted","fail"],[3,35,69,"Tue 02:00 base + WAL to 14:31"]],[[0,"Mon 02:00"],[35,"Tue 02:00"],[70,"14:32"],[100,"now"]],[[70,"DELETE at 14:32"]],"Timeline: nightly base backups and a continuous WAL archive; production rows are deleted at 14:32; the restore target replays WAL from the Tuesday 02:00 backup to 14:31.");}},
+  p12:{title:"An incident against the clock",
+    caption:"One capstone fault plotted against the clock. Detection is the widest bar — so that’s where the review should focus first.",
+    points:[["Detect, mitigate, resolve","Mitigation ends customer impact (roll back, flip a flag); resolution fixes the cause. Track both times."],["Roles beat heroics","One commander decides and communicates; operators investigate. Handing over a role is fine — silently doing both isn’t."],["Timestamps are raw material","Write them in the incident channel as things happen. Memory rewrites timelines within hours."],["The review is the product","A game day that produces no tracked action items was just downtime."]],
+    svg:function(){return timeline("hw12",["Fault active","Detection","Response","Status updates"],[[0,5,58,"bookings stuck pending","fail"],[1,5,42,"undetected ≈ 22 min","gap"],[2,42,58,"mitigate"],[2,58,85,"resolve + verify","pass"],[3,44,85,"every 15 min"]],[[0,"0 min"],[25,"15"],[50,"30"],[75,"45"],[100,"60"]],[[5,"fault"],[42,"alert"],[58,"mitigated"],[85,"resolved"]],"Timeline over 60 minutes: a fault starts at 3 minutes, goes undetected until an alert at about 25 minutes, is mitigated at about 35 minutes and resolved at about 51 minutes, with status updates every 15 minutes.");}}
+};
+
 /* architecture diagrams */
 function zone(x,y,w,h,l){return "<rect class=\"zone\" x=\""+x+"\" y=\""+y+"\" width=\""+w+"\" height=\""+h+"\" rx=\"10\"/><text class=\"zl\" x=\""+(x+12)+"\" y=\""+(y+20)+"\">"+esc(l)+"</text>";}
 function box(x,y,w,h,t,s,c){return "<rect class=\"box"+(c?" "+c:"")+"\" x=\""+x+"\" y=\""+y+"\" width=\""+w+"\" height=\""+h+"\" rx=\"8\"/><text class=\"bt\" x=\""+(x+12)+"\" y=\""+(y+h/2-4)+"\">"+esc(t)+"</text>"+(s?"<text class=\"bs\" x=\""+(x+12)+"\" y=\""+(y+h/2+13)+"\">"+esc(s)+"</text>":"");}
@@ -516,7 +789,7 @@ function key(x,y,c,l){return "<rect class=\"box "+c+"\" x=\""+x+"\" y=\""+y+"\" 
 var ARCH={
   bashbop:{product:"bashbop",title:"bashbop today: two apps behind Cloudflare",
     caption:"Guests reach both apps through Cloudflare. The API owns Postgres, Redis, R2 uploads and every third-party call; payment providers call back through webhooks, and the browser also talks to GetStream directly for video. Dashed amber marks what isn’t defined in code or deployed by CI.",
-    jobs:[["p1","Trace the request path"],["p3","Containerise both apps"],["p4","Replace the hand deploy"],["p5","Hosts and Cloudflare in code"],["p6","Trace a paid booking"]],
+    jobs:[["p1","Trace the request path"],["p3","Containerise both apps"],["p4","Replace the hand deploy"],["p5","Hosts and Cloudflare in code"],["p10","Networks, IAM and cost"],["p11","Pin actions, rotate secrets"],["p6","Trace a paid booking"]],
     svg:function(){var i="ah1";return svgOpen(i,1000,560,"bashbop architecture: browsers and the mobile app reach the Next.js web app and NestJS API through Cloudflare; the API uses Postgres, Redis, R2 and third-party APIs; neither app is deployed by CI.")+
       zone(16,40,150,388,"CLIENTS")+zone(186,40,170,388,"CLOUDFLARE")+zone(376,40,250,388,"YOUR SERVERS")+zone(646,40,150,388,"DATA")+zone(816,40,168,388,"THIRD PARTIES")+zone(16,440,968,104,"DELIVERY · GITHUB ACTIONS")+
       key(736,12,"gap","manual / not in code")+
@@ -537,7 +810,7 @@ var ARCH={
       "</svg>";}},
   bbb:{product:"Brain Boost Buddy",title:"Brain Boost Buddy today: an app, a Worker and a feed",
     caption:"The desktop app talks to three things: the Worker for trials and licence lookups (it holds the Lemon Squeezy API key), Lemon Squeezy directly to activate and validate a key, and the R2 feed for updates. The release lane is where it breaks: the Mac job fails, so a person builds and uploads by hand.",
-    jobs:[["p8","Fix and automate releases"],["p9","Worker staging and CI"],["p5","Worker, KV and D1 in code"],["p6","Watch the feed and Worker"]],
+    jobs:[["p8","Fix and automate releases"],["p9","Worker staging and CI"],["p5","Worker, KV and D1 in code"],["p11","Protect releases and the Worker"],["p6","Watch the feed and Worker"]],
     svg:function(){var i="ah2";return svgOpen(i,1000,480,"Brain Boost Buddy architecture: the desktop app calls a Cloudflare Worker backed by KV and D1, calls Lemon Squeezy directly for keys, and checks an R2 update feed; releases fail in CI and are uploaded by hand.")+
       zone(16,50,240,300,"PARENT’S DEVICE")+zone(286,50,410,300,"CLOUDFLARE")+zone(716,50,268,300,"THIRD PARTIES & WEB")+zone(16,370,968,96,"RELEASE · GITHUB ACTIONS + HAND STEPS")+
       key(620,8,"gap","manual step")+key(760,8,"fail","failing in CI")+
@@ -554,9 +827,98 @@ var ARCH={
       "</svg>";}}
 };
 
+/* break-fix drills per job */
+var DRILL_CHECKS=["I broke it on staging and recovered before revealing the answer","The prevention change is merged"];
+var DRILL={
+  p1:{title:"502 after a reboot",
+    setup:"On a staging copy of the API host, run `pm2 delete bashbop-api && pm2 save --force`, then `sudo reboot`. Better still, have someone else do it so you don’t know what changed.",
+    symptoms:["The API domain returns a 502 error page.","The web app loads, but every data call fails.","SSH works and `top` looks healthy."],
+    hints:["Whose 502 is it — Cloudflare’s or Nginx’s? Check the error page and `curl -sI https://<api-domain>/ | grep -i server`.","On the host: `curl -sI http://127.0.0.1:9999/api/v1/health`. Does anything answer?","Read `/var/log/nginx/error.log`. What does ‘connect() failed (111: Connection refused)’ say about the upstream?","What starts the API after a reboot? Check `pm2 ls` and `systemctl status pm2-$USER`."],
+    cause:"Nothing was listening on the API port. PM2 restores the process list saved by `pm2 save`; that list was empty, so after the reboot no API started. Nginx was healthy — its upstream wasn’t.",
+    fix:"Start the API the way production normally starts it, confirm `/api/v1/health` returns 200 locally, then run `pm2 save` so the list survives the next reboot.",
+    prevent:"An external uptime check on `/api/v1/health` that pages you, a reboot test after any host change — and, in {job:p3}, a container with a restart policy removes this failure class."},
+  p2:{title:"Green checks, broken types",
+    setup:"On a branch from `develop`, add `const n: number = 'oops';` to a component used by one page, and open a PR into `develop`.",
+    symptoms:["Every check on the PR is green.","It merges, and `yarn build` still succeeds.","Weeks later a PR into `main` fails ‘Type check’ on code it didn’t touch."],
+    hints:["List what actually ran: `gh pr checks <number>`. Does any check run `tsc`?","Open `.github/workflows/main-branch-checks.yml`. Which branches trigger it?","Why didn’t `next build` in `repoctx-ci.yml` fail? Search `next.config.mjs` for `typescript`."],
+    cause:"Type checking only runs on PRs into `main`, and `next.config.mjs` sets `typescript.ignoreBuildErrors: true`, so the build ignores type errors too. Nothing on a `develop` PR could catch it.",
+    fix:"Fix the error, add the PR gate from this job’s worked example on both branches, and make `checks` a required status check.",
+    prevent:"A ruleset requiring `checks` on `develop` and `main`, a deliberate test PR proving a type error blocks merging, and removing `ignoreBuildErrors` once the backlog is clean."},
+  p8:{title:"The Mac release that can’t unlock its keychain",open:true,
+    setup:"No setup — this one is live. Every tag since v2.4.0 fails in ‘Build, sign and notarise’. Investigate on a branch with `workflow_dispatch`; never push a real tag to test.",
+    symptoms:["`verify` and `win` pass; `macOS (signed + notarised)` fails after about four minutes.","The log ends with `security set-key-partition-list … SecKeychainUnlock: The user name or passphrase you entered is not correct`.","v2.3.1 on 8 Aug 2026 was the last green release run."],
+    hints:["Did v2.3.1 sign at all? Search its mac log for ‘No CSC_LINK secret set’. If it built unsigned, CI signing may never have worked.","Compare the runner image version at the top of the v2.3.1 and v2.4.0 mac logs, and `electron-builder` in `package-lock.json` between the two tags.","Test the secret offline: decode `CSC_LINK` to a file and run `openssl pkcs12 -in cert.p12 -noout` with the password (add `-legacy` on OpenSSL 3 for older exports).","In a throwaway keychain, `security import cert.p12 -P \"$PW\" -T /usr/bin/codesign`. Does the import succeed?","Isolate the runner: run the same job on an older macOS image that is still offered. If it passes, the image change is your cause."],
+    cause:"Open — finding it is the drill. The error comes from electron-builder’s temporary-keychain step, so the leading suspects are a runner image change, an electron-builder change, or a certificate and password pair that won’t import. Each hint confirms or rules one out.",
+    fix:"Act on the evidence: pin the runner image, pin or upgrade electron-builder, or re-export the Developer ID certificate and replace `CSC_LINK` and `CSC_KEY_PASSWORD` together.",
+    prevent:"A signing smoke run on `workflow_dispatch` every month and on every electron-builder bump, so signing breaks on a quiet day instead of on release day."},
+  p3:{title:"The image that calls the wrong API",
+    setup:"Build the web image with no build args: `docker build -t web:drill .`. Run it with `docker run -p 3000:80 -e NEXT_PUBLIC_BACKEND_URL=https://<staging-api> web:drill`.",
+    symptoms:["Pages render, but every data request fails.","The browser’s Network tab shows requests to a build-time URL — `localhost` or an empty base — not staging.","`docker exec` shows `NEXT_PUBLIC_BACKEND_URL` is set correctly inside the container."],
+    hints:["Where does a `NEXT_PUBLIC_` value live after `next build`? `docker run --rm web:drill sh -c \"grep -rl localhost .next/static | head\"`.","Did a `.env` or `.env.local` file get copied into the build? Check for a `.dockerignore`.","Can an environment variable set at `docker run` change JavaScript files that were generated during the build?"],
+    cause:"`NEXT_PUBLIC_*` values are replaced with literal strings in the browser bundle during `next build`. The image holds whatever existed at build time — possibly a local `.env` copied into the build context. Runtime variables never reach code already in the bundle.",
+    fix:"Pass the value as a build arg (`ARG` + `ENV` before `yarn build`) for each environment, or serve configuration at runtime so one image can promote from staging to production.",
+    prevent:"`.env*` in `.dockerignore`, plus a CI step that greps the built bundle for `localhost` and fails the build."},
+  p10:{title:"The API can’t reach its database",
+    setup:"In the sandbox VPC from the lab, delete the database security group’s inbound rule for port 5432 from the app’s security group, then restart the API task.",
+    symptoms:["The task starts, then logs `P1001: Can't reach database server` and fails health checks.","The load balancer marks targets unhealthy and returns 503.","The database shows as available in the console."],
+    hints:["Timeout or refused? Refused means a host answered; a timeout means packets were dropped on the way.","From inside the task (ECS Exec) run `nc -vz <db-endpoint> 5432`. What happens?","Check in order: the database security group’s inbound rules, the subnets’ network ACLs, the route tables. Which changed?","Run VPC Reachability Analyzer from the task’s network interface to the database."],
+    cause:"The database security group no longer allowed 5432 from the app’s group. Security groups silently drop disallowed traffic, so the client saw a timeout rather than a refusal.",
+    fix:"Restore the inbound rule with the app’s security group as the source — not a CIDR, never `0.0.0.0/0` — and confirm with `nc -vz` before restarting tasks.",
+    prevent:"Security groups defined in Terraform so manual edits show up as drift, and a health check that includes a database ping."},
+  p4:{title:"Deploy succeeded, then ‘column does not exist’",
+    setup:"On staging, rename a harmless field in `schema.prisma`, generate the migration, update the code and ship it all in one release with a rolling deploy.",
+    symptoms:["The pipeline is green.","During the rollout errors spike: `P2022: The column … does not exist in the current database`.","Rolling back makes it worse — the old version now fails on every query touching that table."],
+    hints:["Which version logs the errors? Put the image sha or version on every log line.","Line up the migration step’s timestamp with the first error.","Read the generated SQL in `prisma/migrations/`. Did Prisma rename the column, or drop it and add a new one?"],
+    cause:"The migration removed the old column while the old version was still serving traffic. Prisma turns a field rename into drop-and-add by default, so that column’s data was lost too.",
+    fix:"Roll forward: restore the old column in a new migration (recovering its data from backup), then redo the change as expand–contract over several releases.",
+    prevent:"Fail `migration-check.yml` on `DROP COLUMN`, renames and type changes unless the PR is labelled as a contract step, and lint migrations with a tool such as Squawk."},
+  p9:{title:"Staging says everyone is offline",
+    setup:"Add the `[env.staging]` block from this job’s worked example and run `wrangler deploy --env staging` — but don’t set any secrets for staging.",
+    symptoms:["Every `/start` and `/status` call to staging returns `{ ok: false, reason: \"offline\" }` with HTTP 502.","Production is unaffected.","`wrangler deploy` reported success."],
+    hints:["Watch live logs while you send a request: `wrangler tail --env staging`.","Compare `wrangler secret list` with `wrangler secret list --env staging`.","Find where `worker.js` returns `offline` before it ever calls Lemon Squeezy."],
+    cause:"Secrets don’t carry over into Wrangler environments. With no `LS_API_KEY` in staging, the Worker logs ‘LS_API_KEY secret not set’ and answers `offline` (502) to every request.",
+    fix:"`wrangler secret put LS_API_KEY --env staging` with a Lemon Squeezy test-mode key, then call `/status` with a test email.",
+    prevent:"A post-deploy smoke step that calls `/status` and fails the pipeline on `offline`, and a checklist of per-environment secrets kept next to `wrangler.toml`."},
+  p5:{title:"The plan wants to destroy production DNS",
+    setup:"In a sandbox zone managed by Terraform, rename `resource \"cloudflare_dns_record\" \"api\"` to `\"api_origin\"` and run `terraform plan`.",
+    symptoms:["The plan destroys `cloudflare_dns_record.api` and creates `cloudflare_dns_record.api_origin`.","‘Plan: 1 to add, 0 to change, 1 to destroy.’","Nothing about the record itself changed."],
+    hints:["How does Terraform know which real record a block manages? Run `terraform state list`.","Is a resource identified by its content or by its address?","Look up the `moved` block in the Terraform documentation."],
+    cause:"State maps resource addresses to real IDs. Renaming the block changed the address, so Terraform saw a new resource and an orphaned old one — a delete and a create, briefly breaking DNS.",
+    fix:"Add a `moved` block from `cloudflare_dns_record.api` to `cloudflare_dns_record.api_origin` and re-plan until it shows no changes.",
+    prevent:"`lifecycle { prevent_destroy = true }` on critical records, and a CI check that fails when a plan contains deletes without an approval label."},
+  p11:{title:"A secret in history",
+    setup:"Create a real token with no permissions for this drill (for example a Cloudflare API token scoped to nothing). In a throwaway private repo, commit it, push, then remove it in a second commit.",
+    symptoms:["The latest commit no longer contains the token.","If push protection or secret scanning is on you get an alert; if not, nothing happens at all.","`git log -p` still shows it."],
+    hints:["Scan all history, not just the working tree: `gitleaks git --log-opts=\"--all\" -v`.","Who could already have a copy? Forks, clones, CI logs and caches all count.","What does the provider’s audit log show for that token?","Now run the same scan on bashbop-event-web, bashbop-api and brain-boost."],
+    cause:"Removing a secret in a later commit doesn’t remove it from history, and anyone who had read access may already have it. The only safe assumption is that it’s compromised.",
+    fix:"Revoke or rotate the credential first, check the provider’s audit log for use, then clean history with `git filter-repo` if you must — as hygiene, not as the fix.",
+    prevent:"Push protection on every repo, a pre-commit gitleaks hook, `.env*` in `.gitignore`, and secrets only in a secrets manager or Worker secrets."},
+  p6:{title:"Payments succeed, bookings stay pending",
+    setup:"On staging, set `STRIPE_WEBHOOK_SECRET` to a different `whsec_…` value and restart the API. Make a test-mode booking with card 4242 4242 4242 4242.",
+    symptoms:["Stripe shows the payment as succeeded.","The booking stays pending and the guest gets no confirmation.","Uptime checks are green and the API hasn’t crashed."],
+    hints:["Start at the provider: in the Stripe Dashboard open your webhook endpoint’s recent deliveries. What did your API return?","Search API logs for the webhook route at the payment time. Is signature verification failing?","`src/main.ts` configures body parsing manually for webhook routes. Why does verification need the raw body?"],
+    cause:"Stripe signs every webhook with the endpoint’s secret. With the wrong `STRIPE_WEBHOOK_SECRET`, verification fails, the API rejects each event with a 4xx, and nothing confirms bookings — while every health check stays green.",
+    fix:"Restore the correct secret, resend the failed events from the Stripe Dashboard (or `stripe events resend <event_id>`), and confirm the stuck bookings move to confirmed.",
+    prevent:"Alerts on webhook 4xx rate and on the webhook-lag SLI, a synthetic test-mode booking on staging after each deploy, and replay steps in the ‘Payments failing’ runbook."},
+  p7:{title:"DELETE without WHERE at 14:32",
+    setup:"On a staging database with point-in-time recovery enabled, note the exact time, then delete a meaningful set of rows — for example every booking for one test event.",
+    symptoms:["The organiser dashboard shows the event with no bookings.","No application errors — queries succeed and return nothing.","‘Guests’ report missing tickets."],
+    hints:["When exactly did it happen? Check the API’s audit tables (`src/audit`) and Postgres logs if they record writes.","What’s the latest point you can restore to without losing good writes made afterwards?","Restore into a new instance at one minute before the delete. How long did that take? That’s your real RTO."],
+    cause:"A manual write ran against the database with a missing or wrong condition. The application was healthy; the data wasn’t — which is why no uptime check noticed.",
+    fix:"Restore to a new instance just before the delete, export the lost rows, and insert them into the live database in a reviewed transaction. Never restore over production.",
+    prevent:"No direct production writes: read-only roles for investigation, reviewed runbooks for fixes, `BEGIN … ROLLBACK` rehearsals, and a monthly restore drill with measured RPO and RTO."},
+  p12:{title:"The game day itself",
+    setup:"Your facilitator injects the three faults from the plan at unannounced times inside the time box. You work only from alerts, dashboards and runbooks.",
+    symptoms:["Whatever your alerts show — that’s the test.","Expect at least one fault to be noticed late, or not at all."],
+    hints:["Declare an incident as soon as an alert fires and name a commander, even if it’s you.","Post the first status update within 10 minutes, then every 15.","Mitigate first; find the cause second.","Write timestamps in the incident channel as you go."],
+    cause:"Revealed by the facilitator afterwards — compare their fault log with your timeline, minute by minute.",
+    fix:"Mitigate each fault, return staging to known-good, and confirm every undo in the plan actually ran.",
+    prevent:"The postmortems and action items. Anything detected late gets a new alert or synthetic check before the next game day."}
+};
+
 /* deep dives: worked examples per job */
 var DEEP={};
-DEEP.p1={title:"Read the proxy in front of your API",
+DEEP.p1={verify:"Checked: the script passes `bash -n`. The Nginx file is an example to compare with `sudo nginx -T` — Cloudflare’s IP ranges change, so generate the `set_real_ip_from` lines from cloudflare.com/ips.",title:"Read the proxy in front of your API",
   intro:"An annotated Nginx site for an API behind Cloudflare. Compare it line by line with what `nginx -T` prints on your server.",
   files:[["/etc/nginx/sites-enabled/api.conf (example)",`server {
   listen 443 ssl;
@@ -580,10 +942,28 @@ DEEP.p1={title:"Read the proxy in front of your API",
     proxy_set_header Connection "upgrade";
     proxy_read_timeout 60s;
   }
-}`]],
+}`],["scripts/ops/check-stack.sh",`#!/usr/bin/env bash
+# Exit non-zero if any public surface is down. Run by hand, from cron or a systemd timer.
+set -euo pipefail
+
+check() {
+  local name=$1 url=$2
+  if curl -fsS --max-time 10 --retry 2 -o /dev/null "$url"; then
+    printf 'ok    %s\n' "$name"
+  else
+    printf 'FAIL  %s  %s\n' "$name" "$url" >&2
+    return 1
+  fi
+}
+
+failed=0
+check web  "https://\${WEB_HOST:?set WEB_HOST}/"                              || failed=1
+check api  "https://\${API_HOST:?set API_HOST}/api/v1/health"                 || failed=1
+check feed "https://images.bashbop.com/brain-boost-updates/latest-mac.yml"   || failed=1
+exit "$failed"`]],
   steps:[["Find yours","`sudo nginx -T` prints the full running config, every include expanded."],["Test before reload","`sudo nginx -t && sudo systemctl reload nginx` — reload keeps open connections; restart drops them."],["Bypass one layer at a time","`curl` the API on `127.0.0.1` from the server, then the public URL. The difference is what Nginx and Cloudflare add."],["Read the right log","`/var/log/nginx/error.log` explains 502 and 504 upstream errors; `pm2 logs` explains the app."]]};
 
-DEEP.p2={title:"One PR gate for develop and main",
+DEEP.p2={verify:"Checked: the YAML parses. Adapt: branch protection must require the job name `checks`.",title:"One PR gate for develop and main",
   intro:"A single workflow that replaces today’s split between `main-branch-checks.yml` and `repoctx-ci.yml` for the checks that must block a merge.",
   files:[[".github/workflows/pr-checks.yml",`name: PR checks
 on:
@@ -621,7 +1001,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096`]],
   steps:[["Require the job by name","Branch protection matches the check called `checks`. Rename the job and the rule silently stops matching."],["Cancel stale runs","The concurrency group is keyed on the PR number, so a new push cancels the old run."],["Cache what’s slow","setup-node caches dependencies; `.next/cache` restores the last build for this lockfile."],["Least privilege","`contents: read` means a compromised step can’t push code or create releases."]]};
 
-DEEP.p8={title:"Publish the update feed from CI",
+DEEP.p8={verify:"Checked: the YAML parses. Adapt: first add `latest-mac.yml` and the blockmaps to the mac job’s uploads, and create the `CF_R2_PUBLISH_TOKEN` and `CF_ACCOUNT_ID` secrets.",title:"Publish the update feed from CI",
   intro:"A `publish` job for Brain Boost Buddy’s `release.yml` that replaces the manual `npm run publish:r2` step once the mac job is fixed.",
   files:[["release.yml — new job after mac and win",`  publish:
     needs: [mac, win]
@@ -648,7 +1028,7 @@ DEEP.p8={title:"Publish the update feed from CI",
             | grep -q "version: \${GITHUB_REF_NAME#v}"`]],
   steps:[["Upload the feed files","The mac job uploads only `.dmg` and `-mac.zip` today; add `latest-mac.yml` and blockmaps or there’s nothing to publish."],["Order matters","Installers first, `latest*.yml` last, so no app is told about a file that isn’t there yet."],["Scoped token","An R2-only API token for this bucket — not your personal Cloudflare login."],["Verify from outside","The `curl` sees what parents’ apps see, CDN cache included. Give `latest*.yml` a short cache lifetime."]]};
 
-DEEP.p3={title:"The whole of bashbop on one laptop",
+DEEP.p3={verify:"Checked: `docker compose config` accepts the compose file. Adapt: it needs the two `ARG`/`ENV` lines in the web Dockerfile, and the API path assumes both repos sit side by side.",title:"The whole of bashbop on one laptop",
   intro:"A compose file that starts web, API, Postgres and Redis with the same database versions API CI already uses.",
   files:[["docker-compose.yml",`services:
   web:
@@ -662,7 +1042,7 @@ DEEP.p3={title:"The whole of bashbop on one laptop",
   api:
     build: ../bashbop-api
     ports: ['9999:9999']
-    env_file: ../bashbop-api/.env.docker
+    env_file: ../bashbop-api/.env         # your local values, never committed
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/bashbop
       REDIS_HOST: redis                     # service name, not localhost
@@ -683,10 +1063,22 @@ DEEP.p3={title:"The whole of bashbop on one laptop",
     image: redis:7-alpine
 
 volumes:
-  pgdata:`]],
-  steps:[["Service names are hostnames","Inside the compose network the API reaches Postgres at `db` and Redis at `redis`."],["Wait for healthy","`service_healthy` stops the API crash-looping while Postgres initialises."],["Build args, not env","`NEXT_PUBLIC_*` is inlined by `next build`, so it must be a build arg. Setting it at runtime does nothing."],["Keep data on purpose","The named volume survives `docker compose down`; `down -v` wipes it."]]};
+  pgdata:`],["bashbop-event-web/Dockerfile — builder stage with the build arg",`FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/.yarn ./.yarn
+COPY . .
 
-DEEP.p4={title:"Build once, promote by sha",
+# new: accept the value from compose build.args and expose it to next build
+ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+RUN yarn build`]],
+  steps:[["Service names are hostnames","Inside the compose network the API reaches Postgres at `db` and Redis at `redis`."],["Wait for healthy","`service_healthy` stops the API crash-looping while Postgres initialises."],["Build args, not env","`NEXT_PUBLIC_*` is inlined by `next build`, so it must be a build arg. Setting it at runtime does nothing."],["Keep data on purpose","The named volume survives `docker compose down`; `down -v` wipes it."],["Inside, localhost is the container","Server-side fetches run in the web container, where `localhost` is the container itself. If the app calls the API during rendering, that call needs an internal URL such as `http://api:9999`."]]};
+
+DEEP.p4={verify:"Checked: the YAML parses. Adapt: `deploy.sh` is yours to write for the platform your ADR picks; set `RELEASE_PLEASE_TOKEN` so releases trigger it.",title:"Build once, promote by sha",
   intro:"A deploy workflow for the web app: one image per release, automatic staging, a human gate for production.",
   files:[[".github/workflows/deploy.yml",`on:
   release:
@@ -732,7 +1124,7 @@ jobs:
       - run: ./deploy.sh production "\${{ needs.image.outputs.tag }}"`]],
   steps:[["One image, every environment","The same sha goes to staging then production; nothing is rebuilt in between."],["Watch the trigger","Releases created with the default `GITHUB_TOKEN` don’t start other workflows. Your `release.yml` already accepts `RELEASE_PLEASE_TOKEN` — set it."],["Gate with environments","The production environment’s reviewer is the approval, and its secrets reach only that job."],["`deploy.sh` is your platform","ECS, a VPS running `docker compose pull`, or Fly — whatever your ADR chose. Rollback is the same script with the previous sha."]]};
 
-DEEP.p9={title:"Give the Worker a staging copy and a pipeline",
+DEEP.p9={verify:"Checked: the TOML and YAML parse. Adapt: create the staging KV namespace and D1 database first and paste their ids.",title:"Give the Worker a staging copy and a pipeline",
   intro:"Environments in `wrangler.toml`, then a CI job that migrates D1 before deploying code.",
   files:[["worker/wrangler.toml — staging block",`[env.staging]
 name = "bbb-license-lookup-staging"
@@ -759,7 +1151,7 @@ migrations_dir = "migrations"`],[".github/workflows/worker.yml — deploy steps"
           command: deploy --env staging`]],
   steps:[["Bindings don’t inherit","Each `[env.*]` block must redeclare its KV and D1 bindings, or that environment has none."],["Migrate before deploying","Apply D1 migrations first, so new code never queries a column that doesn’t exist yet."],["Secrets per environment","`wrangler secret put LS_API_KEY --env staging` with a Lemon Squeezy test-mode key."],["Scope the token","Workers Scripts and D1 edit on this account only."]]};
 
-DEEP.p5={title:"Cloudflare as code, starting with what exists",
+DEEP.p5={verify:"Not machine-checked here (no Terraform installed). Written for Cloudflare provider v5 — run `terraform init && terraform validate` before using it.",title:"Cloudflare as code, starting with what exists",
   intro:"The first Terraform file for bashbop: one proxied DNS record and the R2 bucket both products already use.",
   files:[["infra/cloudflare/main.tf",`terraform {
   required_providers {
@@ -786,7 +1178,7 @@ resource "cloudflare_r2_bucket" "assets" {
 }`]],
   steps:[["Import, then plan to zero","`terraform import` each existing record and bucket (ID formats are in the provider docs) until `plan` shows no changes. Only then start editing."],["Pin the provider","v5 renamed resources — `cloudflare_record` became `cloudflare_dns_record`. `~> 5.0` stops a surprise major upgrade."],["State is sensitive","State can hold secrets. Keep it in a private, versioned bucket, never in Git."],["Plan in PRs, apply on merge","Reviewers read the plan output, not just the .tf diff."]]};
 
-DEEP.p6={title:"One trace from checkout to webhook",
+DEEP.p6={verify:"Not machine-checked (TypeScript excerpt). The packages are the official OpenTelemetry, Prisma and Vercel ones — install them and let `tsc` confirm the imports.",title:"One trace from checkout to webhook",
   intro:"OpenTelemetry in both apps, so a slow or failed booking shows every hop with its timing.",
   files:[["bashbop-api/src/tracing.ts",`import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
@@ -811,7 +1203,7 @@ export function register() {
 }`]],
   steps:[["Load order is everything","Instrumentation patches modules as they load. Import it after Nest and you get no spans."],["One trace, two apps","The web app’s outgoing fetch carries a `traceparent` header; the API continues the same trace."],["Error-budget alerts","99.5% over 30 days is 216 minutes. Page when the last hour burns budget about 14× faster than allowed — not on every error."],["Webhooks are their own SLI","Record provider event time against booking-confirmed time as a histogram."]]};
 
-DEEP.p7={title:"A Deployment that survives a bad pod",
+DEEP.p7={verify:"Checked: the YAML parses. Adapt: add a web `/api/health` route first — only the API has one today, at `/api/v1/health`.",title:"A Deployment that survives a bad pod",
   intro:"The web app on Kubernetes with rolling updates, probes and a non-root user that matches the Dockerfile.",
   files:[["k8s/web/deployment.yaml",`apiVersion: apps/v1
 kind: Deployment
@@ -844,11 +1236,120 @@ spec:
             httpGet: { path: /api/health, port: 80 }
             initialDelaySeconds: 20
             periodSeconds: 10`]],
-  steps:[["Readiness isn’t liveness","Readiness takes a pod out of the Service; liveness restarts it. Point liveness at a slow dependency and healthy pods get killed."],["Numeric user","`runAsNonRoot` can only verify a numeric UID, hence `runAsUser: 1001` to match `nextjs`."],["Requests schedule, limits protect","No CPU limit avoids throttling Next.js; the memory limit stops a leak taking down the node."],["Port 80 comes back","Some runtimes refuse port 80 for a non-root user. Your job 4 port decision decides whether this pod starts."]]};
+  steps:[["Readiness isn’t liveness","Readiness takes a pod out of the Service; liveness restarts it. Point liveness at a slow dependency and healthy pods get killed."],["Numeric user","`runAsNonRoot` can only verify a numeric UID, hence `runAsUser: 1001` to match `nextjs`."],["Requests schedule, limits protect","No CPU limit avoids throttling Next.js; the memory limit stops a leak taking down the node."],["Port 80 comes back","Some runtimes refuse port 80 for a non-root user. Your {job:p3} port decision decides whether this pod starts."]]};
+
+DEEP.p10={verify:"Checked: the JSON and YAML parse. Adapt: create the OIDC identity provider once, and replace `<account-id>` and the role name.",title:"CI that deploys to AWS without a stored key",
+  intro:"Create the GitHub OIDC identity provider in IAM once. Then a role that trusts only your repo’s production environment, and a job that assumes it.",
+  files:[["iam/github-deploy-trust-policy.json",`{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "Federated": "arn:aws:iam::<account-id>:oidc-provider/token.actions.githubusercontent.com"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+      "StringEquals": {
+        "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+        "token.actions.githubusercontent.com:sub": "repo:BASHBOP/bashbop-event-web:environment:production"
+      }
+    }
+  }]
+}`,"plain"],[".github/workflows/deploy.yml — production job",`  production:
+    runs-on: ubuntu-latest
+    environment: production               # must match the sub condition
+    permissions:
+      id-token: write                     # lets the job request an OIDC token
+      contents: read
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::<account-id>:role/bashbop-web-deploy
+          aws-region: eu-west-2
+      - run: aws sts get-caller-identity  # prints the role you assumed`]],
+  steps:[["Trust says who, policy says what","The trust policy decides which workflow may assume the role; a separate permissions policy decides what it can do. Keep both narrow."],["`sub` is the lock","`repo:BASHBOP/bashbop-event-web:environment:production` means only jobs in that environment can assume it — not a PR branch, not another repo."],["Credentials expire on their own","The action swaps GitHub’s token for temporary AWS credentials that last an hour by default. Nothing to rotate, nothing long-lived to leak."],["Prove it in the log","`aws sts get-caller-identity` prints the assumed role’s ARN, so a wrong role is visible immediately."]]};
+
+DEEP.p11={verify:"Checked: the YAML parses and the verify command passes `bash -n`. Adapt: replace every `<commit-sha>` with the full SHA of that action’s release.",title:"A hardened build job with provenance",
+  intro:"Deny-by-default permissions, SHA-pinned actions, and a signed provenance attestation you verify before every deploy.",
+  files:[[".github/workflows/image.yml",`permissions: {}                           # nothing unless a job asks
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write                     # push to GHCR
+      id-token: write                     # sign the attestation
+      attestations: write                 # store it
+    steps:
+      - uses: actions/checkout@<commit-sha>          # v4.x.x
+      - uses: docker/login-action@<commit-sha>       # v3.x.x
+        with:
+          registry: ghcr.io
+          username: \${{ github.actor }}
+          password: \${{ secrets.GITHUB_TOKEN }}
+      - id: push
+        uses: docker/build-push-action@<commit-sha>  # v6.x.x
+        with:
+          push: true
+          tags: ghcr.io/bashbop/bashbop-event-web:\${{ github.sha }}
+          sbom: true
+          provenance: mode=max
+      - uses: actions/attest-build-provenance@<commit-sha>  # v2.x.x
+        with:
+          subject-name: ghcr.io/bashbop/bashbop-event-web
+          subject-digest: \${{ steps.push.outputs.digest }}
+          push-to-registry: true`],["deploy step — verify before you ship",`# fails unless this exact image was attested by a workflow in the BASHBOP org
+gh attestation verify "oci://ghcr.io/bashbop/bashbop-event-web:\${GITHUB_SHA}" --owner BASHBOP`]],
+  steps:[["Deny by default","`permissions: {}` at the top; each job lists only what it uses. A compromised step inherits nothing extra."],["SHAs with the version as a comment","Dependabot understands `@<sha> # v4.2.2` and bumps both together, so pinning doesn’t mean falling behind."],["Two permissions for attestations","`id-token: write` to sign through Sigstore and `attestations: write` to store the result."],["Verify where you deploy","Run `gh attestation verify` in the deploy job and stop if it fails — an attestation nobody checks protects nothing."]]};
+
+DEEP.p12={verify:"Checked: the script passes `bash -n`. The fault scripts it calls are yours to write, each with `inject` and `undo`.",title:"The postmortem template and a safe fault injector",
+  intro:"A postmortem that produces action items, and a script that injects one random fault into staging while logging it where you won’t look until the end.",
+  files:[["docs/postmortems/YYYY-MM-DD-bookings-stuck-pending.md",`# Postmortem: bookings stuck pending (game day, staging)
+
+Status: final   Severity: SEV2 (exercise)   Commander: <name>
+
+## Summary
+Two sentences: what customers experienced, for how long, and why.
+
+## Impact
+- Duration: 14:03–14:38 UTC (35 min)
+- Affected: 12 test bookings left pending
+- Detected by: alert webhook_4xx_rate, 22 min after the fault
+
+## Timeline (UTC)
+- 14:03 fault injected (facilitator log)
+- 14:25 alert fired; incident declared
+- 14:35 mitigated: correct webhook secret restored
+- 14:38 failed events resent; bookings confirmed
+
+## What went well / what didn't
+
+## Root cause and trigger
+The trigger, then the conditions that let it reach customers.
+
+## Action items
+| Action                                         | Type    | Owner | Due    |
+|------------------------------------------------|---------|-------|--------|
+| Alert when webhook 4xx rate > 5% for 10 min    | detect  | you   | 30 Sep |
+| Synthetic test booking after every deploy      | prevent | you   | 7 Oct  |`,"plain"],["scripts/gameday/inject.sh",`#!/usr/bin/env bash
+# Game-day fault injector: STAGING ONLY. Every fault script has inject and undo.
+set -euo pipefail
+
+[[ "\${TARGET_ENV:-}" == "staging" ]] || { echo "refusing: TARGET_ENV must be staging" >&2; exit 1; }
+
+faults=(webhook-secret feed-missing-file worker-secret)
+pick=\${faults[RANDOM % \${#faults[@]}]}
+
+# the responder doesn't read this file until the review
+echo "$(date -u +%FT%TZ) inject $pick" >> "$HOME/gameday-facilitator.log"
+
+"./faults/$pick.sh" inject`]],
+  steps:[["Numbers, not adjectives","Durations, counts and the detection delay come from timestamps, so the review argues about facts."],["Separate trigger from cause","The wrong secret was the trigger; the cause is that nothing alerted on failing webhooks for 22 minutes."],["Every action item is owned and dated","An item without an owner and a date is a wish. Link each one to a tracked issue."],["Make faults refuse production","The injector checks `TARGET_ENV` before doing anything, and every fault script ships with its own `undo`."]]};
 
 /* ------------------------------------------------------------------ helpers */
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
-function md(s){return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>");}
+function md(s){return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\{job:(p\d+)\}/g,function(m,id){return "job "+(pidx(id)+1);});}
 function hl(src){return src.split("\n").map(function(line){var e=esc(line);var m=e.match(/^(\s*)(#|\/\/)(.*)$/);if(m)return m[1]+"<span class=\"c\">"+m[2]+m[3]+"</span>";var i=e.search(/\s(#|\/\/)\s/);return i>=0?e.slice(0,i)+"<span class=\"c\">"+e.slice(i)+"</span>":e;}).join("\n");}
 function $(sel,el){return (el||document).querySelector(sel);}
 function tid(p,k,i){return p.id+"-"+k+i;}
@@ -865,7 +1366,7 @@ if(local && local.updatedAt>embedded.updatedAt){state=local;dirty=true;}
 function normalise(s){s=s&&typeof s==="object"?s:{};return {v:1,updatedAt:+s.updatedAt||0,started:typeof s.started==="string"?s.started:"",done:s.done&&typeof s.done==="object"?s.done:{},notes:s.notes&&typeof s.notes==="object"?s.notes:{}};}
 
 function phaseStats(p){
-  var ids=[];p.tasks.forEach(function(_,i){ids.push(tid(p,"t",i));});p.exit.forEach(function(_,i){ids.push(tid(p,"x",i));});
+  var ids=[];p.tasks.forEach(function(_,i){ids.push(tid(p,"t",i));});p.exit.forEach(function(_,i){ids.push(tid(p,"x",i));});if(DRILL[p.id])DRILL_CHECKS.forEach(function(_,i){ids.push(tid(p,"d",i));});
   var n=ids.filter(function(id){return state.done[id];}).length;
   return {n:n,total:ids.length,status:n===0?"queued":(n===ids.length?"passed":"running")};
 }
@@ -936,15 +1437,17 @@ function setChip(s){
 }
 
 /* ------------------------------------------------------------------ slides */
-var HEAD=5, PER=5;
+var HEAD=5, PER=7;
 function ps(pi){return HEAD+pi*PER;}
 function pidx(id){for(var k=0;k<PHASES.length;k++){if(PHASES[k].id===id)return k;}return 0;}
 var SLIDES=[{type:"cover",label:"Run overview"},{type:"howto",label:"How this track works"},{type:"audit",label:"Baseline: both products today"},{type:"arch",which:"bashbop",label:"bashbop architecture"},{type:"arch",which:"bbb",label:"Brain Boost Buddy architecture"}];
 PHASES.forEach(function(p,pi){
   SLIDES.push({type:"intro",pi:pi,label:"Why "+p.short.toLowerCase()});
+  SLIDES.push({type:"how",pi:pi,label:"How it works"});
   SLIDES.push({type:"flow",pi:pi,label:p.flowTitle});
   SLIDES.push({type:"deep",pi:pi,label:"Worked example"});
   SLIDES.push({type:"lab",pi:pi,label:"Lab tasks"});
+  SLIDES.push({type:"drill",pi:pi,label:"Break-fix drill"});
   SLIDES.push({type:"check",pi:pi,label:"Checkpoint"});
 });
 SLIDES.push({type:"habits",label:"Weekly rhythm"});
@@ -961,7 +1464,7 @@ function renderSlide(i){
     var t=totals(), pct=t.t?Math.round(t.n/t.t*100):0;
     h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>pipeline · bashbop + Brain Boost Buddy</span><span>"+(state.started?"started "+esc(new Date(state.started+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})):"not started")+"</span></div>";
     h+="<h1 data-a style=\"--i:1\">Bashbop DevOps Track</h1>";
-    h+="<p class=\"lede\" data-a style=\"--i:2\">Nine jobs across bashbop and Brain Boost Buddy — from reading your own server to signed releases, edge Workers, code-defined infrastructure and alerts. Every lab is real work on your repos.</p>";
+    h+="<p class=\"lede\" data-a style=\"--i:2\">Eleven jobs and a capstone across bashbop and Brain Boost Buddy — from reading your own server to signed releases, cloud networks, supply-chain security, on-call and a full game day. Every lab is real work on your repos.</p>";
     h+="<div class=\"two\">";
     h+="<div class=\"run\" data-a style=\"--i:3\">";
     PHASES.forEach(function(p,pi){
@@ -971,13 +1474,13 @@ function renderSlide(i){
     h+="</div>";
     h+="<div style=\"display:flex;flex-direction:column;gap:22px\">";
     h+="<div class=\"stats\" data-a style=\"--i:4\"><div class=\"stat\"><div class=\"n\">"+pct+"%</div><div class=\"l\">complete</div></div><div class=\"stat\"><div class=\"n\">"+t.n+"<span class=\"muted\" style=\"font-size:22px\">/"+t.t+"</span></div><div class=\"l\">checks ticked</div></div><div class=\"stat\"><div class=\"n\">"+t.passed+"<span class=\"muted\" style=\"font-size:22px\">/"+PHASES.length+"</span></div><div class=\"l\">jobs passed</div></div></div>";
-    h+="<div class=\"panel\" data-a style=\"--i:5\"><div class=\"row\" style=\"justify-content:space-between\"><div class=\"field\"><label for=\"start\">Start date</label><input type=\"date\" id=\"start\" value=\""+esc(state.started)+"\"></div><button class=\"btn primary\" type=\"button\" id=\"resume\">"+(t.n?"Resume":"Start job 1")+" →</button></div><p class=\"small muted\" style=\"margin-top:12px\">Set a start date to get a due date per job. At a few hours a week, the full run is about eight months.</p></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:5\"><div class=\"row\" style=\"justify-content:space-between\"><div class=\"field\"><label for=\"start\">Start date</label><input type=\"date\" id=\"start\" value=\""+esc(state.started)+"\"></div><button class=\"btn primary\" type=\"button\" id=\"resume\">"+(t.n?"Resume":"Start job 1")+" →</button></div><p class=\"small muted\" style=\"margin-top:12px\">Set a start date to get a due date per job. At a few hours a week, the full run is about nine months.</p></div>";
     h+="</div></div>";
   }
   else if(sl.type==="howto"){
     h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>how this track works</span></div>";
-    h+="<h2 data-a style=\"--i:1\">Learn it, study a real example, apply it, prove it.</h2>";
-    h+="<div class=\"loop\" data-a style=\"--i:2\"><div><span class=\"k\">1 · learn</span><h3>Concepts & diagram</h3><p class=\"small muted\">The terms you need and a picture of how they fit your products.</p></div><div><span class=\"k\">2 · study</span><h3>Worked example</h3><p class=\"small muted\">Annotated config or code for your stack, with the gotchas called out.</p></div><div><span class=\"k\">3 · apply</span><h3>Lab tasks</h3><p class=\"small muted\">Real changes to bashbop and Brain Boost Buddy. Tick each one when it’s done.</p></div><div><span class=\"k\">4 · prove</span><h3>Checkpoint</h3><p class=\"small muted\">Exit criteria, self-check questions and notes. A job passes when every box is ticked.</p></div></div>";
+    h+="<h2 data-a style=\"--i:1\">Learn how it works, apply it, break it, prove it.</h2>";
+    h+="<div class=\"loop\" data-a style=\"--i:2\"><div><span class=\"k\">1 · learn</span><h3>How it works</h3><p class=\"small muted\">Concepts plus a diagram of the mechanism underneath, not just its name.</p></div><div><span class=\"k\">2 · study</span><h3>Worked example</h3><p class=\"small muted\">Annotated config for your stack, with what was checked and what to adapt.</p></div><div><span class=\"k\">3 · apply</span><h3>Lab tasks</h3><p class=\"small muted\">Real changes to bashbop and Brain Boost Buddy.</p></div><div><span class=\"k\">4 · break</span><h3>Break-fix drill</h3><p class=\"small muted\">Break staging on purpose, diagnose from symptoms with hints, then reveal the answer.</p></div><div><span class=\"k\">5 · prove</span><h3>Checkpoint</h3><p class=\"small muted\">Exit criteria, five scenario questions and notes. A job passes when every box is ticked.</p></div></div>";
     h+="<div class=\"two\">";
     h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Moving around</h3><div class=\"keys\"><span><kbd>→</kbd> <kbd>space</kbd></span><span>Next slide</span><span><kbd>←</kbd></span><span>Previous slide</span><span><kbd>O</kbd></span><span>All slides overview</span><span><kbd>Home</kbd> <kbd>End</kbd></span><span>First / last slide</span><span>Top rail</span><span>Jump to any job; green is passed, amber is in progress</span></div></div>";
     h+="<div class=\"panel\" data-a style=\"--i:4\"><h3 style=\"margin-bottom:12px\">How progress is kept</h3><p class=\"small muted\">"+(window.claude?"Ticks, notes and your start date save into this page as a new version about 15 seconds after you stop — so they follow you to any device. If this view can’t save to the page, they stay in this browser.":"Ticks, notes and your start date save in this browser as you go. Come back in the same browser to pick up where you left off.")+"</p><p class=\"small\" style=\"margin-top:12px\">Right now: <strong id=\"howsave\">"+CHIP[chipState]+"</strong></p></div>";
@@ -988,7 +1491,7 @@ function renderSlide(i){
     h+="<h2 data-a style=\"--i:1\">Where both products start</h2>";
     h+="<p class=\"lede\" data-a style=\"--i:2\">These findings are the first lab tasks — you learn each concept by fixing something real.</p>";
     h+="<div class=\"findings\" data-a style=\"--i:3\">";
-    FINDINGS.forEach(function(f){var k=pidx(f[3]);h+="<div class=\"finding\"><span class=\"pill "+f[0]+"\">"+(f[0]==="risk"?"risk":f[0]==="warn"?"gap":"tidy")+"</span><span><strong>"+esc(f[1])+"</strong> — "+md(f[2])+"</span><button class=\"fix\" type=\"button\" data-go=\""+(ps(k)+3)+"\">job "+(k+1)+" →</button></div>";});
+    FINDINGS.forEach(function(f){var k=pidx(f[3]);h+="<div class=\"finding\"><span class=\"pill "+f[0]+"\">"+(f[0]==="risk"?"risk":f[0]==="warn"?"gap":"tidy")+"</span><span><strong>"+esc(f[1])+"</strong> — "+md(f[2])+"</span><button class=\"fix\" type=\"button\" data-go=\""+(ps(k)+4)+"\">job "+(k+1)+" →</button></div>";});
     h+="</div>";
     h+="<div data-a style=\"--i:4\"><h3 style=\"margin-bottom:10px\">Already in good shape</h3><div class=\"strengths\">"+STRENGTHS.map(function(s){return "<span>"+esc(s)+"</span>";}).join("")+"</div></div>";
   }
@@ -1024,12 +1527,26 @@ function renderSlide(i){
       h+="<div class=\"flow\" data-a style=\"--i:2\">"+p.flow.map(function(n,k){return (k?"<span class=\"link\" aria-hidden=\"true\"></span>":"")+"<div class=\"node"+(k===p.hot?" hot":"")+"\"><span class=\"tag\">"+esc(n[0])+"</span><span class=\"t\">"+md(n[1])+"</span><span class=\"s\">"+md(n[2])+"</span></div>";}).join("")+"</div>";
       h+="<div class=\"callouts\" data-a style=\"--i:3\">"+p.callouts.map(function(c){return "<div class=\"callout "+(c[0]==="info"?"info":"")+"\">"+md(c[1])+"</div>";}).join("")+"</div>";
     }
+    else if(sl.type==="how"){
+      var HW=HOW[p.id];
+      h+=eyebrowFor(p,pi,"<span>how it works</span>");
+      h+="<h2 data-a style=\"--i:1\">"+esc(HW.title)+"</h2>";
+      h+="<div class=\"how\"><figure class=\"arch\" data-a style=\"--i:2\"><div class=\"svgwrap\">"+HW.svg()+"</div><figcaption>"+md(HW.caption)+"</figcaption></figure><div class=\"explain\" data-a style=\"--i:3\">"+HW.points.map(function(x){return "<div><b>"+md(x[0])+"</b><span>"+md(x[1])+"</span></div>";}).join("")+"</div></div>";
+    }
+    else if(sl.type==="drill"){
+      var DR=DRILL[p.id];
+      h+=eyebrowFor(p,pi,"<span>break-fix drill</span>"+(DR.open?"<span class=\"pill risk\">live investigation</span>":""));
+      h+="<h2 data-a style=\"--i:1\">Drill: "+esc(DR.title)+"</h2>";
+      h+="<div class=\"drill\" data-a style=\"--i:2\"><div class=\"panel\"><h3>Break it</h3><p class=\"small muted\">"+md(DR.setup)+"</p></div><div class=\"panel\"><h3>What you’ll see</h3><ul class=\"symptoms\">"+DR.symptoms.map(function(x){return "<li><span>"+md(x)+"</span></li>";}).join("")+"</ul></div><div class=\"panel\"><h3>Investigate</h3>"+DR.hints.map(function(x,k){return "<details class=\"hint\"><summary>Hint "+(k+1)+" of "+DR.hints.length+"</summary><p>"+md(x)+"</p></details>";}).join("")+"</div></div>";
+      h+="<details class=\"reveal\" data-a style=\"--i:3\"><summary>"+(DR.open?"Suspects, fix and prevention":"Cause, fix and prevention")+"</summary><div class=\"reveal-body\"><div><h4>"+(DR.open?"Suspects":"Cause")+"</h4><p>"+md(DR.cause)+"</p></div><div><h4>Fix</h4><p>"+md(DR.fix)+"</p></div><div><h4>Prevent</h4><p>"+md(DR.prevent)+"</p></div></div></details>";
+      h+="<ul class=\"tasks\" data-a style=\"--i:4\">"+DRILL_CHECKS.map(function(t,k){var id=tid(p,"d",k),on=!!state.done[id];return "<li class=\"task"+(on?" done":"")+"\"><label><input type=\"checkbox\" class=\"settled\" data-task=\""+id+"\""+(on?" checked":"")+"><span class=\"tx\"><span class=\"main\">"+md(t)+"</span></span></label></li>";}).join("")+"</ul>";
+    }
     else if(sl.type==="deep"){
       var D=DEEP[p.id];
       h+=eyebrowFor(p,pi,"<span>worked example</span>");
       h+="<h2 data-a style=\"--i:1\">"+esc(D.title)+"</h2>";
       h+="<p class=\"lede\" data-a style=\"--i:2\">"+md(D.intro)+"</p>";
-      h+="<div class=\"deep\" data-a style=\"--i:3\"><div class=\"codes\">"+D.files.map(function(f){return "<div><div class=\"codehead\">"+esc(f[0])+"</div><pre class=\"code\"><code>"+hl(f[1])+"</code></pre></div>";}).join("")+"</div><ol class=\"steps\">"+D.steps.map(function(x){return "<li><span><b>"+esc(x[0])+"</b>"+md(x[1])+"</span></li>";}).join("")+"</ol></div>";
+      h+="<div class=\"deep\" data-a style=\"--i:3\"><div class=\"codes\">"+D.files.map(function(f){return "<div><div class=\"codehead\">"+esc(f[0])+"</div><pre class=\"code\"><code>"+(f[2]==="plain"?esc(f[1]):hl(f[1]))+"</code></pre></div>";}).join("")+(D.verify?"<p class=\"verify\">"+md(D.verify)+"</p>":"")+"</div><ol class=\"steps\">"+D.steps.map(function(x){return "<li><span><b>"+esc(x[0])+"</b>"+md(x[1])+"</span></li>";}).join("")+"</ol></div>";
     }
     else if(sl.type==="lab"){
       var ln=p.tasks.filter(function(_,k){return state.done[tid(p,"t",k)];}).length;
@@ -1043,11 +1560,11 @@ function renderSlide(i){
       h+="<div class=\"two\">";
       h+="<div style=\"display:flex;flex-direction:column;gap:22px\">";
       h+="<div data-a style=\"--i:2\"><h3 style=\"margin-bottom:10px\">Exit criteria</h3><ul class=\"tasks\">"+p.exit.map(function(t,k){var id=tid(p,"x",k),on=!!state.done[id];return "<li class=\"task"+(on?" done":"")+"\"><label><input type=\"checkbox\" class=\"settled\" data-task=\""+id+"\""+(on?" checked":"")+"><span class=\"tx\"><span class=\"main\">"+md(t)+"</span></span></label></li>";}).join("")+"</ul></div>";
-      h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Self-check</h3>"+p.quiz.map(function(q){return "<details class=\"q\"><summary>"+md(q[0])+"</summary><p>"+md(q[1])+"</p></details>";}).join("")+"</div>";
+      h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Self-check</h3>"+p.quiz.map(function(q){return "<details class=\"q\"><summary><span>"+md(q[0])+"</span></summary><p>"+md(q[1])+"</p></details>";}).join("")+"</div>";
       h+="</div>";
       h+="<div style=\"display:flex;flex-direction:column;gap:22px\">";
       h+="<div data-a style=\"--i:4\"><div class=\"field\"><label for=\"notes-"+p.id+"\">Notes for job "+(pi+1)+"</label><textarea id=\"notes-"+p.id+"\" data-notes=\""+p.id+"\" placeholder=\"What surprised you, commands worth keeping, links to PRs…\">"+esc(state.notes[p.id]||"")+"</textarea></div></div>";
-      h+="<div class=\"panel\" data-a style=\"--i:5\"><h3 style=\"margin-bottom:12px\">Resources</h3><ul class=\"res\">"+p.res.map(function(r){return "<li>"+md(r)+"</li>";}).join("")+"</ul></div>";
+      h+="<div class=\"panel\" data-a style=\"--i:5\"><h3 style=\"margin-bottom:12px\">Resources</h3><ul class=\"res\">"+p.res.map(function(r){return "<li><span>"+md(r)+"</span></li>";}).join("")+"</ul></div>";
       h+="</div></div>";
     }
   }
@@ -1104,7 +1621,7 @@ function go(i){if(i===cur)return;show(i,i>cur?1:-1,true);closeOverview();}
 function openOverview(){
   var o=$("#overview"),h="<div class=\"ovgrid\"><div class=\"row\" style=\"justify-content:space-between\"><h2>All slides</h2><button class=\"btn\" type=\"button\" id=\"ovclose\">Close <kbd>Esc</kbd></button></div>";
   var groups=[{name:"Start",idx:[0,1,2,3,4]}];
-  PHASES.forEach(function(p,pi){var b=ps(pi);groups.push({name:"Job "+(pi+1)+" · "+p.title,pi:pi,idx:[b,b+1,b+2,b+3,b+4]});});
+  PHASES.forEach(function(p,pi){var b=ps(pi);groups.push({name:"Job "+(pi+1)+" · "+p.title,pi:pi,idx:[b,b+1,b+2,b+3,b+4,b+5,b+6]});});
   groups.push({name:"Finish",idx:[SLIDES.length-1]});
   groups.forEach(function(g){
     h+="<div class=\"ovgroup\"><h3>"+(g.pi!=null?"<span class=\"dot "+phaseStats(PHASES[g.pi]).status+"\"></span>":"")+esc(g.name)+"</h3><div class=\"ovcards\">"+g.idx.map(function(k){return "<button type=\"button\" class=\"ovcard"+(k===cur?" cur":"")+"\" data-go=\""+k+"\"><span>"+(k+1)+"</span>"+esc(SLIDES[k].label)+"</button>";}).join("")+"</div></div>";
@@ -1125,7 +1642,7 @@ document.addEventListener("click",function(e){
   else if(e.target.closest("#resume")){
     var target=PHASES.findIndex(function(p){return phaseStats(p).status!=="passed";});
     if(target<0)target=PHASES.length-1;
-    go(ps(target)+(phaseStats(PHASES[target]).n?3:0));
+    go(ps(target)+(phaseStats(PHASES[target]).n?4:0));
   }
 });
 document.addEventListener("change",function(e){
