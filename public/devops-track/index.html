@@ -317,17 +317,17 @@ details.reveal summary::-webkit-details-marker{display:none}
 /* ------------------------------------------------------------------ content */
 var PHASES=[
 { id:"p1", short:"Linux", title:"Linux & networking on your own stack", weeks:[1,3],
-  why:"Every later job — pipelines, containers, Terraform, alerts — assumes you can read a server, trace a request and restart a process calmly. Learn it on the machine bashbop already runs on, not a tutorial VM.",
-  terms:[["systemd & PM2","What keeps a process alive and restarts it after a crash or reboot."],["journalctl / pm2 logs","Where a process writes what went wrong."],["ss -tlnp","Which program is listening on which port."],["DNS: A, CNAME, TTL","How a name becomes an IP, and how long caches keep it."],["TLS & SSL modes","Who holds the certificate, and Cloudflare Flexible vs Full (strict)."],["Reverse proxy","Nginx accepting :443 and forwarding to the app’s local port."],["File permissions","Users, groups, chmod — why the app should not run as root."]],
+  why:"Every later job, pipelines, containers, Terraform, alerts, assumes you can read a server, trace a request and restart a process calmly. Learn it on the machine bashbop already runs on, not a tutorial VM.",
+  terms:[["systemd & PM2","What keeps a process alive and restarts it after a crash or reboot."],["journalctl / pm2 logs","Where a process writes what went wrong."],["ss -tlnp","Which program is listening on which port."],["DNS: A, CNAME, TTL","How a name becomes an IP, and how long caches keep it."],["TLS & SSL modes","Who holds the certificate, and Cloudflare Flexible vs Full (strict)."],["Reverse proxy","Nginx accepting :443 and forwarding to the app’s local port."],["File permissions","Users, groups, chmod, why the app should not run as root."]],
   flowTitle:"One request, end to end",
   flow:[["client","Browser","guest opens an event page"],["edge","Cloudflare","DNS answers, proxy terminates TLS"],["origin","Nginx :443","forwards to the upstream port"],["app","bashbop-api","NestJS process under PM2"],["data","Postgres + Redis","queries, sessions, cache"]],
   hot:3,
-  callouts:[["warn","The API docs describe PM2 behind Nginx/Cloudflare. Confirm this on the real host — docs drift."],["info","Draw this diagram from memory at the end of the job. If you can’t, you don’t know it yet."]],
+  callouts:[["warn","The API docs describe PM2 behind Nginx/Cloudflare. Confirm this on the real host, docs drift."],["info","Draw this diagram from memory at the end of the job. If you can’t, you don’t know it yet."]],
   tasks:[
     ["Run `dig +short` and `dig +trace` against the web and API domains. Note which records are proxied by Cloudflare.","Proxied records return Cloudflare edge IPs, not your server."],
     ["Run `curl -svI https://<api-domain>/` and read the certificate issuer, expiry and HTTP version.",""],
     ["Check the Cloudflare SSL/TLS mode for the zone and write down why it is (or should be) Full (strict).","Flexible means the edge talks plain HTTP to your origin."],
-    ["SSH into the API host. Run `pm2 ls`, `pm2 logs bashbop-api --lines 100` and `pm2 startup` — explain each output.",""],
+    ["SSH into the API host. Run `pm2 ls`, `pm2 logs bashbop-api --lines 100` and `pm2 startup`, explain each output.",""],
     ["Open the Nginx site config under `/etc/nginx/sites-enabled/`. Identify the upstream port, timeouts and body-size limit.","`client_max_body_size` matters for event image uploads."],
     ["Run `ss -tlnp` and justify every listening port. Anything unexplained is a finding.",""],
     ["Check who the API process runs as (`ps -o user= -p <pid>`) and what the `.env` file permissions are.",""],
@@ -338,11 +338,11 @@ var PHASES=[
   quiz:[["Nginx returns 502 Bad Gateway. Which layer is failing, and what do you run first?","Nginx is up but can’t reach its upstream. Check `pm2 ls` (is bashbop-api online?) and `ss -tlnp` (is it listening on the port Nginx expects?), then the Nginx error log."],
         ["What changes when a DNS record is proxied (orange cloud) in Cloudflare?","DNS returns Cloudflare edge IPs, hiding your origin. TLS terminates at the edge; the SSL mode decides how the edge connects to your origin. Real client IPs arrive in `CF-Connecting-IP`."],
         ["The API is up but slow. Name three places to look before touching code.","Host load (`top`/`htop`, memory, disk), database (slow queries, connection count), and logs for timeouts to third parties like Stripe or Paystack."]],
-  res:["Linux Journey — linuxjourney.com","Julia Evans’ networking and DNS zines — wizardzines.com","nginx.org — Beginner’s Guide","Cloudflare Learning Center — SSL/TLS encryption modes"]
+  res:["Linux Journey, linuxjourney.com","Julia Evans’ networking and DNS zines, wizardzines.com","nginx.org, Beginner’s Guide","Cloudflare Learning Center, SSL/TLS encryption modes"]
 },
 { id:"p2", short:"CI", title:"Harden the CI you already have", weeks:[4,5],
-  why:"You have seven workflows in the web repo and a strong one in the API — but they disagree on Node versions and only guard main properly. This is where your ‘never merge red’ rule becomes something GitHub enforces instead of something you remember.",
-  terms:[["Triggers","`pull_request`, `push`, `workflow_dispatch` — and why `pull_request_target` is dangerous."],["Required status checks","Branch protection that blocks merging until named jobs pass."],["Caching","`actions/setup-node` cache for dependencies, `actions/cache` for `.next/cache`."],["Concurrency groups","Cancel superseded runs when a PR gets a new push."],["Single source of versions","`.nvmrc` read by every workflow via `node-version-file`."],["Secret scanning","gitleaks on every push, plus rotation when something leaks."],["Pinning actions","Referencing an action by commit SHA to limit supply-chain risk."]],
+  why:"You have seven workflows in the web repo and a strong one in the API, but they disagree on Node versions and only guard main properly. This is where your ‘never merge red’ rule becomes something GitHub enforces instead of something you remember.",
+  terms:[["Triggers","`pull_request`, `push`, `workflow_dispatch`, and why `pull_request_target` is dangerous."],["Required status checks","Branch protection that blocks merging until named jobs pass."],["Caching","`actions/setup-node` cache for dependencies, `actions/cache` for `.next/cache`."],["Concurrency groups","Cancel superseded runs when a PR gets a new push."],["Single source of versions","`.nvmrc` read by every workflow via `node-version-file`."],["Secret scanning","gitleaks on every push, plus rotation when something leaks."],["Pinning actions","Referencing an action by commit SHA to limit supply-chain risk."]],
   flowTitle:"The PR gate you want",
   flow:[["trigger","PR opened","into develop or main"],["parallel","Lint + types","`yarn lint`, `yarn tsc:check`"],["parallel","Unit tests","`yarn test` (Jest)"],["parallel","Build","`next build`, cached"],["gate","Required checks","merge button stays grey until green"]],
   hot:4,
@@ -354,7 +354,7 @@ var PHASES=[
     ["Standardise installs on `yarn install --immutable` (the repo uses Yarn Berry; `--frozen-lockfile` is the legacy flag).",""],
     ["Add `concurrency` with `cancel-in-progress: true` to the web PR workflows, as bashbop-api’s `ci.yml` already does.",""],
     ["Cache `.next/cache` in build jobs and record build time before and after.",""],
-    ["Stop `bundle-size.yml` rebuilding main on every PR — store main’s report as an artifact on push and download it in PRs.","Halves that job’s minutes."],
+    ["Stop `bundle-size.yml` rebuilding main on every PR, store main’s report as an artifact on push and download it in PRs.","Halves that job’s minutes."],
     ["Port `gitleaks.yml` from bashbop-api into bashbop-event-web.",""],
     ["Replace the non-dummy `CSRF_SECRET` in the web repo’s tracked `.env.test` with an obvious test value; rotate it anywhere the real value was used.",""],
     ["Untrack `server.log` and `server-logs.log` in bashbop-api (`git rm --cached`) and add `*.log` to `.gitignore`.",""],
@@ -365,59 +365,59 @@ var PHASES=[
   quiz:[["Why is `pull_request_target` risky on a public repo?","It runs in the base repository’s context with access to secrets, so checking out and running a fork’s code there can leak those secrets."],
         ["A check is flaky and blocks merges. What’s the right move?","Fix or quarantine the test explicitly (and track it), not remove the required check or retry until green. A gate people learn to bypass is not a gate."],
         ["What does `concurrency: cancel-in-progress` save you?","Runner minutes and queue time: when you push again to a PR, the now-stale run is cancelled instead of finishing."]],
-  res:["GitHub Docs — Security hardening for GitHub Actions","GitHub Docs — Caching dependencies to speed up workflows","GitHub Docs — About protected branches and rulesets","gitleaks — github.com/gitleaks/gitleaks"]
+  res:["GitHub Docs, Security hardening for GitHub Actions","GitHub Docs, Caching dependencies to speed up workflows","GitHub Docs, About protected branches and rulesets","gitleaks, github.com/gitleaks/gitleaks"]
 },
 { id:"p8", short:"Releases", title:"Release engineering: signed apps that update themselves", weeks:[6,8],
-  why:"Brain Boost Buddy ships to parents’ Macs and Windows PCs, so a release isn’t a server deploy — it’s a signed, notarised binary plus an update feed every install checks. Today that release is a hand-run checklist, and the CI that should do it has failed on every tag since v2.4.0.",
+  why:"Brain Boost Buddy ships to parents’ Macs and Windows PCs, so a release isn’t a server deploy, it’s a signed, notarised binary plus an update feed every install checks. Today that release is a hand-run checklist, and the CI that should do it has failed on every tag since v2.4.0.",
   terms:[["Code signing","A certificate proves who built the binary; macOS and Windows warn or block without it."],["Notarisation","Apple scans a signed Mac build and issues a ticket you staple to it."],["Keychain on CI","electron-builder imports `CSC_LINK` (a .p12) into a temporary keychain on the runner."],["Universal binary","One macOS build containing both arm64 and x64 code."],["Update feed","`latest-mac.yml` and `latest.yml` tell electron-updater the newest version and its hashes."],["Blockmaps","Let the updater download only the changed parts of an installer."],["Release channels","Separate feeds (beta, stable) so a bad build reaches few people first."]],
   flowTitle:"From tag to a parent’s ‘Update available’",
   flow:[["tag","git tag v2.5.3","push triggers release.yml"],["gate","verify","SVG, icons, smoke, whitespace"],["build","mac + win jobs","sign, notarise, package"],["publish","R2 feed","installers, then latest*.yml"],["client","electron-updater","parent taps ‘install now’"]],
   hot:3,
-  callouts:[["warn","The mac job fails at `security set-key-partition-list … SecKeychainUnlock: passphrase not correct` — the certificate never unlocks on the runner, so Mac builds are made by hand."],["warn","Publishing is manual: download the Windows artifact, merge it with a local Mac build, run `npm run publish:r2`, then edit download links on the site."]],
+  callouts:[["warn","The mac job fails at `security set-key-partition-list … SecKeychainUnlock: passphrase not correct`, the certificate never unlocks on the runner, so Mac builds are made by hand."],["warn","Publishing is manual: download the Windows artifact, merge it with a local Mac build, run `npm run publish:r2`, then edit download links on the site."]],
   tasks:[
     ["Read the failing v2.5.2 run with `gh run view --log-failed` and write down exactly which step fails and why.",""],
     ["Reproduce locally: create a throwaway keychain, `security import` the .p12 with its password, and find out whether the password or the export format is the problem.","Never commit or print the .p12 or its password."],
     ["Fix the mac job so a tag produces a signed, notarised universal DMG and zip in CI. Check the extracted app with `spctl -a -vv` and `xcrun stapler validate`.",""],
     ["Add `latest-mac.yml` and the Mac blockmaps to the mac job’s uploaded artifacts.",""],
-    ["Add a `publish` job that needs mac + win, downloads both artifacts and uploads them to R2 — replacing the manual `publish:r2` step.",""],
+    ["Add a `publish` job that needs mac + win, downloads both artifacts and uploads them to R2, replacing the manual `publish:r2` step.",""],
     ["After publishing, have CI fetch `latest-mac.yml` and `latest.yml` and fail if the version doesn’t match the tag.",""],
     ["Add a beta feed path so a new build reaches your own machines before every parent’s.",""],
     ["Pick a Windows signing route (`docs/AZURE-ARTIFACT-SIGNING.md` covers Azure) and remove the SmartScreen warning.",""],
     ["Add CI for the iOS app (`brain-boost-app`, Capacitor): build and upload to TestFlight with fastlane or Xcode Cloud.",""],
     ["Rewrite `docs/RELEASE-CHECKLIST.md`, deleting every step CI now does.",""]
   ],
-  exit:["Pushing a tag is the whole Mac and Windows release — no local builds.","CI proves the live update feed serves the new version before the release counts as done.","I can explain signing, notarisation and the update feed to someone else."],
+  exit:["Pushing a tag is the whole Mac and Windows release, no local builds.","CI proves the live update feed serves the new version before the release counts as done.","I can explain signing, notarisation and the update feed to someone else."],
   quiz:[["Why does macOS need both signing and notarisation?","Signing proves identity and integrity; notarisation is Apple’s malware scan of that signed build. Gatekeeper expects both for apps downloaded outside the App Store."],
-        ["What’s in `latest-mac.yml`, and why does its version matter?","The newest version, file names, sizes and SHA-512 hashes. electron-updater compares that version with the installed one — publish the wrong file and installs either miss the update or reject the download."],
-        ["Why ship to a beta feed first?","A broken desktop build can’t be rolled back like a server — it’s already on people’s machines. A small beta audience catches it before everyone gets it."]],
-  res:["electron-builder docs — Code Signing and Auto Update","Apple Developer — Notarizing macOS software before distribution","GitHub Docs — Installing an Apple certificate on macOS runners","fastlane docs — iOS beta deployment"]
+        ["What’s in `latest-mac.yml`, and why does its version matter?","The newest version, file names, sizes and SHA-512 hashes. electron-updater compares that version with the installed one, publish the wrong file and installs either miss the update or reject the download."],
+        ["Why ship to a beta feed first?","A broken desktop build can’t be rolled back like a server, it’s already on people’s machines. A small beta audience catches it before everyone gets it."]],
+  res:["electron-builder docs, Code Signing and Auto Update","Apple Developer, Notarizing macOS software before distribution","GitHub Docs, Installing an Apple certificate on macOS runners","fastlane docs, iOS beta deployment"]
 },
 { id:"p3", short:"Containers", title:"Containers: package bashbop once, run it anywhere", weeks:[9,11],
-  why:"The web repo already has a good multi-stage Dockerfile using Next’s standalone output — but nothing builds it. Learning why each line exists, then containerising the API and the whole stack, is the foundation for every deploy that follows.",
+  why:"The web repo already has a good multi-stage Dockerfile using Next’s standalone output, but nothing builds it. Learning why each line exists, then containerising the API and the whole stack, is the foundation for every deploy that follows.",
   terms:[["Image vs container","A read-only template vs a running process with its own filesystem view."],["Layers & cache","Each instruction is a layer; order them so dependencies rarely rebuild."],["Multi-stage builds","Build with the toolchain, ship only the output."],[".dockerignore","Keeps `node_modules`, `.next`, reports and `.env*` out of the build context."],["Non-root user","The runner stage already switches to `nextjs` (uid 1001)."],["Healthchecks","How an orchestrator knows the app is actually serving."],["Compose","One file that starts web, API, Postgres and Redis on a shared network."]],
   flowTitle:"What your Dockerfile already does",
   flow:[["stage 1","deps","`yarn install --immutable` on node:20-alpine"],["stage 2","builder","copies source, `yarn build` → `.next/standalone`"],["stage 3","runner","non-root `nextjs`, only standalone + static + public"],["run","node server.js","listens on PORT=80"]],
   hot:2,
-  callouts:[["info","Port 80 as a non-root user works in Docker 20.10+ because it lowers the unprivileged-port floor inside the container. Other runtimes may not — decide whether 3000 is safer."],["warn","`NEXT_PUBLIC_*` values are inlined at build time. An image built for staging will carry staging URLs into production. You’ll solve this in {job:p4}."]],
+  callouts:[["info","Port 80 as a non-root user works in Docker 20.10+ because it lowers the unprivileged-port floor inside the container. Other runtimes may not, decide whether 3000 is safer."],["warn","`NEXT_PUBLIC_*` values are inlined at build time. An image built for staging will carry staging URLs into production. You’ll solve this in {job:p4}."]],
   tasks:[
     ["Build locally with `docker build -t bashbop-web .` and record the image size from `docker image ls`.",""],
     ["Run `docker history bashbop-web` and identify the largest layer and why it’s there.",""],
     ["Check for a `.dockerignore`; add or tighten it to exclude `node_modules`, `.next`, `test-results`, `playwright-report`, `storybook-static` and `.env*`.","Compare build-context size before and after."],
     ["Add a lightweight health route (e.g. `/api/health`) and a `HEALTHCHECK` or orchestrator probe that uses it.",""],
     ["Scan the image with `trivy image bashbop-web` and fix or document every critical finding.",""],
-    ["Write a Dockerfile for bashbop-api: NestJS build, `prisma generate`, libvips for image processing, non-root runtime.","CI already installs `libvips-dev` — mirror that."],
-    ["Create a `docker-compose.yml` with web, API, `postgres:16` and `redis:7-alpine` — the same versions API CI uses.",""],
+    ["Write a Dockerfile for bashbop-api: NestJS build, `prisma generate`, libvips for image processing, non-root runtime.","CI already installs `libvips-dev`, mirror that."],
+    ["Create a `docker-compose.yml` with web, API, `postgres:16` and `redis:7-alpine`, the same versions API CI uses.",""],
     ["Add a CI job that builds the web image on PRs (no push) so a broken Dockerfile fails fast.",""]
   ],
   exit:["`docker compose up` runs the whole of bashbop locally.","I can explain every line of both Dockerfiles.","No critical vulnerabilities are unaddressed in either image."],
   quiz:[["Why copy `package.json` and the lockfile before the rest of the source?","So the dependency-install layer is cached and only reruns when dependencies change, not on every code edit."],
         ["How is a container different from a VM?","Containers share the host kernel and isolate with namespaces and cgroups; a VM runs its own kernel on virtual hardware. Containers start faster and weigh less, with weaker isolation."],
         ["What does `output: 'standalone'` give you?","A minimal `server.js` plus only the `node_modules` files the app actually needs, so the runtime image doesn’t need a full install."]],
-  res:["Docker Docs — Multi-stage builds and build cache","Next.js Docs — `output: 'standalone'`","Trivy — trivy.dev","TechWorld with Nana — Docker tutorial (free, YouTube)"]
+  res:["Docker Docs, Multi-stage builds and build cache","Next.js Docs, `output: 'standalone'`","Trivy, trivy.dev","TechWorld with Nana, Docker tutorial (free, YouTube)"]
 },
 { id:"p10", short:"Cloud", title:"Cloud fundamentals: networks, identity and cost", weeks:[12,14],
-  why:"Delivery, Terraform and Kubernetes all assume you can reason about a cloud account: which network a service sits in, what may talk to what, which identity may do which action — and what it all costs each month. Learn it on one provider (AWS has the most jobs) in a sandbox account with a hard budget.",
-  terms:[["Regions & AZs","Independent locations. Spread across two Availability Zones so one data-centre failure isn’t an outage."],["VPC & CIDR","Your private network, e.g. `10.0.0.0/16`, carved into subnets such as `10.0.1.0/24`."],["Public vs private subnets","Public routes `0.0.0.0/0` to an internet gateway; private sends it through a NAT gateway."],["Security groups","Stateful firewalls on each resource — allow the app’s group, never `0.0.0.0/0` to a database."],["IAM evaluation","An explicit deny beats any allow; anything not allowed is denied."],["Roles, not users","Workloads and CI assume short-lived roles. No access keys on laptops."],["Cost drivers","NAT data processing, egress, idle databases and forgotten load balancers — often more than compute."]],
+  why:"Delivery, Terraform and Kubernetes all assume you can reason about a cloud account: which network a service sits in, what may talk to what, which identity may do which action, and what it all costs each month. Learn it on one provider (AWS has the most jobs) in a sandbox account with a hard budget.",
+  terms:[["Regions & AZs","Independent locations. Spread across two Availability Zones so one data-centre failure isn’t an outage."],["VPC & CIDR","Your private network, e.g. `10.0.0.0/16`, carved into subnets such as `10.0.1.0/24`."],["Public vs private subnets","Public routes `0.0.0.0/0` to an internet gateway; private sends it through a NAT gateway."],["Security groups","Stateful firewalls on each resource, allow the app’s group, never `0.0.0.0/0` to a database."],["IAM evaluation","An explicit deny beats any allow; anything not allowed is denied."],["Roles, not users","Workloads and CI assume short-lived roles. No access keys on laptops."],["Cost drivers","NAT data processing, egress, idle databases and forgotten load balancers, often more than compute."]],
   flowTitle:"A request inside a VPC",
   flow:[["edge","Cloudflare","proxies to the load balancer"],["public subnet","Load balancer","TLS, health checks, two AZs"],["private subnet","API tasks","security group: from the LB only"],["isolated subnet","PostgreSQL","security group: from the API only"],["egress","NAT gateway","calls to Stripe, Paystack, OpenAI"]],
   hot:2,
@@ -438,13 +438,13 @@ var PHASES=[
   quiz:[["Your API task in a private subnet can’t call Stripe, but load balancer health checks pass. What’s missing?","Outbound internet. The private subnet’s route table needs `0.0.0.0/0 → NAT gateway` (the NAT gateway itself sits in a public subnet). Inbound works because it arrives through the ALB."],
         ["An identity policy allows `s3:*`, but the permissions boundary doesn’t include `s3:DeleteObject`. Can the role delete objects?","No. Effective permissions are the intersection of the identity policy and the boundary; anything outside the boundary is implicitly denied."],
         ["Why reference a security group instead of an IP range?","Task and instance IPs change on every deploy. A group reference follows membership, so the rule stays both correct and narrow."],
-        ["Which costs more if forgotten: a stopped EC2 instance or an idle NAT gateway?","The NAT gateway — it bills hourly whether or not traffic flows. A stopped instance mainly bills for its disk (and any public IPv4 address kept attached)."],
-        ["What does the `sub` condition in a GitHub OIDC trust policy protect against?","Without it, workflows in any repository could try to assume your role. `sub` pins it to your repository — and ideally to one environment or branch."]],
-  res:["AWS Skill Builder — Cloud Practitioner Essentials (free)","AWS Docs — VPC with public and private subnets","AWS Docs — Policy evaluation logic","GitHub Docs — Configuring OpenID Connect in Amazon Web Services","AWS Well-Architected — Cost Optimization pillar"]
+        ["Which costs more if forgotten: a stopped EC2 instance or an idle NAT gateway?","The NAT gateway, it bills hourly whether or not traffic flows. A stopped instance mainly bills for its disk (and any public IPv4 address kept attached)."],
+        ["What does the `sub` condition in a GitHub OIDC trust policy protect against?","Without it, workflows in any repository could try to assume your role. `sub` pins it to your repository, and ideally to one environment or branch."]],
+  res:["AWS Skill Builder, Cloud Practitioner Essentials (free)","AWS Docs, VPC with public and private subnets","AWS Docs, Policy evaluation logic","GitHub Docs, Configuring OpenID Connect in Amazon Web Services","AWS Well-Architected, Cost Optimization pillar"]
 },
 { id:"p4", short:"Delivery", title:"Continuous delivery: merge is the only way to prod", weeks:[15,17],
   why:"Release Please already versions bashbop on merge to main. Right now that version never turns into a deploy. This job connects the two: an immutable image per release, automatic staging, a gated production step, and a rollback you’ve actually practised.",
-  terms:[["Immutable tags","Deploy `:<git-sha>`, never a moving `:latest`."],["Registry","GHCR or ECR — where built images live."],["Environments","GitHub staging / production with required reviewers."],["OIDC","Short-lived cloud credentials for CI instead of stored keys."],["Rolling / blue-green","Replacing versions without dropping requests."],["Expand–contract migrations","Schema changes that both old and new app versions tolerate."],["Feature flags","Ship code dark; the API already has `FEATURE_FLAGS_ENABLED`."]],
+  terms:[["Immutable tags","Deploy `:<git-sha>`, never a moving `:latest`."],["Registry","GHCR or ECR, where built images live."],["Environments","GitHub staging / production with required reviewers."],["OIDC","Short-lived cloud credentials for CI instead of stored keys."],["Rolling / blue-green","Replacing versions without dropping requests."],["Expand–contract migrations","Schema changes that both old and new app versions tolerate."],["Feature flags","Ship code dark; the API already has `FEATURE_FLAGS_ENABLED`."]],
   flowTitle:"From merge to production",
   flow:[["release","Release Please","tags the version on main"],["build","Image :sha","pushed to the registry"],["staging","Deploy + sanity","`yarn test:sanity` against staging"],["gate","Approval","production environment reviewer"],["prod","Deploy","migrations first, then app"],["safety","Verify / roll back","previous sha in < 5 min"]],
   hot:3,
@@ -461,39 +461,39 @@ var PHASES=[
     ["Practise one expand–contract change on a harmless column (add → backfill → switch → remove).",""],
     ["Rollback drill: redeploy the previous sha on staging, time it, and write the steps down.",""]
   ],
-  exit:["Nobody deploys from a laptop — merge is the only path.","Rolling back production takes under five minutes and is written down.","Migrations never break the version that is still running."],
-  quiz:[["Why must a migration be backward compatible with the previous app version?","During a rolling deploy both versions run at once. If the new schema breaks the old code, users hit errors mid-deploy — and rollback becomes impossible."],
+  exit:["Nobody deploys from a laptop, merge is the only path.","Rolling back production takes under five minutes and is written down.","Migrations never break the version that is still running."],
+  quiz:[["Why must a migration be backward compatible with the previous app version?","During a rolling deploy both versions run at once. If the new schema breaks the old code, users hit errors mid-deploy, and rollback becomes impossible."],
         ["What’s wrong with deploying `:latest`?","It’s mutable: you can’t tell what’s running, can’t reproduce it, and rolling back to ‘the previous latest’ is guesswork."],
         ["Why OIDC instead of an access key in GitHub secrets?","Credentials are minted per run, expire in minutes and can be scoped to a repo and branch, so there’s no long-lived key to leak."]],
-  res:["GitHub Docs — Using environments for deployment","GitHub Docs — Security hardening with OpenID Connect","Martin Fowler — BlueGreenDeployment","release-please — github.com/googleapis/release-please"]
+  res:["GitHub Docs, Using environments for deployment","GitHub Docs, Security hardening with OpenID Connect","Martin Fowler, BlueGreenDeployment","release-please, github.com/googleapis/release-please"]
 },
 { id:"p9", short:"Edge", title:"Edge & serverless on Cloudflare", weeks:[18,20],
-  why:"Both products lean on Cloudflare: bashbop for DNS, proxying, R2 storage, AI and organiser custom domains; Brain Boost Buddy for its update feed and the Worker that guards trials and licences with KV and D1. Serverless removes servers, not operations — deploys, secrets, migrations, limits and logs are still yours.",
-  terms:[["Workers","JavaScript at Cloudflare’s edge, started per request, with no server to patch."],["Bindings","How a Worker reaches KV, D1, R2 or secrets — declared in `wrangler.toml`."],["KV","Eventually consistent key-value store — fine for rough counters, wrong for exact ones."],["D1","SQLite at the edge, changed through versioned migrations."],["R2","S3-compatible object storage with no egress fees."],["Secrets","`wrangler secret put` — never in `wrangler.toml` or Git."],["Environments","Separate staging and production Workers, KV namespaces and D1 databases."]],
+  why:"Both products lean on Cloudflare: bashbop for DNS, proxying, R2 storage, AI and organiser custom domains; Brain Boost Buddy for its update feed and the Worker that guards trials and licences with KV and D1. Serverless removes servers, not operations, deploys, secrets, migrations, limits and logs are still yours.",
+  terms:[["Workers","JavaScript at Cloudflare’s edge, started per request, with no server to patch."],["Bindings","How a Worker reaches KV, D1, R2 or secrets, declared in `wrangler.toml`."],["KV","Eventually consistent key-value store, fine for rough counters, wrong for exact ones."],["D1","SQLite at the edge, changed through versioned migrations."],["R2","S3-compatible object storage with no egress fees."],["Secrets","`wrangler secret put`, never in `wrangler.toml` or Git."],["Environments","Separate staging and production Workers, KV namespaces and D1 databases."]],
   flowTitle:"A trial activation, end to end",
   flow:[["client","Desktop app","POST /start with email + device id"],["edge","Worker","validate, block disposable email"],["kv","KV","best-effort throttle"],["d1","D1","one trial row per email"],["provider","Lemon Squeezy","paid subscription lookup"]],
   hot:1,
-  callouts:[["warn","The Worker is deployed by hand with `wrangler deploy`, and the hard rate limit is a dashboard rule — neither is in code or CI."],["info","KV is eventually consistent, so the Worker’s README treats the KV throttle as best-effort and relies on a Cloudflare Rate Limiting rule as the hard cap. Keep that split."]],
+  callouts:[["warn","The Worker is deployed by hand with `wrangler deploy`, and the hard rate limit is a dashboard rule, neither is in code or CI."],["info","KV is eventually consistent, so the Worker’s README treats the KV throttle as best-effort and relies on a Cloudflare Rate Limiting rule as the hard cap. Keep that split."]],
   tasks:[
     ["Draw the trial and licence flow from `worker/README.md`: every endpoint, binding and external call.",""],
     ["Add a staging environment to `wrangler.toml` with its own KV namespace and D1 database.",""],
     ["Move D1 schema changes into `migrations/` and apply them with `wrangler d1 migrations apply`.",""],
-    ["Deploy the Worker from GitHub Actions (`cloudflare/wrangler-action`) — staging on merge, production on tag — with a scoped API token.",""],
+    ["Deploy the Worker from GitHub Actions (`cloudflare/wrangler-action`), staging on merge, production on tag, with a scoped API token.",""],
     ["Write tests for `/start` and `/status` with Vitest and the Workers pool: trial cap, expiry, rate limiting.",""],
     ["Turn on Workers Logs and check how an `offline` (502) response shows up.",""],
     ["List bashbop’s Cloudflare usage (DNS, proxy, R2 buckets, AI, custom domains) and mark what is still dashboard-only.",""],
     ["Add R2 lifecycle rules so old installers and temporary uploads don’t pile up.",""],
     ["Load-test `/status` on staging to see how launch-time re-checks behave in a spike.",""]
   ],
-  exit:["The Worker deploys from CI to staging and production, never from a laptop.","D1 changes are versioned migrations.","I know which Cloudflare settings live only in the dashboard — {job:p5} moves them to code."],
+  exit:["The Worker deploys from CI to staging and production, never from a laptop.","D1 changes are versioned migrations.","I know which Cloudflare settings live only in the dashboard, {job:p5} moves them to code."],
   quiz:[["Why is KV a poor fit for an exact per-IP request limit?","KV is eventually consistent across locations: two edges can read the same old count and both allow the request. Use a Rate Limiting rule or Durable Objects for strict limits."],
-        ["Where does `LS_API_KEY` live, and why not in `wrangler.toml`?","As a Worker secret (`wrangler secret put`), because `wrangler.toml` is committed. The desktop app never sees it — that’s why the Worker exists."],
+        ["Where does `LS_API_KEY` live, and why not in `wrangler.toml`?","As a Worker secret (`wrangler secret put`), because `wrangler.toml` is committed. The desktop app never sees it, that’s why the Worker exists."],
         ["What does a staging Worker need to be a real test?","Its own KV namespace, D1 database and secrets (a Lemon Squeezy test-mode key). Sharing production bindings means tests change real data."]],
-  res:["Cloudflare Docs — Wrangler configuration and environments","Cloudflare Docs — D1 migrations","Cloudflare Docs — Workers Vitest integration","Cloudflare Docs — R2 object lifecycles"]
+  res:["Cloudflare Docs, Wrangler configuration and environments","Cloudflare Docs, D1 migrations","Cloudflare Docs, Workers Vitest integration","Cloudflare Docs, R2 object lifecycles"]
 },
 { id:"p5", short:"IaC", title:"Infrastructure as code & secrets", weeks:[21,24],
-  why:"If staging disappeared tomorrow, how long would it take to rebuild — and would it match production? Terraform (or OpenTofu) turns DNS, R2 buckets, servers and databases into reviewed pull requests, and a secrets manager ends `.env` files on servers.",
-  terms:[["Declarative state","Describe what should exist; the tool works out the changes."],["plan / apply","A reviewable diff before anything changes."],["Remote state & locking","Shared state that two people can’t corrupt at once."],["Import","Bringing resources you made by hand under management."],["Drift","When reality no longer matches the code."],["Modules","Reusable building blocks — one for staging and production."],["Least privilege","Every token and role can do only its job."]],
+  why:"If staging disappeared tomorrow, how long would it take to rebuild, and would it match production? Terraform (or OpenTofu) turns DNS, R2 buckets, servers and databases into reviewed pull requests, and a secrets manager ends `.env` files on servers.",
+  terms:[["Declarative state","Describe what should exist; the tool works out the changes."],["plan / apply","A reviewable diff before anything changes."],["Remote state & locking","Shared state that two people can’t corrupt at once."],["Import","Bringing resources you made by hand under management."],["Drift","When reality no longer matches the code."],["Modules","Reusable building blocks, one for staging and production."],["Least privilege","Every token and role can do only its job."]],
   flowTitle:"The change workflow",
   flow:[["author","Edit .tf","in an infra repo or folder"],["review","terraform plan","posted as a PR comment"],["merge","Approve","a human reads the diff"],["apply","terraform apply","from CI only"],["record","Remote state","locked, versioned"]],
   hot:1,
@@ -511,20 +511,20 @@ var PHASES=[
     ["Bring Brain Boost Buddy’s Worker, KV namespace, D1 database and dashboard rate-limiting rule under Terraform.",""]
   ],
   exit:["Staging can be destroyed and rebuilt from code alone.","No production secret lives in a file on a server or in Git.","Infrastructure changes arrive as reviewed pull requests."],
-  quiz:[["What happens if two people run apply at once without state locking?","Both read the same state, make conflicting changes and write back — state can end up corrupt or out of sync with reality."],
+  quiz:[["What happens if two people run apply at once without state locking?","Both read the same state, make conflicting changes and write back, state can end up corrupt or out of sync with reality."],
         ["You change a DNS record by hand in the dashboard. What happens on the next plan?","Terraform detects drift and proposes reverting it to what the code says. Fix it in code instead."],
         ["Why import before creating?","Creating a duplicate of something that already exists either fails or silently splits ownership; import puts the real resource under management."]],
-  res:["HashiCorp Developer — Terraform tutorials","OpenTofu documentation — opentofu.org","Cloudflare Terraform provider documentation","Yevgeniy Brikman — Terraform: Up & Running"]
+  res:["HashiCorp Developer, Terraform tutorials","OpenTofu documentation, opentofu.org","Cloudflare Terraform provider documentation","Yevgeniy Brikman, Terraform: Up & Running"]
 },
 { id:"p11", short:"Security", title:"Security & supply chain: every hop from laptop to production", weeks:[25,27],
-  why:"Both products handle money or licence keys, run third-party code in CI, and ship binaries to families’ computers. Security isn’t a final audit — it’s a control on every hop. In March 2025 the popular `tj-actions/changed-files` action had its version tags repointed to code that dumped CI secrets into logs; workflows pinned to a commit SHA were unaffected.",
-  terms:[["Threat model","Who would attack this, what they want, and the cheapest path — written down per product."],["Least privilege","Every token, role and workflow job gets only the permissions its task needs."],["Secret lifecycle","Store, scope, rotate, revoke — and treat anything ever committed as compromised."],["Dependency risk","Lockfiles, `yarn npm audit`, Dependabot, and a look at every new package."],["Pinned actions","`uses: owner/action@<commit-sha>` — tags can move, SHAs can’t."],["SBOM & provenance","What’s inside a build, and a signed record of how and where it was built."],["OWASP Top 10","The web risks that matter most for bashbop: broken access control, injection, authentication failures, SSRF."]],
+  why:"Both products handle money or licence keys, run third-party code in CI, and ship binaries to families’ computers. Security isn’t a final audit, it’s a control on every hop. In March 2025 the popular `tj-actions/changed-files` action had its version tags repointed to code that dumped CI secrets into logs; workflows pinned to a commit SHA were unaffected.",
+  terms:[["Threat model","Who would attack this, what they want, and the cheapest path, written down per product."],["Least privilege","Every token, role and workflow job gets only the permissions its task needs."],["Secret lifecycle","Store, scope, rotate, revoke, and treat anything ever committed as compromised."],["Dependency risk","Lockfiles, `yarn npm audit`, Dependabot, and a look at every new package."],["Pinned actions","`uses: owner/action@<commit-sha>`, tags can move, SHAs can’t."],["SBOM & provenance","What’s inside a build, and a signed record of how and where it was built."],["OWASP Top 10","The web risks that matter most for bashbop: broken access control, injection, authentication failures, SSRF."]],
   flowTitle:"Every hop is an attack path",
   flow:[["laptop","Developer","MFA, disk encryption"],["source","GitHub","rulesets, push protection"],["ci","Actions","pinned SHAs, OIDC, scoped tokens"],["build","Artifact","SBOM + provenance attestation"],["run","Production","secrets manager, minimal image"]],
   hot:2,
-  callouts:[["warn","bashbop-event-web workflows use tags such as `actions/checkout@v6` and run `npx -y @nugehs/bouncer@latest` — a moved tag or a bad publish runs with that job’s permissions."],["info","Brain Boost Buddy already keeps the Lemon Squeezy API key in the Worker, never in the desktop app. That’s the pattern to repeat: secrets stay server-side."]],
+  callouts:[["warn","bashbop-event-web workflows use tags such as `actions/checkout@v6` and run `npx -y @nugehs/bouncer@latest`, a moved tag or a bad publish runs with that job’s permissions."],["info","Brain Boost Buddy already keeps the Lemon Squeezy API key in the Worker, never in the desktop app. That’s the pattern to repeat: secrets stay server-side."]],
   tasks:[
-    ["Write a one-page threat model per product: assets (payments, licence keys, children’s progress data), likely attackers, and the top five risks.","Brain Boost Buddy is used by children — weigh its data accordingly."],
+    ["Write a one-page threat model per product: assets (payments, licence keys, children’s progress data), likely attackers, and the top five risks.","Brain Boost Buddy is used by children, weigh its data accordingly."],
     ["Turn on secret scanning and push protection for every repository in both GitHub accounts.",""],
     ["Pin every third-party action to a commit SHA with the version as a comment, and let Dependabot keep them updated.",""],
     ["Set `permissions: {}` at the top of every workflow and grant each job only what it uses.",""],
@@ -532,7 +532,7 @@ var PHASES=[
     ["Enable Dependabot security updates and add `actions/dependency-review-action` to PR checks.",""],
     ["Run `zizmor` on `.github/workflows` in every repo and fix the high-severity findings.","zizmor is a static analyser for GitHub Actions workflows."],
     ["Generate an SBOM and build provenance for the web image, and verify it with `gh attestation verify` before deploy.",""],
-    ["Rotate every secret that was ever committed — starting with the web `.env.test` `CSRF_SECRET` — and record rotation dates.",""],
+    ["Rotate every secret that was ever committed, starting with the web `.env.test` `CSRF_SECRET`, and record rotation dates.",""],
     ["Test bashbop for broken access control on staging: with two accounts you own, can organiser A read or change organiser B’s events, guests or payouts by editing an id?",""],
     ["Review the licence Worker for abuse: rate limits, email enumeration through `/status`, and what an error response reveals.",""]
   ],
@@ -540,12 +540,12 @@ var PHASES=[
   quiz:[["A third-party action you use as `@v4` is compromised. What’s the blast radius, and what limits it?","It runs with that job’s `GITHUB_TOKEN` permissions and any secrets passed to the job. SHA pinning prevents the swap; scoped `permissions` and OIDC-only cloud access limit the damage."],
         ["You find a live API key in Git history. Order these: purge history, rotate the key, check usage logs.","Rotate first (it was compromised the moment it was pushed), then check the provider’s logs for misuse, then purge history as hygiene."],
         ["What’s the difference between an SBOM and provenance?","An SBOM lists the components inside an artifact; provenance attests which source commit and workflow built it. Together they answer ‘is this exactly what we built, from what?’"],
-        ["An organiser edits `/events/123/guests` to `/events/124/guests` and sees another organiser’s guests. Which OWASP category, and where’s the fix?","Broken Access Control (A01). The fix is a server-side ownership check on every request — hiding the link in the UI changes nothing."],
-        ["Why is `pull_request_target` combined with checking out the PR’s code dangerous?","It runs with the base repository’s secrets and a write-capable token while executing untrusted fork code — a direct path to stealing secrets."]],
-  res:["OWASP — Top 10 and ASVS","GitHub Docs — Security hardening for GitHub Actions","OpenSSF Scorecard","zizmor — docs.zizmor.sh","SLSA — slsa.dev"]
+        ["An organiser edits `/events/123/guests` to `/events/124/guests` and sees another organiser’s guests. Which OWASP category, and where’s the fix?","Broken Access Control (A01). The fix is a server-side ownership check on every request, hiding the link in the UI changes nothing."],
+        ["Why is `pull_request_target` combined with checking out the PR’s code dangerous?","It runs with the base repository’s secrets and a write-capable token while executing untrusted fork code, a direct path to stealing secrets."]],
+  res:["OWASP, Top 10 and ASVS","GitHub Docs, Security hardening for GitHub Actions","OpenSSF Scorecard","zizmor, docs.zizmor.sh","SLSA, slsa.dev"]
 },
 { id:"p6", short:"Observe", title:"Observability: hear about outages before users do", weeks:[28,30],
-  why:"Bashbop takes money through Stripe, Paystack and MTN MoMo. The September 2025 booking and payment recovery left a trail of hand-written SQL in the API repo — a sign the problem was found late and fixed by hand. This job makes the next one visible in minutes.",
+  why:"Bashbop takes money through Stripe, Paystack and MTN MoMo. The September 2025 booking and payment recovery left a trail of hand-written SQL in the API repo, a sign the problem was found late and fixed by hand. This job makes the next one visible in minutes.",
   terms:[["Logs, metrics, traces","What happened, how much, and where the time went."],["Structured logs","JSON lines with a request id you can search on."],["OpenTelemetry","Vendor-neutral instrumentation for NestJS, Prisma and Next.js."],["SLI / SLO","The measurement, and the target you promise."],["Error budget","How much failure the SLO allows before you stop shipping features."],["Symptom alerts","Page on ‘checkouts failing’, not ‘CPU 80%’."],["Runbook & postmortem","What to do now; what we learned after."]],
   flowTitle:"Follow one paid booking",
   flow:[["web","Checkout page","trace starts, request id created"],["api","Booking API","span: validate, price, reserve"],["provider","Stripe / Paystack","span: payment intent"],["webhook","Webhook","span: confirm booking"],["signal","Dashboards & alerts","SLO burn → phone"]],
@@ -566,16 +566,16 @@ var PHASES=[
   exit:["An outage reaches me through an alert before a user message.","I can follow any booking across web, API and payment provider.","Every alert links to a runbook."],
   quiz:[["Your SLO is 99.5% monthly and you’ve used 180 minutes of errors by day 12. What now?","You’ve spent ~83% of a 216-minute budget with 18 days left. Slow risky releases and prioritise reliability work until the burn rate is safe."],
         ["Why alert on symptoms instead of causes?","Users feel symptoms. CPU spikes may be harmless, while a broken webhook at low CPU loses money. Symptom alerts are fewer and always matter."],
-        ["What makes a postmortem ‘blameless’?","It asks how the system allowed the failure, not who caused it — so people share what really happened and the fixes target process and tooling."]],
-  res:["Google — Site Reliability Engineering, ch. 4 ‘Service Level Objectives’ (sre.google)","OpenTelemetry — JavaScript getting started","Next.js Docs — OpenTelemetry","Grafana Labs — Prometheus and Loki getting started"]
+        ["What makes a postmortem ‘blameless’?","It asks how the system allowed the failure, not who caused it, so people share what really happened and the fixes target process and tooling."]],
+  res:["Google, Site Reliability Engineering, ch. 4 ‘Service Level Objectives’ (sre.google)","OpenTelemetry, JavaScript getting started","Next.js Docs, OpenTelemetry","Grafana Labs, Prometheus and Loki getting started"]
 },
 { id:"p7", short:"Scale", title:"Reliability drills, then Kubernetes", weeks:[31,36],
-  why:"Prove the system survives failure — restore a backup, find the breaking point, kill a dependency on purpose. Only then learn Kubernetes: bashbop probably doesn’t need it yet, but the job market does, and you’ll understand it far better with everything above in place.",
+  why:"Prove the system survives failure, restore a backup, find the breaking point, kill a dependency on purpose. Only then learn Kubernetes: bashbop probably doesn’t need it yet, but the job market does, and you’ll understand it far better with everything above in place.",
   terms:[["RPO / RTO","How much data you can lose; how long you can be down."],["Restore testing","A backup you haven’t restored is a hope, not a backup."],["Load testing","k6 scripts that find the traffic level where things break."],["Game days","Planned failure in staging to test alerts and runbooks."],["Pod, Deployment, Service","Kubernetes’ unit of work, rollout controller and stable address."],["Probes","Readiness gates traffic; liveness restarts stuck pods."],["Helm & GitOps","Packaged manifests, synced from Git by Argo CD."]],
   flowTitle:"GitOps on Kubernetes",
   flow:[["ci","Image :sha","from {job:p4}’s pipeline"],["git","Manifests repo","PR bumps the image tag"],["sync","Argo CD","notices the change"],["cluster","Deployment","rolling update, probes gate traffic"],["edge","Ingress","routes bashbop traffic"]],
   hot:2,
-  callouts:[["info","Use `k3d` or `kind` locally first. A managed cluster costs real money every hour it runs."],["warn","The API repo has a `database-backups/` folder. Manual dumps in a repo are not a backup strategy — automate and test restores."]],
+  callouts:[["info","Use `k3d` or `kind` locally first. A managed cluster costs real money every hour it runs."],["warn","The API repo has a `database-backups/` folder. Manual dumps in a repo are not a backup strategy, automate and test restores."]],
   tasks:[
     ["Automate Postgres backups off the host; restore one into a scratch database and record RPO and RTO.",""],
     ["Schedule a monthly restore test and put it in the calendar.",""],
@@ -589,46 +589,46 @@ var PHASES=[
     ["Optional: book the AWS Solutions Architect Associate or CKA exam as a deadline.",""],
     ["Practise restoring Brain Boost Buddy’s staging D1 database with Time Travel.",""]
   ],
-  exit:["I’ve restored a real backup and know our RPO and RTO.","I know the traffic level where bashbop breaks, and what breaks first.","I can deploy bashbop to Kubernetes via GitOps — and argue whether we should."],
+  exit:["I’ve restored a real backup and know our RPO and RTO.","I know the traffic level where bashbop breaks, and what breaks first.","I can deploy bashbop to Kubernetes via GitOps, and argue whether we should."],
   quiz:[["RPO is 1 hour and RTO is 30 minutes. What does that promise?","You’ll lose at most one hour of data, and service will be back within 30 minutes of an incident."],
         ["Readiness vs liveness probe?","A failing readiness probe removes the pod from traffic but leaves it running; a failing liveness probe restarts the container."],
         ["Why deploy through Git (Argo CD) instead of `kubectl apply` from CI?","The cluster continuously matches Git, drift is corrected, every change is a reviewed commit, and rollback is a revert."]],
-  res:["Kubernetes Docs — Tutorials (kubernetes.io)","Burns, Beda, Hightower & Evenson — Kubernetes: Up & Running","Grafana k6 documentation","Argo CD — Getting Started","CNCF — CKA curriculum"]
+  res:["Kubernetes Docs, Tutorials (kubernetes.io)","Burns, Beda, Hightower & Evenson, Kubernetes: Up & Running","Grafana k6 documentation","Argo CD, Getting Started","CNCF, CKA curriculum"]
 },
 { id:"p12", short:"Capstone", title:"Capstone: a game day and a case study", weeks:[37,38],
-  why:"Prove it end to end. Someone else breaks staging for both products without telling you what or when; you detect it from alerts, run the incident, recover and write it up. Then turn the whole track into a case study with real numbers — for a hiring manager, an investor or your own next decision.",
-  terms:[["Game day","A planned, time-boxed exercise that injects real failures into a safe environment."],["Fault script","Scripted, reversible faults, so every break is repeatable and every undo is known."],["TTD / TTM","Time to detect and time to mitigate. Measure them from timestamps; don’t estimate."],["Incident roles","Commander decides and communicates; operators investigate. One person may hold two, on purpose."],["Blameless review","Asks how the system allowed the failure, not who caused it."],["Case study","Problem, constraints, decisions, results with numbers, and what you’d change."],["Evidence","PR links, dashboards and before/after metrics — claims a reader can check."]],
+  why:"Prove it end to end. Someone else breaks staging for both products without telling you what or when; you detect it from alerts, run the incident, recover and write it up. Then turn the whole track into a case study with real numbers, for a hiring manager, an investor or your own next decision.",
+  terms:[["Game day","A planned, time-boxed exercise that injects real failures into a safe environment."],["Fault script","Scripted, reversible faults, so every break is repeatable and every undo is known."],["TTD / TTM","Time to detect and time to mitigate. Measure them from timestamps; don’t estimate."],["Incident roles","Commander decides and communicates; operators investigate. One person may hold two, on purpose."],["Blameless review","Asks how the system allowed the failure, not who caused it."],["Case study","Problem, constraints, decisions, results with numbers, and what you’d change."],["Evidence","PR links, dashboards and before/after metrics, claims a reader can check."]],
   flowTitle:"The game day",
   flow:[["prep","Facilitator","chooses three faults and times"],["inject","Faults go live","unannounced, staging only"],["detect","Alerts fire","time to detect starts here"],["respond","Run the incident","roles, runbooks, updates"],["learn","Review","postmortems, tracked fixes"]],
   hot:3,
   callouts:[["warn","Staging only, with a written undo for every fault and a hard stop time. A game day that damages production is an incident, not an exercise."],["info","If nobody else can facilitate, let a script pick the faults and times at random and write them to a log you don’t open until the end."]],
   tasks:[
     ["Write the game-day plan: date, time box, facilitator, abort criteria, and the undo for every fault.",""],
-    ["Prepare at least three faults across both products — for example a wrong webhook secret on bashbop staging, a test feed whose `latest-mac.yml` names a missing file, and a staging Worker without its secret.",""],
+    ["Prepare at least three faults across both products, for example a wrong webhook secret on bashbop staging, a test feed whose `latest-mac.yml` names a missing file, and a staging Worker without its secret.",""],
     ["Confirm beforehand that each fault triggers an alert, so the day tests detection rather than luck.",""],
     ["Run the game day and record timestamps: injected, alert fired, incident declared, mitigated, resolved.",""],
     ["Post status updates at a fixed cadence during the incident, written as if customers were reading.",""],
     ["Write a blameless postmortem per fault using the template in this job’s worked example.",""],
     ["Turn every action item into a tracked issue with an owner and a due date.",""],
-    ["Write the case study: before/after architecture diagrams, key decisions linked to ADRs, and metrics — CI time, deploy frequency, rollback time, time to detect, time to mitigate, monthly cost.",""],
+    ["Write the case study: before/after architecture diagrams, key decisions linked to ADRs, and metrics, CI time, deploy frequency, rollback time, time to detect, time to mitigate, monthly cost.",""],
     ["Publish the case study and walk one person who will ask hard questions through it.",""],
     ["Book the certification that matches your next step: AWS Solutions Architect Associate, HashiCorp Terraform Associate or CKA.",""]
   ],
   exit:["Every fault was detected by an alert, not by me looking.","Each fault has a postmortem with tracked action items.","The case study shows real before/after numbers from both products."],
-  quiz:[["An alert fires 22 minutes after the fault and you mitigate 10 minutes later. Which do you improve first?","Detection — 22 of the 32 minutes of impact happened before anyone knew. Tighten the alert (burn-rate windows, a synthetic check) before speeding up the fix."],
+  quiz:[["An alert fires 22 minutes after the fault and you mitigate 10 minutes later. Which do you improve first?","Detection, 22 of the 32 minutes of impact happened before anyone knew. Tighten the alert (burn-rate windows, a synthetic check) before speeding up the fix."],
         ["Mid-incident you find the root cause, but the proper fix needs a code change. What now?","Mitigate first: roll back, flip a flag or restore known-good config. The root-cause fix follows once users are no longer affected."],
-        ["What makes a postmortem action item good?","Specific, owned, dated and preventive — ‘alert when webhook 4xx rate exceeds 5% for 10 minutes, owner: you, due 30 Sep’ — never ‘be more careful’."],
+        ["What makes a postmortem action item good?","Specific, owned, dated and preventive, ‘alert when webhook 4xx rate exceeds 5% for 10 minutes, owner: you, due 30 Sep’, never ‘be more careful’."],
         ["What turns a case study from a list of tools into evidence?","Numbers against a baseline (CI 14 → 6 minutes), decisions with their trade-offs, links to the actual PRs and dashboards, and an honest ‘what I’d change’."],
         ["Why confirm alerts fire before the game day?","Otherwise a silent fault can’t be told apart from a broken exercise, and you learn nothing about your monitoring."]],
-  res:["Google SRE Workbook — ‘Incident Response’ (sre.google)","PagerDuty — Incident Response documentation (response.pagerduty.com)","AWS — Fault Injection Service and game days","Atlassian — Incident postmortem templates"]
+  res:["Google SRE Workbook, ‘Incident Response’ (sre.google)","PagerDuty, Incident Response documentation (response.pagerduty.com)","AWS, Fault Injection Service and game days","Atlassian, Incident postmortem templates"]
 },
 { id:"p13", part:"job", short:"K8s prod", title:"Production Kubernetes on a managed cluster", weeks:[39,43],
-  why:"{job:p7} ran bashbop on a laptop cluster. Production-grade is what hiring managers actually probe: a managed cluster, ingress with TLS, autoscaling that doesn’t flap, pods that survive node drains and upgrades, per-pod cloud identity, secrets from a secrets manager, RBAC, in-cluster monitoring and GitOps you can roll back. Build it for bashbop staging, run it for a month, then tear it down — the bill is the reason not to keep it.",
-  terms:[["Managed control plane","EKS runs the API server and etcd; you run the nodes and everything on them."],["Requests & limits","Requests drive scheduling and autoscaling; limits cap usage. Wrong requests break both."],["HPA","Scales replicas on CPU, memory or custom metrics — measured against requests."],["Karpenter / Cluster Autoscaler","Adds nodes when pods can’t be scheduled and removes empty ones."],["PodDisruptionBudget","Keeps a minimum number of pods running during drains and upgrades."],["Ingress / Gateway API","Routes external HTTP(S) to Services; a controller creates the real load balancer."],["RBAC & Pod Identity","Who may do what in the cluster, and which AWS role a pod gets — without node-wide credentials."],["External Secrets","Syncs secrets from AWS Secrets Manager into Kubernetes Secrets."]],
+  why:"{job:p7} ran bashbop on a laptop cluster. Production-grade is what hiring managers actually probe: a managed cluster, ingress with TLS, autoscaling that doesn’t flap, pods that survive node drains and upgrades, per-pod cloud identity, secrets from a secrets manager, RBAC, in-cluster monitoring and GitOps you can roll back. Build it for bashbop staging, run it for a month, then tear it down, the bill is the reason not to keep it.",
+  terms:[["Managed control plane","EKS runs the API server and etcd; you run the nodes and everything on them."],["Requests & limits","Requests drive scheduling and autoscaling; limits cap usage. Wrong requests break both."],["HPA","Scales replicas on CPU, memory or custom metrics, measured against requests."],["Karpenter / Cluster Autoscaler","Adds nodes when pods can’t be scheduled and removes empty ones."],["PodDisruptionBudget","Keeps a minimum number of pods running during drains and upgrades."],["Ingress / Gateway API","Routes external HTTP(S) to Services; a controller creates the real load balancer."],["RBAC & Pod Identity","Who may do what in the cluster, and which AWS role a pod gets, without node-wide credentials."],["External Secrets","Syncs secrets from AWS Secrets Manager into Kubernetes Secrets."]],
   flowTitle:"A deploy on a production cluster",
   flow:[["git","PR bumps the tag","manifests repository"],["gitops","Argo CD sync","staging auto, production manual"],["rollout","Deployment","maxUnavailable 0, readiness gates"],["scale","HPA + Karpenter","more pods, then more nodes"],["safety","PDB + probes","drains never drop below minimum"]],
   hot:2,
-  callouts:[["warn","An EKS control plane bills hourly on top of nodes, load balancers and NAT. Give the staging cluster a budget alarm and a teardown date before you create it."],["info","Keep the manifests from {job:p7} — this job hardens them rather than starting again."]],
+  callouts:[["warn","An EKS control plane bills hourly on top of nodes, load balancers and NAT. Give the staging cluster a budget alarm and a teardown date before you create it."],["info","Keep the manifests from {job:p7}, this job hardens them rather than starting again."]],
   tasks:[
     ["Provision a staging EKS cluster with Terraform (for example the `terraform-aws-modules/eks` module): private nodes across two AZs, with a managed node group or Karpenter.",""],
     ["Install the AWS Load Balancer Controller and expose bashbop-web through an Ingress with a certificate from ACM.",""],
@@ -644,19 +644,19 @@ var PHASES=[
   ],
   exit:["A node drain or cluster upgrade causes zero failed requests.","Pods get AWS access and secrets without node-wide credentials or secrets in Git.","I can explain every object in the bashbop namespace and why it’s there."],
   quiz:[["Pods are `Pending` with ‘0/3 nodes are available: insufficient memory’. What are the two fixes, and which does Karpenter do?","Lower an over-stated memory request, or add capacity. Karpenter (or Cluster Autoscaler) adds a node that fits the pod; it can’t fix a wrong request."],
-        ["Your HPA never scales under load. What do you check first?","That pods have CPU requests (utilisation is a percentage of the request) and metrics-server is running — `kubectl get hpa` shows `<unknown>` targets when metrics are missing."],
+        ["Your HPA never scales under load. What do you check first?","That pods have CPU requests (utilisation is a percentage of the request) and metrics-server is running, `kubectl get hpa` shows `<unknown>` targets when metrics are missing."],
         ["Why can a `maxUnavailable: 0` rollout still drop requests?","Terminating pods can still receive traffic while the load balancer deregisters them. Without readiness probes, a `preStop` delay and graceful shutdown, requests hit pods that are stopping."],
-        ["What doesn’t a PodDisruptionBudget protect against?","Involuntary disruption — a node crash, the OOM killer, a zone outage. It only limits voluntary evictions such as drains and upgrades."],
+        ["What doesn’t a PodDisruptionBudget protect against?","Involuntary disruption, a node crash, the OOM killer, a zone outage. It only limits voluntary evictions such as drains and upgrades."],
         ["Why per-pod AWS roles instead of an IAM role on the node?","Every pod on a node shares the node role, so one compromised pod gets all its permissions. Pod Identity or IRSA scopes access to the workload that needs it."]],
-  res:["Kubernetes Docs — Production environment; Specifying a Disruption Budget","AWS — Amazon EKS Best Practices Guide","Karpenter documentation","External Secrets Operator documentation","kube-prometheus-stack Helm chart"]
+  res:["Kubernetes Docs, Production environment; Specifying a Disruption Budget","AWS, Amazon EKS Best Practices Guide","Karpenter documentation","External Secrets Operator documentation","kube-prometheus-stack Helm chart"]
 },
 { id:"p14", part:"job", short:"Enterprise", title:"Enterprise tooling: Ansible and Jenkins", weeks:[44,46],
   why:"Many DevOps job ads still list Ansible and Jenkins, because large companies run fleets of long-lived servers and years of Jenkins pipelines. You don’t need to love them; you need to read an existing playbook or Jenkinsfile, change it safely, and explain how they compare with Terraform and GitHub Actions. Learn both by rebuilding things you already have.",
-  terms:[["Idempotency","Running a playbook twice changes nothing the second time — Ansible’s core promise."],["Inventory & groups","Which hosts exist and how they’re grouped: web, api, staging."],["Modules vs shell","`ansible.builtin.apt` knows the desired state; `shell` just runs commands and reports ‘changed’ every time."],["Roles & handlers","Reusable task bundles; handlers run once at the end when notified, such as reloading Nginx."],["Ansible Vault","Encrypts secrets inside the repository; the vault password lives outside it."],["Declarative Jenkinsfile","`pipeline { agent … stages { … } }` — Jenkins pipelines as code."],["Agents & credentials","Where builds run, and secrets bound into steps with `withCredentials`."],["Shared libraries","Reusable pipeline code across repositories — like reusable workflows in Actions."]],
+  terms:[["Idempotency","Running a playbook twice changes nothing the second time, Ansible’s core promise."],["Inventory & groups","Which hosts exist and how they’re grouped: web, api, staging."],["Modules vs shell","`ansible.builtin.apt` knows the desired state; `shell` just runs commands and reports ‘changed’ every time."],["Roles & handlers","Reusable task bundles; handlers run once at the end when notified, such as reloading Nginx."],["Ansible Vault","Encrypts secrets inside the repository; the vault password lives outside it."],["Declarative Jenkinsfile","`pipeline { agent … stages { … } }`, Jenkins pipelines as code."],["Agents & credentials","Where builds run, and secrets bound into steps with `withCredentials`."],["Shared libraries","Reusable pipeline code across repositories, like reusable workflows in Actions."]],
   flowTitle:"Where each tool fits",
   flow:[["provision","Terraform","creates the VM and network"],["configure","Ansible","packages, users, Nginx, PM2"],["build","Jenkins or Actions","test, build, package"],["deploy","Ansible or GitOps","roll out to hosts or a cluster"],["verify","Smoke checks","health, logs, metrics"]],
   hot:1,
-  callouts:[["info","The PM2 + Nginx host from {job:p1} is a perfect Ansible target: turn that hand-configured server into a playbook you can rerun on a blank VM."],["warn","Jenkins plugins are a well-known attack surface. Run Jenkins in a throwaway local container for this job — never on a public server."]],
+  callouts:[["info","The PM2 + Nginx host from {job:p1} is a perfect Ansible target: turn that hand-configured server into a playbook you can rerun on a blank VM."],["warn","Jenkins plugins are a well-known attack surface. Run Jenkins in a throwaway local container for this job, never on a public server."]],
   tasks:[
     ["Install Ansible and write an inventory for a throwaway staging VM (or two local VMs with Multipass).",""],
     ["Write a playbook that configures the API host from {job:p1}: Node.js, a service user, PM2, the Nginx site and firewall rules.",""],
@@ -667,19 +667,19 @@ var PHASES=[
     ["Run Jenkins locally in Docker (`jenkins/jenkins:lts`) and create a multibranch pipeline for bashbop-event-web.",""],
     ["Write a declarative Jenkinsfile mirroring the PR gate from {job:p2}: install, then lint, types and tests in parallel, with JUnit reports.",""],
     ["Bind a credential with `withCredentials` and prove it’s masked in the console log.",""],
-    ["Write a one-page comparison: Jenkins vs GitHub Actions, and Ansible vs Terraform vs containers — when you’d pick each.",""]
+    ["Write a one-page comparison: Jenkins vs GitHub Actions, and Ansible vs Terraform vs containers, when you’d pick each.",""]
   ],
   exit:["My playbook builds the API host from a blank VM and reruns with zero changes.","I can read an unfamiliar Jenkinsfile and explain every stage, agent and credential.","I can explain when Ansible, Terraform or Kubernetes is the right tool."],
   quiz:[["A task runs `shell: apt-get install -y nginx` and reports ‘changed’ every run. Why does that matter, and what’s the fix?","It breaks idempotency: handlers fire every time and real drift hides in the noise. Use `ansible.builtin.apt` with `state: present`, which reports changed only when it installs."],
         ["Terraform or Ansible to create an EC2 instance and install Nginx on it?","Terraform creates and tracks the instance in state; Ansible configures what runs inside it. Ansible can create cloud resources, but without state it can’t plan changes or detect drift the same way."],
-        ["A secret appears in the Jenkins log even though it’s inside `withCredentials`. How?","Masking replaces only the exact string. If a step transforms it — base64, URL-encoding, splitting — the printed text no longer matches and isn’t masked."],
+        ["A secret appears in the Jenkins log even though it’s inside `withCredentials`. How?","Masking replaces only the exact string. If a step transforms it, base64, URL-encoding, splitting, the printed text no longer matches and isn’t masked."],
         ["What’s Jenkins’ equivalent of a reusable workflow, and of a runner label?","A shared library (`@Library`) for reusable pipeline code, and an agent label (`agent { label 'linux' }`) to choose where it runs."],
-        ["Why do handlers run at the end of a play rather than immediately?","So several config changes trigger one reload instead of many — and only if something actually changed."]],
-  res:["Ansible Docs — Getting started and tips for playbooks","ansible-lint and Molecule documentation","Jenkins Docs — Pipeline syntax","Jenkins Docs — Using credentials","Jeff Geerling — Ansible for DevOps"]
+        ["Why do handlers run at the end of a play rather than immediately?","So several config changes trigger one reload instead of many, and only if something actually changed."]],
+  res:["Ansible Docs, Getting started and tips for playbooks","ansible-lint and Molecule documentation","Jenkins Docs, Pipeline syntax","Jenkins Docs, Using credentials","Jeff Geerling, Ansible for DevOps"]
 },
 { id:"p15", part:"job", short:"Certify", title:"Certification: prove it under exam conditions", weeks:[47,50],
   why:"A certification won’t get you hired on its own, but it gets a CV past filters and forces you to fill the gaps you’ve skipped. Pick the one your target roles ask for: AWS Solutions Architect – Associate for cloud-heavy roles, or CKA for Kubernetes and platform roles. Most of this track maps onto both; this job turns that into a study plan and timed practice.",
-  terms:[["SAA-C03 format","65 questions in 130 minutes, pass at 720/1000. Domains: secure 30%, resilient 26%, high-performing 24%, cost-optimised 20%."],["CKA format","15–20 hands-on tasks in live clusters over two hours; pass at 66%. Troubleshooting is 30%."],["Blueprint mapping","Every exam objective linked to the job, lab or drill where you practised it."],["Timed practice","Full-length practice exams under the real time limit, reviewed question by question."],["Imperative speed","`kubectl create … --dry-run=client -o yaml` generates YAML faster than typing it."],["Mistakes log","What you believed, what’s true, and the doc link — reviewed daily."],["Exam logistics","ID rules, online proctoring room checks, and a booked date as the deadline."]],
+  terms:[["SAA-C03 format","65 questions in 130 minutes, pass at 720/1000. Domains: secure 30%, resilient 26%, high-performing 24%, cost-optimised 20%."],["CKA format","15–20 hands-on tasks in live clusters over two hours; pass at 66%. Troubleshooting is 30%."],["Blueprint mapping","Every exam objective linked to the job, lab or drill where you practised it."],["Timed practice","Full-length practice exams under the real time limit, reviewed question by question."],["Imperative speed","`kubectl create … --dry-run=client -o yaml` generates YAML faster than typing it."],["Mistakes log","What you believed, what’s true, and the doc link, reviewed daily."],["Exam logistics","ID rules, online proctoring room checks, and a booked date as the deadline."]],
   flowTitle:"From track to exam",
   flow:[["map","Blueprint","objectives → track jobs"],["gaps","Weak areas","what the track didn’t cover"],["study","Daily reps","docs, labs, flashcards"],["practice","Timed exams","80%+ twice in a row"],["sit","Exam day","booked, checked, rested"]],
   hot:3,
@@ -696,21 +696,21 @@ var PHASES=[
     ["Score at least 80% on two consecutive timed practice runs before exam week.",""],
     ["Run an exam-day check: ID, room and webcam rules, a stable connection and a quiet slot.",""]
   ],
-  exit:["Every exam objective is mapped to something I’ve done or studied.","I scored at least 80% on two consecutive timed practice runs.","The exam is booked — or passed."],
-  quiz:[["An SAA question asks for the most cost-effective storage for logs you rarely read but must keep for seven years. What’s the likely answer?","S3 with a lifecycle rule moving objects to S3 Glacier Deep Archive — the cheapest storage for rarely accessed long-term data, accepting retrieval that takes hours."],
+  exit:["Every exam objective is mapped to something I’ve done or studied.","I scored at least 80% on two consecutive timed practice runs.","The exam is booked, or passed."],
+  quiz:[["An SAA question asks for the most cost-effective storage for logs you rarely read but must keep for seven years. What’s the likely answer?","S3 with a lifecycle rule moving objects to S3 Glacier Deep Archive, the cheapest storage for rarely accessed long-term data, accepting retrieval that takes hours."],
         ["In the CKA a pod won’t start and you have eight minutes. What’s your order?","`kubectl describe pod` for events, `kubectl logs --previous` if it crashed, then the image, requests, node taints and PVC binding. Events usually name the cause within a minute."],
         ["Why generate manifests with `--dry-run=client -o yaml` in the CKA?","It’s faster and avoids indentation mistakes: you edit generated YAML instead of writing it from memory under time pressure."],
-        ["SAA: a relational database must survive losing an Availability Zone with no data loss. Which feature?","RDS Multi-AZ — a synchronous standby in another AZ with automatic failover. Read replicas are asynchronous, so they can lose recent writes."],
+        ["SAA: a relational database must survive losing an Availability Zone with no data loss. Which feature?","RDS Multi-AZ, a synchronous standby in another AZ with automatic failover. Read replicas are asynchronous, so they can lose recent writes."],
         ["Why map objectives to your own labs instead of just following a course?","Exam scenarios test judgement. Linking each objective to something you built makes recall concrete and exposes the gaps a course would skim past."]],
-  res:["AWS — Certified Solutions Architect – Associate exam guide","CNCF — CKA curriculum (github.com/cncf/curriculum)","Kubernetes Docs — kubectl quick reference","killer.sh — CKA simulator","AWS Skill Builder — official practice question sets"]
+  res:["AWS, Certified Solutions Architect – Associate exam guide","CNCF, CKA curriculum (github.com/cncf/curriculum)","Kubernetes Docs, kubectl quick reference","killer.sh, CKA simulator","AWS Skill Builder, official practice question sets"]
 },
 { id:"p16", part:"job", short:"Interview", title:"Job search & interviews: turn the work into offers", weeks:[51,54],
   why:"DevOps interviews test three things: can you debug under pressure, can you design something sensible and explain the trade-offs, and have you actually run production. You have two live products as evidence. This job turns that into a CV with measured results, stories you can tell in two minutes, and practice with people who push back.",
-  terms:[["STAR stories","Situation, task, action, result — with a number in the result."],["Troubleshooting round","A live broken system or scenario; they grade your method more than the fix."],["System design round","Design a CI/CD platform, logging pipeline or zero-downtime migration, talking through trade-offs."],["Take-home task","Usually Terraform, a pipeline or a Dockerfile, judged on clarity, safety and the README."],["Evidence bullets","Action, tool, measured result — ‘cut CI from 14 to 6 minutes’, not ‘worked on CI’."],["Mock interviews","Practice with someone who interrupts, challenges and scores you."],["Pipeline tracking","Applications, stages, follow-ups and outcomes in one sheet, reviewed weekly."]],
+  terms:[["STAR stories","Situation, task, action, result, with a number in the result."],["Troubleshooting round","A live broken system or scenario; they grade your method more than the fix."],["System design round","Design a CI/CD platform, logging pipeline or zero-downtime migration, talking through trade-offs."],["Take-home task","Usually Terraform, a pipeline or a Dockerfile, judged on clarity, safety and the README."],["Evidence bullets","Action, tool, measured result, ‘cut CI from 14 to 6 minutes’, not ‘worked on CI’."],["Mock interviews","Practice with someone who interrupts, challenges and scores you."],["Pipeline tracking","Applications, stages, follow-ups and outcomes in one sheet, reviewed weekly."]],
   flowTitle:"A typical DevOps hiring loop",
   flow:[["screen","Recruiter call","motivation, salary, logistics"],["technical","Troubleshooting","live scenario, thinking aloud"],["design","System design","CI/CD or platform trade-offs"],["behavioural","Stories","incidents, conflict, ownership"],["offer","Decision","references, negotiation"]],
   hot:1,
-  callouts:[["info","Your capstone postmortem and case study from {job:p12} are your strongest interview material: a real incident, measured, with what you changed."],["warn","Never show bashbop or Brain Boost Buddy secrets, customer data or internal URLs in a take-home or screen share — sanitise every example first."]],
+  callouts:[["info","Your capstone postmortem and case study from {job:p12} are your strongest interview material: a real incident, measured, with what you changed."],["warn","Never show bashbop or Brain Boost Buddy secrets, customer data or internal URLs in a take-home or screen share, sanitise every example first."]],
   tasks:[
     ["Rewrite your CV around evidence: at least five bullets from this track, each with a measured before/after number.",""],
     ["Update your LinkedIn headline and About section for the roles you want, and feature the case study.",""],
@@ -724,12 +724,12 @@ var PHASES=[
     ["After every real interview, write down each question and a better answer, and practise it.",""]
   ],
   exit:["My CV has at least five evidence-backed bullets from this track.","I’ve done design, troubleshooting and behavioural mocks and acted on the feedback.","I apply every week, with a tracker and follow-ups."],
-  quiz:[["‘Tell me about an outage.’ What must your answer include?","What broke and the customer impact, how and how quickly it was detected, what you did first to mitigate, the root cause, and what you changed so it can’t recur — with numbers."],
+  quiz:[["‘Tell me about an outage.’ What must your answer include?","What broke and the customer impact, how and how quickly it was detected, what you did first to mitigate, the root cause, and what you changed so it can’t recur, with numbers."],
         ["In a design round they mention a tool you don’t know. What do you do?","Say so briefly, describe what you need that component to do, and design with a tool you know that fills the role. Clear reasoning beats name-dropping."],
         ["‘The website is slow.’ How do you open a troubleshooting round?","Clarify before touching anything: all users or some, since when, what changed, which pages. Then work down the request path from the outside in, stating each hypothesis and the check that tests it."],
-        ["Why put numbers in CV bullets?","They make impact checkable and comparable: ‘rollback from 40 to 4 minutes’ shows scale and skill in one line — and invites a follow-up you’re ready for."],
+        ["Why put numbers in CV bullets?","They make impact checkable and comparable: ‘rollback from 40 to 4 minutes’ shows scale and skill in one line, and invites a follow-up you’re ready for."],
         ["What’s a strong question to ask them at the end?","‘Walk me through your last incident and what changed afterwards.’ It reveals on-call health, blame culture and whether reviews lead to action."]],
-  res:["Google SRE Book — ‘Being On-Call’ and ‘Postmortem Culture’","Alex Xu — System Design Interview, volume 1","Kim, Humble, Debois, Willis & Forsgren — The DevOps Handbook","Peer mock-interview platforms, or a local DevOps meetup","Your own capstone case study"]
+  res:["Google SRE Book, ‘Being On-Call’ and ‘Postmortem Culture’","Alex Xu, System Design Interview, volume 1","Kim, Humble, Debois, Willis & Forsgren, The DevOps Handbook","Peer mock-interview platforms, or a local DevOps meetup","Your own capstone case study"]
 }
 ];
 
@@ -739,15 +739,15 @@ var EXTRA={
     terms:[["Bash safety","`set -euo pipefail`, quoted variables and `trap` for clean-up."],["Python for glue","Parsing logs and calling APIs once Bash gets awkward."],["systemd timers","Scheduled scripts with logs you can find via `journalctl`."]],
     tasks:[["Write `scripts/ops/check-stack.sh` that checks the web app, the API’s `/api/v1/health` and the Brain Boost Buddy update feed, exiting non-zero on any failure.","The second file in this job’s worked example is a starting point."],["Write a Python script that reads an Nginx access log and prints the ten paths returning the most 5xx responses.",""],["Run `check-stack.sh` every five minutes from a systemd timer and find its output with `journalctl -u`.",""]],
     exit:["I automate repeated checks with scripts instead of doing them by hand."],
-    quiz:[["Your Bash script ‘succeeded’, but a `curl` inside it failed. What was probably missing?","`curl -f` (treat HTTP errors as failures) and `set -e`, plus `set -o pipefail` if the output was piped — otherwise a pipeline’s status is its last command’s."],["What does Cloudflare error 521 tell you that a plain 502 doesn’t?","521 means Cloudflare couldn’t connect to your origin at all. A 502 can come from Cloudflare or from your own Nginx — the error page and the `server` header show which."]]},
-  p2:{quiz:[["Your required check is named `checks`. You rename the job to `quality`. What happens to PRs?","The ruleset keeps waiting for a `checks` status that never reports (‘Expected — waiting for status’), so merges block. Update the ruleset in the same change."],["A job is skipped by an `if:` condition; a whole workflow is skipped by a `paths` filter. How does each affect a required check?","A job skipped by `if:` reports success. A workflow that never starts reports nothing, so a required check from it stays pending."]]},
-  p8:{quiz:[["The mac job was green on v2.3.1 and red from v2.4.0. What do you compare before touching the certificate?","The runner image version at the top of both logs, and `electron-builder` in `package-lock.json` between the tags — and whether v2.3.1 signed at all or skipped signing."],["A parent on 2.5.0 never gets 2.5.2, but fresh installs work. Where do you look?","The feed URL and channel that 2.5.0 was built with, the `version` and `sha512` in the `latest*.yml` it reads, and 2.5.0’s own updater code — old builds only ever run the update logic they shipped with."]]},
+    quiz:[["Your Bash script ‘succeeded’, but a `curl` inside it failed. What was probably missing?","`curl -f` (treat HTTP errors as failures) and `set -e`, plus `set -o pipefail` if the output was piped, otherwise a pipeline’s status is its last command’s."],["What does Cloudflare error 521 tell you that a plain 502 doesn’t?","521 means Cloudflare couldn’t connect to your origin at all. A 502 can come from Cloudflare or from your own Nginx, the error page and the `server` header show which."]]},
+  p2:{quiz:[["Your required check is named `checks`. You rename the job to `quality`. What happens to PRs?","The ruleset keeps waiting for a `checks` status that never reports (‘Expected, waiting for status’), so merges block. Update the ruleset in the same change."],["A job is skipped by an `if:` condition; a whole workflow is skipped by a `paths` filter. How does each affect a required check?","A job skipped by `if:` reports success. A workflow that never starts reports nothing, so a required check from it stays pending."]]},
+  p8:{quiz:[["The mac job was green on v2.3.1 and red from v2.4.0. What do you compare before touching the certificate?","The runner image version at the top of both logs, and `electron-builder` in `package-lock.json` between the tags, and whether v2.3.1 signed at all or skipped signing."],["A parent on 2.5.0 never gets 2.5.2, but fresh installs work. Where do you look?","The feed URL and channel that 2.5.0 was built with, the `version` and `sha512` in the `latest*.yml` it reads, and 2.5.0’s own updater code, old builds only ever run the update logic they shipped with."]]},
   p3:{quiz:[["A container restarts every few seconds with exit code 137. What happened?","It received SIGKILL (128 + 9), usually from the out-of-memory killer at the memory limit. `docker inspect` shows `OOMKilled: true`."],["Why does editing app code rebuild in seconds, but editing `package.json` takes minutes?","Only layers from the first changed instruction onward rebuild. Dependencies install in an early layer keyed on `package.json` and the lockfile, so only dependency changes invalidate it."]]},
-  p4:{quiz:[["Production breaks after a release that included a migration. Roll back or roll forward?","Roll the app back only if the migration is backward compatible. If it dropped or renamed something the old version needs, roll forward with a fix — the reason for expand–contract."],["What does a canary release give you that blue-green doesn’t?","Gradual exposure: a small share of real traffic hits the new version first, so a bad release hurts fewer users. Blue-green switches everyone at once, but switches back just as fast."]]},
+  p4:{quiz:[["Production breaks after a release that included a migration. Roll back or roll forward?","Roll the app back only if the migration is backward compatible. If it dropped or renamed something the old version needs, roll forward with a fix, the reason for expand–contract."],["What does a canary release give you that blue-green doesn’t?","Gradual exposure: a small share of real traffic hits the new version first, so a bad release hurts fewer users. Blue-green switches everyone at once, but switches back just as fast."]]},
   p9:{quiz:[["`startTrial` uses one `INSERT OR IGNORE … WHERE NOT EXISTS` statement. What bug does that prevent?","A race. With a separate ‘check this device’ query followed by an insert, two parallel activations could both see no trial and both insert. One statement makes check and insert atomic."],["A Worker works in `wrangler dev` but throws on an undefined binding after `wrangler deploy --env production`. Why?","Bindings don’t inherit into environments. The `[env.production]` block has to redeclare every KV, D1 and R2 binding, and secrets must be set per environment."]]},
-  p5:{quiz:[["After renaming a resource block, `plan` wants to destroy and recreate a DNS record. How do you rename safely?","Add a `moved` block from the old address to the new one (or run `terraform state mv`), then re-plan until it shows no changes."],["What should never go in committed Terraform variables — and what still needs protecting even then?","Secrets such as API tokens and database passwords; pass them via environment variables or a secrets manager. State can still contain secret values, so the state bucket must be private too."]]},
+  p5:{quiz:[["After renaming a resource block, `plan` wants to destroy and recreate a DNS record. How do you rename safely?","Add a `moved` block from the old address to the new one (or run `terraform state mv`), then re-plan until it shows no changes."],["What should never go in committed Terraform variables, and what still needs protecting even then?","Secrets such as API tokens and database passwords; pass them via environment variables or a secrets manager. State can still contain secret values, so the state bucket must be private too."]]},
   p6:{title:"Observability & on-call: hear about outages before users do",
-    terms:[["Severity levels","SEV1 payments down for everyone, SEV2 degraded, SEV3 minor — each with a response time."],["Incident commander","One person coordinates and decides while others fix. Even solo, name the role."],["Status page","Where customers see what’s happening without emailing you."]],
+    terms:[["Severity levels","SEV1 payments down for everyone, SEV2 degraded, SEV3 minor, each with a response time."],["Incident commander","One person coordinates and decides while others fix. Even solo, name the role."],["Status page","Where customers see what’s happening without emailing you."]],
     tasks:[["Write a severity matrix for both products with example incidents and target response times.",""],["Route alerts by severity: SEV1 reaches your phone at any hour; SEV3 waits for working hours.",""],["Set up a status page for bashbop and Brain Boost Buddy and practise posting an update.",""],["Run a 30-minute tabletop exercise: ‘Paystack webhooks failing on a Friday night’, using your runbook.",""]],
     exit:["Every alert has a severity, and a SEV1 reaches me within five minutes."],
     quiz:[["Payments fail for 3% of customers in one country. Which severity?","Probably SEV2: a real, revenue-affecting degradation for a segment, not a full outage. Severity follows customer impact, not how hard the bug looks."],["Why define incident roles for a one-person team?","Under stress you’ll switch between fixing and communicating and do both badly. Deciding in advance when to post updates and who else to call is the point."]]},
@@ -755,7 +755,7 @@ var EXTRA={
     terms:[["WAL & PITR","Postgres logs every change to a write-ahead log; replaying it restores to a chosen second."],["Connection pooling","PgBouncer or Prisma’s pool stops hundreds of requests opening hundreds of connections."],["Read replicas","Copies for reporting and dashboards, slightly behind the primary."],["pg_stat_statements","Shows which queries consume the most total time."]],
     tasks:[["Enable point-in-time recovery on the production database, and restore staging to a chosen second.",""],["Enable `pg_stat_statements`, list the ten queries with the highest total time, and fix one.",""],["Size Prisma’s `connection_limit` against Postgres `max_connections` for your peak number of API instances, including during deploys.",""],["Replace ad-hoc production SQL with reviewed, transactional runbooks and a read-only role for investigation.","The September 2025 recovery scripts show why."]],
     exit:["Nobody runs unreviewed writes against production; investigation uses a read-only role."],
-    quiz:[["Four API instances each use a pool of 20, and Postgres allows 100 connections. What breaks during a rolling deploy?","Old and new instances overlap — up to eight × 20 = 160 connections — so new ones fail with ‘too many connections’. Lower the pool size, add PgBouncer, or raise the limit."],["Why restore point-in-time into a new database instead of over production?","You keep the good writes made after the incident, can compare safely, and copy back only what was lost. Restoring over production destroys newer data."]]}
+    quiz:[["Four API instances each use a pool of 20, and Postgres allows 100 connections. What breaks during a rolling deploy?","Old and new instances overlap, up to eight × 20 = 160 connections, so new ones fail with ‘too many connections’. Lower the pool size, add PgBouncer, or raise the limit."],["Why restore point-in-time into a new database instead of over production?","You keep the good writes made after the incident, can compare safely, and copy back only what was lost. Restoring over production destroys newer data."]]}
 };
 PHASES.forEach(function(p){
   var e=EXTRA[p.id];if(!e)return;
@@ -764,14 +764,14 @@ PHASES.forEach(function(p){
 });
 
 var FINDINGS=[
-  ["risk","bashbop","Type check (`tsc`) only runs on PRs into main — and `next.config.mjs` sets `ignoreBuildErrors: true`, so the build won’t catch type errors on develop PRs either.","p2"],
+  ["risk","bashbop","Type check (`tsc`) only runs on PRs into main, and `next.config.mjs` sets `ignoreBuildErrors: true`, so the build won’t catch type errors on develop PRs either.","p2"],
   ["risk","bashbop","A non-dummy `CSRF_SECRET` is committed in web `.env.test`.","p2"],
   ["risk","Brain Boost Buddy","Release CI has failed on every tag since v2.4.0: the Mac signing step can’t unlock the certificate.","p8"],
   ["warn","bashbop","Workflows use Node 18, 20 and 22; Node 18 is out of security support.","p2"],
   ["warn","bashbop","No workflow deploys the web app; the Dockerfile is never built in CI.","p4"],
   ["warn","Brain Boost Buddy","Releases follow a hand-run checklist: local Mac build, manual R2 upload, site links edited by hand.","p8"],
   ["warn","Brain Boost Buddy","The licence Worker is deployed by hand and its hard rate limit is a dashboard rule.","p9"],
-  ["warn","bashbop","API production runs under PM2 behind Nginx per docs — not described as code.","p5"],
+  ["warn","bashbop","API production runs under PM2 behind Nginx per docs, not described as code.","p5"],
   ["warn","bashbop","Sept 2025 booking/payment recovery lives as ad-hoc SQL files in the API root.","p6"],
   ["info","Brain Boost Buddy","Smoke tests only run when a tag is pushed, not on PRs; the iOS app has no CI.","p2"],
   ["info","bashbop","`bundle-size.yml` builds both main and the PR on every PR, with no build cache.","p2"],
@@ -805,12 +805,12 @@ function timeline(id,rows,bars,ticks,marks,label){
 }
 var HOW={
   p1:{title:"What happens between a click and a 200",
-    caption:"Eleven messages for one API call. Every lane is a place the request can fail — and a place you can test on its own with `dig`, `curl --resolve` or `curl http://127.0.0.1`.",
+    caption:"Eleven messages for one API call. Every lane is a place the request can fail, and a place you can test on its own with `dig`, `curl --resolve` or `curl http://127.0.0.1`.",
     points:[["DNS answers with Cloudflare, not you","A proxied record returns edge IPs, so `dig` never shows your server. If your origin IP leaks, attackers can skip Cloudflare entirely."],["Two TLS connections, not one","Browser to edge uses Cloudflare’s certificate; edge to origin uses yours. ‘Full (strict)’ makes Cloudflare verify the second one."],["Nginx is a second client","It opens its own connection to the app. A 502 means that hop failed, even when DNS and TLS are fine."],["Every hop leaves evidence","`cf-ray` identifies the edge request; `CF-Connecting-IP` carries the real client IP into your logs."]],
     svg:function(){return seq("hw1",["Browser","DNS resolver","Cloudflare edge","Nginx","bashbop-api"],[[0,1,"A? api host"],[1,0,"Cloudflare edge IPs"],[0,2,"TCP + TLS 1.3 handshake"],[2,2,"edge certificate"],[0,2,"GET /api/v1/events"],[2,3,"new TLS to origin (Full strict)","hot"],[3,4,"proxy_pass 127.0.0.1:9999"],[4,4,"auth, query Postgres"],[4,3,"200 JSON"],[3,2,"200"],[2,0,"200 + cf-ray"]],"Sequence of one API request: DNS returns Cloudflare, the browser does TLS with the edge, the edge opens a second TLS connection to Nginx, Nginx proxies to the API on localhost, and the response returns the same way.");}},
   p2:{title:"What a workflow run really is",
-    caption:"Each job starts on a clean virtual machine. Nothing survives between jobs except what goes into the cache or an artifact, and only a job’s reported status — matched by name — reaches branch protection.",
-    points:[["Jobs don’t share disks","`node_modules` from one job isn’t there in the next. That’s why every job installs again — and why caching matters."],["Cache keys decide hits","A key built from `yarn.lock`’s hash misses only when dependencies change; `restore-keys` fall back to the closest older cache."],["Skips aren’t all equal","A job skipped by `if:` reports success. A workflow skipped by a `paths` filter never reports, so its required check stays pending."],["Forks don’t get secrets","PRs from forks run with a read-only token and no secrets, so steps that need them fail there by design."]],
+    caption:"Each job starts on a clean virtual machine. Nothing survives between jobs except what goes into the cache or an artifact, and only a job’s reported status, matched by name, reaches branch protection.",
+    points:[["Jobs don’t share disks","`node_modules` from one job isn’t there in the next. That’s why every job installs again, and why caching matters."],["Cache keys decide hits","A key built from `yarn.lock`’s hash misses only when dependencies change; `restore-keys` fall back to the closest older cache."],["Skips aren’t all equal","A job skipped by `if:` reports success. A workflow skipped by a `paths` filter never reports, so its required check stays pending."],["Forks don’t get secrets","PRs from forks run with a read-only token and no secrets, so steps that need them fail there by design."]],
     svg:function(){var i="hw2";return svgOpen(i,1000,380,"A pull_request event starts three jobs on separate fresh runners; the checks job saves and restores a cache, the build job uploads artifacts, and only the checks job's status satisfies the branch ruleset that enables merging.")+
       zone(190,30,300,340,"RUNNERS · A FRESH VM PER JOB")+
       box(20,170,140,56,"pull_request","opened or pushed")+
@@ -823,16 +823,16 @@ var HOW={
       arw(i,"M880 226 V290","allows merge",888,262,"start")+"</svg>";}},
   p8:{title:"Signing, notarisation and the update check",
     caption:"Two trust chains. Apple vouches for the binary through signing and notarisation; the feed tells every installed copy what to download and how to verify it.",
-    points:[["The keychain step is where CI breaks","A runner has no keychain holding your certificate. electron-builder creates a temporary one, imports `CSC_LINK` and must unlock it — your failing step."],["Notarisation needs the hardened runtime","Apple rejects signed apps without it. Stapling attaches the ticket so Gatekeeper can check it offline."],["The feed is a contract","The app trusts `latest-mac.yml`: version, file name, size and `sha512`. Any mismatch is a failed or rejected update."],["Old versions run old updaters","2.5.0 checks for updates with the code 2.5.0 shipped. Test updates from real old builds, not just fresh installs."]],
+    points:[["The keychain step is where CI breaks","A runner has no keychain holding your certificate. electron-builder creates a temporary one, imports `CSC_LINK` and must unlock it, your failing step."],["Notarisation needs the hardened runtime","Apple rejects signed apps without it. Stapling attaches the ticket so Gatekeeper can check it offline."],["The feed is a contract","The app trusts `latest-mac.yml`: version, file name, size and `sha512`. Any mismatch is a failed or rejected update."],["Old versions run old updaters","2.5.0 checks for updates with the code 2.5.0 shipped. Test updates from real old builds, not just fresh installs."]],
     svg:function(){return seq("hw3",["CI runner","Apple notary","R2 update feed","Parent’s Mac"],[[0,0,"import .p12 into temp keychain"],[0,0,"codesign with hardened runtime"],[0,1,"notarytool submit"],[1,1,"scan + verify signature"],[1,0,"accepted"],[0,0,"stapler staple"],[0,2,"upload dmg, zip, blockmaps"],[0,2,"upload latest-mac.yml last","hot"],[3,2,"GET latest-mac.yml"],[3,3,"2.5.3 > 2.5.2: show ‘Update’"],[3,2,"GET zip (blockmap diff)"],[3,3,"verify sha512, install on quit"]],"Sequence: the CI runner signs with a temporary keychain, submits to Apple for notarisation, staples the ticket and uploads installers then the feed; the installed app fetches the feed, compares versions, downloads the zip and verifies its hash.");}},
   p3:{title:"How a container is isolated",
     caption:"Containers are ordinary processes that the shared kernel fences in with namespaces and limits with cgroups. The image is a stack of read-only layers with one thin writable layer on top.",
-    points:[["No kernel of its own","Both containers make system calls to the same host kernel — much lighter than a VM, which is also why a kernel bug can cross containers."],["Namespaces decide what a process sees","Its own process tree, network interface, hostname and mounts. Inside, `ps` shows `node` as PID 1."],["cgroups decide what it can use","Exceed the memory limit and the kernel kills the process: exit code 137, `OOMKilled: true`."],["Layers are cached and shared","Every image built on `node:20-alpine` shares that layer on disk. Runtime writes land in the writable layer and vanish with the container."]],
+    points:[["No kernel of its own","Both containers make system calls to the same host kernel, much lighter than a VM, which is also why a kernel bug can cross containers."],["Namespaces decide what a process sees","Its own process tree, network interface, hostname and mounts. Inside, `ps` shows `node` as PID 1."],["cgroups decide what it can use","Exceed the memory limit and the kernel kills the process: exit code 137, `OOMKilled: true`."],["Layers are cached and shared","Every image built on `node:20-alpine` shares that layer on disk. Runtime writes land in the writable layer and vanish with the container."]],
     svg:function(){var i="hw4",h=svgOpen(i,1000,400,"Two containers, bashbop-web and bashbop-api, each with pid, net and mount namespaces and a cgroup limit, share one host kernel; the web image is a stack of read-only layers under a writable layer.");
       h+=zone(30,40,270,280,"CONTAINER · bashbop-web")+zone(320,40,270,280,"CONTAINER · bashbop-api");
       [["pid namespace","sees only its processes"],["net namespace","own interface, :80"],["mnt namespace","own root filesystem"],["cgroup","memory limit 1 GiB"]].forEach(function(b,k){h+=box(45,70+k*60,240,48,b[0],b[1]);});
       [["pid namespace","PID 1 is node"],["net namespace","own interface, :9999"],["mnt namespace","its own image layers"],["cgroup","CPU and memory limits"]].forEach(function(b,k){h+=box(335,70+k*60,240,48,b[0],b[1]);});
-      h+=box(30,344,560,48,"Host Linux kernel — shared","namespaces and cgroups are kernel features")+arw(i,"M165 320 V344","syscalls",172,336,"start")+arw(i,"M455 320 V344","syscalls",462,336,"start");
+      h+=box(30,344,560,48,"Host Linux kernel, shared","namespaces and cgroups are kernel features")+arw(i,"M165 320 V344","syscalls",172,336,"start")+arw(i,"M455 320 V344","syscalls",462,336,"start");
       h+=zone(630,40,350,352,"IMAGE · web runner stage");
       [["Writable layer","runtime writes, lost on removal","hot"],["COPY .next/static","hashed JS and CSS"],["COPY .next/standalone","server.js + traced node_modules"],["COPY public/","images, fonts"],["RUN adduser nextjs","uid 1001"],["FROM node:20-alpine","shared by images built on it"]].forEach(function(b,k){h+=box(650,70+k*52,310,44,b[0],b[1],b[2]);});
       return h+"</svg>";}},
@@ -853,15 +853,15 @@ var HOW={
       arw(i,"M300 216 V180 H410 V142","egress",355,174)+arw(i,"M410 86 V52 H930 V216","to the internet",670,46)+"</svg>";}},
   p4:{title:"Expand–contract: renaming a column with zero downtime",
     caption:"Renaming a column safely takes four releases. At every step the version being deployed and the one it replaces both work with the schema that exists, so a rollback never meets a missing column.",
-    points:[["Rolling deploys run two versions","For a few minutes old and new pods serve traffic against one database, so every schema change must suit both."],["Expand, migrate, contract","Add the new shape, dual-write, backfill, switch reads, stop the old writes — and only then drop the old column."],["Rollback stays safe","Until the final release, rolling back one step never meets a column that isn’t there."],["Migrations run before the app","`prisma migrate deploy` in a gated step, so new code never starts against an older schema."]],
+    points:[["Rolling deploys run two versions","For a few minutes old and new pods serve traffic against one database, so every schema change must suit both."],["Expand, migrate, contract","Add the new shape, dual-write, backfill, switch reads, stop the old writes, and only then drop the old column."],["Rollback stays safe","Until the final release, rolling back one step never meets a column that isn’t there."],["Migrations run before the app","`prisma migrate deploy` in a gated step, so new code never starts against an older schema."]],
     svg:function(){return timeline("hw6",["Schema","Writes","Reads","Backfill"],[[0,0,15,"venue"],[0,15,85,"venue + location_name"],[0,85,100,"new only","pass"],[1,0,15,"venue"],[1,15,65,"both columns"],[1,65,100,"location_name"],[2,0,40,"venue"],[2,40,100,"location_name"],[3,18,38,"copy old rows","gap"]],[[0,"before"],[15,"R1"],[40,"R2"],[65,"R3"],[85,"R4"],[100,"done"]],[[15,"R1 add column"],[40,"R2 read new"],[65,"R3 stop old writes"],[85,"R4 drop venue"]],"Timeline of renaming venue to location_name over four releases: add the column and dual-write, backfill, switch reads, stop writing the old column, then drop it.");}},
   p9:{title:"Why KV counters drift at the edge",
     caption:"Two locations read the same cached counter, both allow the request, and both write 10. That’s why the Worker treats its KV throttle as best-effort and relies on a Rate Limiting rule as the hard cap.",
     points:[["A Worker is an isolate, not a server","Each request runs in a V8 isolate at the nearest location, started in milliseconds. Memory isn’t shared between locations."],["KV reads can be stale","Reads come from caches near the user and can lag a write made elsewhere by up to about a minute."],["KV has no atomic increment","Get-then-put loses concurrent updates. Use a Rate Limiting rule or Durable Objects when a limit must be exact."],["D1 is where correctness lives","`startTrial` does the device check and the insert in one SQL statement, so parallel activations can’t both create a trial."]],
-    svg:function(){return seq("hw7",["Request A","Edge London","Workers KV","Edge Lagos","Request B"],[[0,1,"POST /start"],[4,3,"POST /start"],[1,2,"get rl:key"],[2,1,"9"],[3,2,"get rl:key"],[2,3,"9 (cached copy)"],[1,1,"9 < 10: allow"],[3,3,"9 < 10: allow","fail"],[1,2,"put rl:key = 10"],[3,2,"put rl:key = 10","fail"],[2,2,"stored 10 — 11 got through"]],"Sequence: two Worker locations read the same KV counter value 9 at the same time, both allow their request and both write 10, so one request beyond the limit gets through.");}},
+    svg:function(){return seq("hw7",["Request A","Edge London","Workers KV","Edge Lagos","Request B"],[[0,1,"POST /start"],[4,3,"POST /start"],[1,2,"get rl:key"],[2,1,"9"],[3,2,"get rl:key"],[2,3,"9 (cached copy)"],[1,1,"9 < 10: allow"],[3,3,"9 < 10: allow","fail"],[1,2,"put rl:key = 10"],[3,2,"put rl:key = 10","fail"],[2,2,"stored 10, 11 got through"]],"Sequence: two Worker locations read the same KV counter value 9 at the same time, both allow their request and both write 10, so one request beyond the limit gets through.");}},
   p5:{title:"What plan and apply actually compare",
-    caption:"Plan compares three things — your code, the last recorded state and what really exists — and apply changes the world to match the reviewed plan, then records the result.",
-    points:[["State is Terraform’s memory","It maps every resource address to a real ID. Lose it and Terraform thinks nothing exists; share it without locking and two applies corrupt it."],["Refresh finds drift","Plan reads the real resources first, so a dashboard edit shows up as a change to undo."],["Addresses are identity","Rename a resource block and Terraform sees a delete plus a create — unless you add a `moved` block."],["Apply what you reviewed","`terraform plan -out=tfplan` then `terraform apply tfplan` makes CI apply exactly what the PR showed."]],
+    caption:"Plan compares three things, your code, the last recorded state and what really exists, and apply changes the world to match the reviewed plan, then records the result.",
+    points:[["State is Terraform’s memory","It maps every resource address to a real ID. Lose it and Terraform thinks nothing exists; share it without locking and two applies corrupt it."],["Refresh finds drift","Plan reads the real resources first, so a dashboard edit shows up as a change to undo."],["Addresses are identity","Rename a resource block and Terraform sees a delete plus a create, unless you add a `moved` block."],["Apply what you reviewed","`terraform plan -out=tfplan` then `terraform apply tfplan` makes CI apply exactly what the PR showed."]],
     svg:function(){var i="hw8";return svgOpen(i,1000,360,"terraform plan reads the .tf files, the state and a refresh of the Cloudflare API to produce a plan; terraform apply executes the saved plan against the API and writes the new state.")+
       box(20,60,200,56,".tf files","desired state, in Git")+box(20,260,200,56,"State","last known · locked")+
       box(300,160,190,56,"terraform plan","refresh + diff","hot")+box(570,160,190,56,"terraform apply","runs the saved plan")+box(790,60,190,56,"Cloudflare API","what actually exists")+
@@ -870,7 +870,7 @@ var HOW={
       arw(i,"M665 160 V88 H790","create / update / delete",782,80,"end")+arw(i,"M665 216 V340 H120 V316","writes new state",392,334)+"</svg>";}},
   p11:{title:"Where the supply chain gets attacked",
     caption:"Attackers take the cheapest hop. Each red line is a real path into bashbop or Brain Boost Buddy; the grey line under it is the control that closes it.",
-    points:[["Tags are mutable","`@v4` is a pointer its owner — or anyone holding their token — can move. A 40-character commit SHA can’t be."],["The token is the blast radius","Whatever `permissions:` and secrets a job holds, a compromised step holds too. Start from `permissions: {}`."],["Lockfiles make installs repeatable","`yarn install --immutable` fails if the lockfile would change, so CI installs exactly what was reviewed."],["Provenance closes the loop","An attestation ties the image digest to the commit and workflow that built it; verify it before deploying."]],
+    points:[["Tags are mutable","`@v4` is a pointer its owner, or anyone holding their token, can move. A 40-character commit SHA can’t be."],["The token is the blast radius","Whatever `permissions:` and secrets a job holds, a compromised step holds too. Start from `permissions: {}`."],["Lockfiles make installs repeatable","`yarn install --immutable` fails if the lockfile would change, so CI installs exactly what was reviewed."],["Provenance closes the loop","An attestation ties the image digest to the commit and workflow that built it; verify it before deploying."]],
     svg:function(){var i="hw9",h=svgOpen(i,1000,310,"Supply chain from laptop to GitHub to the Actions runner, which installs dependencies, publishes to a registry and deploys to production; each hop lists its main attack and control.");
       var cols=[["Your laptop","commits, tokens","stolen session","MFA, disk encryption"],["GitHub","source and PRs","secret committed","push protection"],["Actions runner","builds and deploys","moved action tag","pin SHA, perms: {}"],["Registry","image + attestation","swapped image","attest and verify"],["Production","runs the image","long-lived keys","OIDC, rotation"]];
       cols.forEach(function(c,k){var x=20+k*205;h+=box(x,70,150,56,c[0],c[1],k===2?"hot":"")+txt(x+8,150,"al w failt",c[2])+txt(x+8,168,"bs",c[3]);if(k<4)h+=arw(i,"M"+(x+150)+" 98 H"+(x+205),["push","triggers","publishes","deploys"][k],x+177,62);});
@@ -878,33 +878,33 @@ var HOW={
       return h+"</svg>";}},
   p6:{title:"One trace across web, API and a webhook",
     caption:"The checkout is one trace across web, API and Postgres. Stripe’s webhook arrives later as a separate trace, joined only by the booking id you record on both.",
-    points:[["A trace is a tree of spans","Each hop records start, duration and attributes under one trace id, so a slow checkout shows exactly which hop was slow."],["`traceparent` carries the context","`00-<trace-id>-<parent-span-id>-01` — instrumented clients add it, instrumented servers continue it."],["Webhooks break the chain","Stripe’s callback isn’t a child of your request. Put `booking_id` on both traces, or add a span link, to join them."],["Measure the gap","Time from payment intent to confirmed booking is your webhook-lag SLI. Alert when its p95 climbs."]],
+    points:[["A trace is a tree of spans","Each hop records start, duration and attributes under one trace id, so a slow checkout shows exactly which hop was slow."],["`traceparent` carries the context","`00-<trace-id>-<parent-span-id>-01`, instrumented clients add it, instrumented servers continue it."],["Webhooks break the chain","Stripe’s callback isn’t a child of your request. Put `booking_id` on both traces, or add a span link, to join them."],["Measure the gap","Time from payment intent to confirmed booking is your webhook-lag SLI. Alert when its p95 climbs."]],
     svg:function(){return seq("hw10",["Browser","bashbop-web","bashbop-api","PostgreSQL","Stripe"],[[0,1,"POST checkout: trace starts"],[1,2,"traceparent: 00-4bf9…-01","hot"],[2,3,"span: insert booking (pending)"],[2,4,"span: create PaymentIntent"],[2,0,"client secret"],[0,4,"confirm payment (Stripe.js)"],[4,2,"webhook: payment_intent.succeeded"],[2,2,"new trace · booking_id links it"],[2,3,"span: booking → confirmed"]],"Sequence: a checkout trace flows from browser to web to API with a traceparent header, creating spans for the database insert and the Stripe payment intent; the Stripe webhook later starts a new trace linked by booking id.");}},
   p7:{title:"Point-in-time recovery, and the loop behind Kubernetes",
-    caption:"Point-in-time recovery starts from the last base backup and replays the write-ahead log to just before the mistake — into a new instance, so nothing written since is lost.",
-    points:[["Backups alone lose a day","A 02:00 dump can’t bring back twelve hours of bookings before a 14:32 mistake. Replaying the WAL can."],["RPO and RTO are measured","RPO is how far back the last recoverable point is; RTO is how long your last real restore took."],["Pools protect Postgres","Each connection is a server process. A pool caps them, so a traffic spike queues instead of exhausting `max_connections`."],["Kubernetes is a control loop","You declare desired state; controllers keep comparing it with reality and act — the same idea as Terraform, running forever."]],
+    caption:"Point-in-time recovery starts from the last base backup and replays the write-ahead log to just before the mistake, into a new instance, so nothing written since is lost.",
+    points:[["Backups alone lose a day","A 02:00 dump can’t bring back twelve hours of bookings before a 14:32 mistake. Replaying the WAL can."],["RPO and RTO are measured","RPO is how far back the last recoverable point is; RTO is how long your last real restore took."],["Pools protect Postgres","Each connection is a server process. A pool caps them, so a traffic spike queues instead of exhausting `max_connections`."],["Kubernetes is a control loop","You declare desired state; controllers keep comparing it with reality and act, the same idea as Terraform, running forever."]],
     svg:function(){return timeline("hw11",["Base backups","WAL archive","Production data","Restore target"],[[0,0,12,"Mon 02:00","pass"],[0,35,47,"Tue 02:00","pass"],[1,0,100,"every committed change, continuously"],[2,0,70,"healthy"],[2,70,100,"rows deleted","fail"],[3,35,69,"Tue 02:00 base + WAL to 14:31"]],[[0,"Mon 02:00"],[35,"Tue 02:00"],[70,"14:32"],[100,"now"]],[[70,"DELETE at 14:32"]],"Timeline: nightly base backups and a continuous WAL archive; production rows are deleted at 14:32; the restore target replays WAL from the Tuesday 02:00 backup to 14:31.");}},
   p12:{title:"An incident against the clock",
-    caption:"One capstone fault plotted against the clock. Detection is the widest bar — so that’s where the review should focus first.",
-    points:[["Detect, mitigate, resolve","Mitigation ends customer impact (roll back, flip a flag); resolution fixes the cause. Track both times."],["Roles beat heroics","One commander decides and communicates; operators investigate. Handing over a role is fine — silently doing both isn’t."],["Timestamps are raw material","Write them in the incident channel as things happen. Memory rewrites timelines within hours."],["The review is the product","A game day that produces no tracked action items was just downtime."]],
+    caption:"One capstone fault plotted against the clock. Detection is the widest bar, so that’s where the review should focus first.",
+    points:[["Detect, mitigate, resolve","Mitigation ends customer impact (roll back, flip a flag); resolution fixes the cause. Track both times."],["Roles beat heroics","One commander decides and communicates; operators investigate. Handing over a role is fine, silently doing both isn’t."],["Timestamps are raw material","Write them in the incident channel as things happen. Memory rewrites timelines within hours."],["The review is the product","A game day that produces no tracked action items was just downtime."]],
     svg:function(){return timeline("hw12",["Fault active","Detection","Response","Status updates"],[[0,5,58,"bookings stuck pending","fail"],[1,5,42,"undetected ≈ 22 min","gap"],[2,42,58,"mitigate"],[2,58,85,"resolve + verify","pass"],[3,44,85,"every 15 min"]],[[0,"0 min"],[25,"15"],[50,"30"],[75,"45"],[100,"60"]],[[5,"fault"],[42,"alert"],[58,"mitigated"],[85,"resolved"]],"Timeline over 60 minutes: a fault starts at 3 minutes, goes undetected until an alert at about 25 minutes, is mitigated at about 35 minutes and resolved at about 51 minutes, with status updates every 15 minutes.");}}
 };
 
 HOW.p13={title:"What happens after kubectl apply",
   caption:"A Deployment becomes running pods through independent control loops that only ever talk to the API server. Nothing calls the scheduler or a kubelet directly.",
-  points:[["Everything goes through the API server","kubectl, controllers, the scheduler and kubelets never talk to each other — they read and write objects through the API server, which stores them in etcd."],["Controllers are loops, not scripts","Each watches for a gap between desired and observed state and acts. Delete a pod and the ReplicaSet controller simply notices one is missing."],["Scheduling uses requests, not usage","The scheduler filters nodes by unrequested capacity, taints and affinity, then scores them. A pod without requests can land anywhere and starve its neighbours."],["Ready is what routes traffic","Only pods whose readiness probe passes become Service endpoints — which is why probes decide whether a rollout drops requests."]],
+  points:[["Everything goes through the API server","kubectl, controllers, the scheduler and kubelets never talk to each other, they read and write objects through the API server, which stores them in etcd."],["Controllers are loops, not scripts","Each watches for a gap between desired and observed state and acts. Delete a pod and the ReplicaSet controller simply notices one is missing."],["Scheduling uses requests, not usage","The scheduler filters nodes by unrequested capacity, taints and affinity, then scores them. A pod without requests can land anywhere and starve its neighbours."],["Ready is what routes traffic","Only pods whose readiness probe passes become Service endpoints, which is why probes decide whether a rollout drops requests."]],
   svg:function(){return seq("hw13",["kubectl","API server","etcd","Controllers","Scheduler","kubelet"],[[0,1,"apply Deployment"],[1,1,"authn · RBAC · admission"],[1,2,"store desired"],[3,1,"watch → create ReplicaSet + Pods"],[4,1,"watch: Pods with no node"],[4,4,"filter + score nodes"],[4,1,"bind Pod to node-b"],[5,1,"watch: Pod bound to me"],[5,5,"pull image, start container","hot"],[5,1,"status: Ready (probe passed)"],[1,2,"store observed"]],"Sequence: kubectl applies a Deployment to the API server, which stores it in etcd; controllers create a ReplicaSet and Pods, the scheduler binds each Pod to a node, and the kubelet starts the container and reports Ready.");}};
 HOW.p14={title:"How Ansible and Jenkins actually run",
   caption:"Left: Ansible connects to a host over SSH, checks the current state, changes only what differs and fires a handler once. Right: a Jenkins controller schedules a build on an agent and collects the results.",
-  points:[["Ansible is agentless push","A control node connects over SSH, copies a small module, runs it and reads JSON back. Nothing stays running on the host."],["Modules check before they change","Each module compares current state first, so ‘ok’ means already correct and ‘changed’ means it acted — the basis of idempotency."],["Jenkins splits controller and agents","The controller schedules and stores results; agents run builds. Building on the controller is a security and stability mistake."],["Both need real secret handling","Vault-encrypted variables for Ansible, the credentials store for Jenkins — never plain text in a repo or job config."]],
+  points:[["Ansible is agentless push","A control node connects over SSH, copies a small module, runs it and reads JSON back. Nothing stays running on the host."],["Modules check before they change","Each module compares current state first, so ‘ok’ means already correct and ‘changed’ means it acted, the basis of idempotency."],["Jenkins splits controller and agents","The controller schedules and stores results; agents run builds. Building on the controller is a security and stability mistake."],["Both need real secret handling","Vault-encrypted variables for Ansible, the credentials store for Jenkins, never plain text in a repo or job config."]],
   svg:function(){return seq("hw14",["Ansible control","api-1 host","Jenkins controller","Jenkins agent"],[[0,0,"read inventory + playbook"],[0,1,"SSH: run apt module"],[1,1,"nginx present → ok"],[0,1,"SSH: template api.conf"],[1,0,"changed → notify handler"],[0,1,"handler: reload nginx (once)","hot"],[2,2,"webhook: push to main"],[2,3,"run on agent label linux"],[3,3,"checkout, stages in parallel"],[3,2,"JUnit results + status"]],"Sequence: the Ansible control node runs modules on a host over SSH, gets ok or changed back and reloads Nginx once through a handler; separately, a Jenkins controller receives a webhook, schedules a build on an agent and collects results.");}};
 HOW.p15={title:"Six weeks from booking to exam",
   caption:"Baseline early, close gaps first, study daily, and only sit the exam after two timed practice runs at 80% or better.",
-  points:[["Baseline before studying","A cold practice exam shows where you really are — usually not where you think."],["Gaps first, strengths never","Map objectives to what you’ve done, then spend study time only on the unmapped ones."],["Practise the format","Timed runs build pacing. For the CKA, speed with `kubectl` matters as much as knowledge."],["A booked date is the plan","Without a date, ‘almost ready’ lasts forever. Book it and fit the plan to it."]],
+  points:[["Baseline before studying","A cold practice exam shows where you really are, usually not where you think."],["Gaps first, strengths never","Map objectives to what you’ve done, then spend study time only on the unmapped ones."],["Practise the format","Timed runs build pacing. For the CKA, speed with `kubectl` matters as much as knowledge."],["A booked date is the plan","Without a date, ‘almost ready’ lasts forever. Book it and fit the plan to it."]],
   svg:function(){return timeline("hw15",["Map & gaps","Daily study","Practice exams","Simulator / labs","Exam"],[[0,0,15,"map objectives"],[0,15,32,"close top gaps","gap"],[1,15,92,"45–60 minutes a day"],[2,2,14,"cold baseline"],[2,36,47,"practice 1"],[2,58,69,"practice 2"],[2,78,90,"80%+ twice","pass"],[3,6,20,"simulator 1"],[3,79,92,"simulator 2"],[4,94,100,"exam","pass"]],[[0,"week 0"],[33,"week 2"],[67,"week 4"],[100,"week 6"]],[[94,"exam day"]],"Timeline over six weeks: map objectives and close gaps in the first two weeks, study daily throughout, take a cold baseline and then practice exams until scoring 80% twice, with simulator sessions early and late, and the exam at the end of week six.");}};
 HOW.p16={title:"How a troubleshooting round is scored",
   caption:"The loop interviewers want to hear out loud: clarify, form a hypothesis, test it cheaply, narrow down, and finish with a fix plus prevention.",
-  points:[["Method beats the answer","Rubrics score how you narrow the problem. Candidates who find the bug by guessing still fail."],["Clarify before touching anything","Scope, impact and ‘what changed?’ often point straight at the cause."],["Cheap checks first","`curl`, logs and `kubectl describe` before restarts or redeploys — and say why you chose each."],["Always end with prevention","Naming the alert or test that would have caught it shows real production experience."]],
+  points:[["Method beats the answer","Rubrics score how you narrow the problem. Candidates who find the bug by guessing still fail."],["Clarify before touching anything","Scope, impact and ‘what changed?’ often point straight at the cause."],["Cheap checks first","`curl`, logs and `kubectl describe` before restarts or redeploys, and say why you chose each."],["Always end with prevention","Naming the alert or test that would have caught it shows real production experience."]],
   svg:function(){var i="hw16",h=svgOpen(i,1000,290,"Troubleshooting loop: clarify, hypothesise, test, narrow, then fix and prevent; if a test rules a hypothesis out, return to hypothesise. Below each step, what the interviewer scores.");
     var st=[["Clarify","scope, impact, change"],["Hypothesise","most likely layer"],["Test","one cheap check"],["Narrow","rule in or out"],["Fix + prevent","mitigate, then root cause"]],sc=["asks before acting","reasons out loud","cheap checks first","follows evidence","names the alert"];
     st.forEach(function(b,k){var x=20+k*195;h+=box(x,70,165,56,b[0],b[1],k===2?"hot":"")+txt(x+8,250,"bs",sc[k]);if(k<4)h+=arw(i,"M"+(x+165)+" 98 H"+(x+195));});
@@ -964,10 +964,10 @@ var DRILL={
   p1:{title:"502 after a reboot",
     setup:"On a staging copy of the API host, run `pm2 delete bashbop-api && pm2 save --force`, then `sudo reboot`. Better still, have someone else do it so you don’t know what changed.",
     symptoms:["The API domain returns a 502 error page.","The web app loads, but every data call fails.","SSH works and `top` looks healthy."],
-    hints:["Whose 502 is it — Cloudflare’s or Nginx’s? Check the error page and `curl -sI https://<api-domain>/ | grep -i server`.","On the host: `curl -sI http://127.0.0.1:9999/api/v1/health`. Does anything answer?","Read `/var/log/nginx/error.log`. What does ‘connect() failed (111: Connection refused)’ say about the upstream?","What starts the API after a reboot? Check `pm2 ls` and `systemctl status pm2-$USER`."],
-    cause:"Nothing was listening on the API port. PM2 restores the process list saved by `pm2 save`; that list was empty, so after the reboot no API started. Nginx was healthy — its upstream wasn’t.",
+    hints:["Whose 502 is it, Cloudflare’s or Nginx’s? Check the error page and `curl -sI https://<api-domain>/ | grep -i server`.","On the host: `curl -sI http://127.0.0.1:9999/api/v1/health`. Does anything answer?","Read `/var/log/nginx/error.log`. What does ‘connect() failed (111: Connection refused)’ say about the upstream?","What starts the API after a reboot? Check `pm2 ls` and `systemctl status pm2-$USER`."],
+    cause:"Nothing was listening on the API port. PM2 restores the process list saved by `pm2 save`; that list was empty, so after the reboot no API started. Nginx was healthy, its upstream wasn’t.",
     fix:"Start the API the way production normally starts it, confirm `/api/v1/health` returns 200 locally, then run `pm2 save` so the list survives the next reboot.",
-    prevent:"An external uptime check on `/api/v1/health` that pages you, a reboot test after any host change — and, in {job:p3}, a container with a restart policy removes this failure class."},
+    prevent:"An external uptime check on `/api/v1/health` that pages you, a reboot test after any host change, and, in {job:p3}, a container with a restart policy removes this failure class."},
   p2:{title:"Green checks, broken types",
     setup:"On a branch from `develop`, add `const n: number = 'oops';` to a component used by one page, and open a PR into `develop`.",
     symptoms:["Every check on the PR is green.","It merges, and `yarn build` still succeeds.","Weeks later a PR into `main` fails ‘Type check’ on code it didn’t touch."],
@@ -976,17 +976,17 @@ var DRILL={
     fix:"Fix the error, add the PR gate from this job’s worked example on both branches, and make `checks` a required status check.",
     prevent:"A ruleset requiring `checks` on `develop` and `main`, a deliberate test PR proving a type error blocks merging, and removing `ignoreBuildErrors` once the backlog is clean."},
   p8:{title:"The Mac release that can’t unlock its keychain",open:true,
-    setup:"No setup — this one is live. Every tag since v2.4.0 fails in ‘Build, sign and notarise’. Investigate on a branch with `workflow_dispatch`; never push a real tag to test.",
+    setup:"No setup, this one is live. Every tag since v2.4.0 fails in ‘Build, sign and notarise’. Investigate on a branch with `workflow_dispatch`; never push a real tag to test.",
     symptoms:["`verify` and `win` pass; `macOS (signed + notarised)` fails after about four minutes.","The log ends with `security set-key-partition-list … SecKeychainUnlock: The user name or passphrase you entered is not correct`.","v2.3.1 on 8 Aug 2026 was the last green release run."],
     hints:["Did v2.3.1 sign at all? Search its mac log for ‘No CSC_LINK secret set’. If it built unsigned, CI signing may never have worked.","Compare the runner image version at the top of the v2.3.1 and v2.4.0 mac logs, and `electron-builder` in `package-lock.json` between the two tags.","Test the secret offline: decode `CSC_LINK` to a file and run `openssl pkcs12 -in cert.p12 -noout` with the password (add `-legacy` on OpenSSL 3 for older exports).","In a throwaway keychain, `security import cert.p12 -P \"$PW\" -T /usr/bin/codesign`. Does the import succeed?","Isolate the runner: run the same job on an older macOS image that is still offered. If it passes, the image change is your cause."],
-    cause:"Open — finding it is the drill. The error comes from electron-builder’s temporary-keychain step, so the leading suspects are a runner image change, an electron-builder change, or a certificate and password pair that won’t import. Each hint confirms or rules one out.",
+    cause:"Open, finding it is the drill. The error comes from electron-builder’s temporary-keychain step, so the leading suspects are a runner image change, an electron-builder change, or a certificate and password pair that won’t import. Each hint confirms or rules one out.",
     fix:"Act on the evidence: pin the runner image, pin or upgrade electron-builder, or re-export the Developer ID certificate and replace `CSC_LINK` and `CSC_KEY_PASSWORD` together.",
     prevent:"A signing smoke run on `workflow_dispatch` every month and on every electron-builder bump, so signing breaks on a quiet day instead of on release day."},
   p3:{title:"The image that calls the wrong API",
     setup:"Build the web image with no build args: `docker build -t web:drill .`. Run it with `docker run -p 3000:80 -e NEXT_PUBLIC_BACKEND_URL=https://<staging-api> web:drill`.",
-    symptoms:["Pages render, but every data request fails.","The browser’s Network tab shows requests to a build-time URL — `localhost` or an empty base — not staging.","`docker exec` shows `NEXT_PUBLIC_BACKEND_URL` is set correctly inside the container."],
+    symptoms:["Pages render, but every data request fails.","The browser’s Network tab shows requests to a build-time URL, `localhost` or an empty base, not staging.","`docker exec` shows `NEXT_PUBLIC_BACKEND_URL` is set correctly inside the container."],
     hints:["Where does a `NEXT_PUBLIC_` value live after `next build`? `docker run --rm web:drill sh -c \"grep -rl localhost .next/static | head\"`.","Did a `.env` or `.env.local` file get copied into the build? Check for a `.dockerignore`.","Can an environment variable set at `docker run` change JavaScript files that were generated during the build?"],
-    cause:"`NEXT_PUBLIC_*` values are replaced with literal strings in the browser bundle during `next build`. The image holds whatever existed at build time — possibly a local `.env` copied into the build context. Runtime variables never reach code already in the bundle.",
+    cause:"`NEXT_PUBLIC_*` values are replaced with literal strings in the browser bundle during `next build`. The image holds whatever existed at build time, possibly a local `.env` copied into the build context. Runtime variables never reach code already in the bundle.",
     fix:"Pass the value as a build arg (`ARG` + `ENV` before `yarn build`) for each environment, or serve configuration at runtime so one image can promote from staging to production.",
     prevent:"`.env*` in `.dockerignore`, plus a CI step that greps the built bundle for `localhost` and fails the build."},
   p10:{title:"The API can’t reach its database",
@@ -994,17 +994,17 @@ var DRILL={
     symptoms:["The task starts, then logs `P1001: Can't reach database server` and fails health checks.","The load balancer marks targets unhealthy and returns 503.","The database shows as available in the console."],
     hints:["Timeout or refused? Refused means a host answered; a timeout means packets were dropped on the way.","From inside the task (ECS Exec) run `nc -vz <db-endpoint> 5432`. What happens?","Check in order: the database security group’s inbound rules, the subnets’ network ACLs, the route tables. Which changed?","Run VPC Reachability Analyzer from the task’s network interface to the database."],
     cause:"The database security group no longer allowed 5432 from the app’s group. Security groups silently drop disallowed traffic, so the client saw a timeout rather than a refusal.",
-    fix:"Restore the inbound rule with the app’s security group as the source — not a CIDR, never `0.0.0.0/0` — and confirm with `nc -vz` before restarting tasks.",
+    fix:"Restore the inbound rule with the app’s security group as the source, not a CIDR, never `0.0.0.0/0`, and confirm with `nc -vz` before restarting tasks.",
     prevent:"Security groups defined in Terraform so manual edits show up as drift, and a health check that includes a database ping."},
   p4:{title:"Deploy succeeded, then ‘column does not exist’",
     setup:"On staging, rename a harmless field in `schema.prisma`, generate the migration, update the code and ship it all in one release with a rolling deploy.",
-    symptoms:["The pipeline is green.","During the rollout errors spike: `P2022: The column … does not exist in the current database`.","Rolling back makes it worse — the old version now fails on every query touching that table."],
+    symptoms:["The pipeline is green.","During the rollout errors spike: `P2022: The column … does not exist in the current database`.","Rolling back makes it worse, the old version now fails on every query touching that table."],
     hints:["Which version logs the errors? Put the image sha or version on every log line.","Line up the migration step’s timestamp with the first error.","Read the generated SQL in `prisma/migrations/`. Did Prisma rename the column, or drop it and add a new one?"],
     cause:"The migration removed the old column while the old version was still serving traffic. Prisma turns a field rename into drop-and-add by default, so that column’s data was lost too.",
     fix:"Roll forward: restore the old column in a new migration (recovering its data from backup), then redo the change as expand–contract over several releases.",
     prevent:"Fail `migration-check.yml` on `DROP COLUMN`, renames and type changes unless the PR is labelled as a contract step, and lint migrations with a tool such as Squawk."},
   p9:{title:"Staging says everyone is offline",
-    setup:"Add the `[env.staging]` block from this job’s worked example and run `wrangler deploy --env staging` — but don’t set any secrets for staging.",
+    setup:"Add the `[env.staging]` block from this job’s worked example and run `wrangler deploy --env staging`, but don’t set any secrets for staging.",
     symptoms:["Every `/start` and `/status` call to staging returns `{ ok: false, reason: \"offline\" }` with HTTP 502.","Production is unaffected.","`wrangler deploy` reported success."],
     hints:["Watch live logs while you send a request: `wrangler tail --env staging`.","Compare `wrangler secret list` with `wrangler secret list --env staging`.","Find where `worker.js` returns `offline` before it ever calls Lemon Squeezy."],
     cause:"Secrets don’t carry over into Wrangler environments. With no `LS_API_KEY` in staging, the Worker logs ‘LS_API_KEY secret not set’ and answers `offline` (502) to every request.",
@@ -1014,7 +1014,7 @@ var DRILL={
     setup:"In a sandbox zone managed by Terraform, rename `resource \"cloudflare_dns_record\" \"api\"` to `\"api_origin\"` and run `terraform plan`.",
     symptoms:["The plan destroys `cloudflare_dns_record.api` and creates `cloudflare_dns_record.api_origin`.","‘Plan: 1 to add, 0 to change, 1 to destroy.’","Nothing about the record itself changed."],
     hints:["How does Terraform know which real record a block manages? Run `terraform state list`.","Is a resource identified by its content or by its address?","Look up the `moved` block in the Terraform documentation."],
-    cause:"State maps resource addresses to real IDs. Renaming the block changed the address, so Terraform saw a new resource and an orphaned old one — a delete and a create, briefly breaking DNS.",
+    cause:"State maps resource addresses to real IDs. Renaming the block changed the address, so Terraform saw a new resource and an orphaned old one, a delete and a create, briefly breaking DNS.",
     fix:"Add a `moved` block from `cloudflare_dns_record.api` to `cloudflare_dns_record.api_origin` and re-plan until it shows no changes.",
     prevent:"`lifecycle { prevent_destroy = true }` on critical records, and a CI check that fails when a plan contains deletes without an approval label."},
   p11:{title:"A secret in history",
@@ -1022,27 +1022,27 @@ var DRILL={
     symptoms:["The latest commit no longer contains the token.","If push protection or secret scanning is on you get an alert; if not, nothing happens at all.","`git log -p` still shows it."],
     hints:["Scan all history, not just the working tree: `gitleaks git --log-opts=\"--all\" -v`.","Who could already have a copy? Forks, clones, CI logs and caches all count.","What does the provider’s audit log show for that token?","Now run the same scan on bashbop-event-web, bashbop-api and brain-boost."],
     cause:"Removing a secret in a later commit doesn’t remove it from history, and anyone who had read access may already have it. The only safe assumption is that it’s compromised.",
-    fix:"Revoke or rotate the credential first, check the provider’s audit log for use, then clean history with `git filter-repo` if you must — as hygiene, not as the fix.",
+    fix:"Revoke or rotate the credential first, check the provider’s audit log for use, then clean history with `git filter-repo` if you must, as hygiene, not as the fix.",
     prevent:"Push protection on every repo, a pre-commit gitleaks hook, `.env*` in `.gitignore`, and secrets only in a secrets manager or Worker secrets."},
   p6:{title:"Payments succeed, bookings stay pending",
     setup:"On staging, set `STRIPE_WEBHOOK_SECRET` to a different `whsec_…` value and restart the API. Make a test-mode booking with card 4242 4242 4242 4242.",
     symptoms:["Stripe shows the payment as succeeded.","The booking stays pending and the guest gets no confirmation.","Uptime checks are green and the API hasn’t crashed."],
     hints:["Start at the provider: in the Stripe Dashboard open your webhook endpoint’s recent deliveries. What did your API return?","Search API logs for the webhook route at the payment time. Is signature verification failing?","`src/main.ts` configures body parsing manually for webhook routes. Why does verification need the raw body?"],
-    cause:"Stripe signs every webhook with the endpoint’s secret. With the wrong `STRIPE_WEBHOOK_SECRET`, verification fails, the API rejects each event with a 4xx, and nothing confirms bookings — while every health check stays green.",
+    cause:"Stripe signs every webhook with the endpoint’s secret. With the wrong `STRIPE_WEBHOOK_SECRET`, verification fails, the API rejects each event with a 4xx, and nothing confirms bookings, while every health check stays green.",
     fix:"Restore the correct secret, resend the failed events from the Stripe Dashboard (or `stripe events resend <event_id>`), and confirm the stuck bookings move to confirmed.",
     prevent:"Alerts on webhook 4xx rate and on the webhook-lag SLI, a synthetic test-mode booking on staging after each deploy, and replay steps in the ‘Payments failing’ runbook."},
   p7:{title:"DELETE without WHERE at 14:32",
-    setup:"On a staging database with point-in-time recovery enabled, note the exact time, then delete a meaningful set of rows — for example every booking for one test event.",
-    symptoms:["The organiser dashboard shows the event with no bookings.","No application errors — queries succeed and return nothing.","‘Guests’ report missing tickets."],
+    setup:"On a staging database with point-in-time recovery enabled, note the exact time, then delete a meaningful set of rows, for example every booking for one test event.",
+    symptoms:["The organiser dashboard shows the event with no bookings.","No application errors, queries succeed and return nothing.","‘Guests’ report missing tickets."],
     hints:["When exactly did it happen? Check the API’s audit tables (`src/audit`) and Postgres logs if they record writes.","What’s the latest point you can restore to without losing good writes made afterwards?","Restore into a new instance at one minute before the delete. How long did that take? That’s your real RTO."],
-    cause:"A manual write ran against the database with a missing or wrong condition. The application was healthy; the data wasn’t — which is why no uptime check noticed.",
+    cause:"A manual write ran against the database with a missing or wrong condition. The application was healthy; the data wasn’t, which is why no uptime check noticed.",
     fix:"Restore to a new instance just before the delete, export the lost rows, and insert them into the live database in a reviewed transaction. Never restore over production.",
     prevent:"No direct production writes: read-only roles for investigation, reviewed runbooks for fixes, `BEGIN … ROLLBACK` rehearsals, and a monthly restore drill with measured RPO and RTO."},
   p12:{title:"The game day itself",
     setup:"Your facilitator injects the three faults from the plan at unannounced times inside the time box. You work only from alerts, dashboards and runbooks.",
-    symptoms:["Whatever your alerts show — that’s the test.","Expect at least one fault to be noticed late, or not at all."],
+    symptoms:["Whatever your alerts show, that’s the test.","Expect at least one fault to be noticed late, or not at all."],
     hints:["Declare an incident as soon as an alert fires and name a commander, even if it’s you.","Post the first status update within 10 minutes, then every 15.","Mitigate first; find the cause second.","Write timestamps in the incident channel as you go."],
-    cause:"Revealed by the facilitator afterwards — compare their fault log with your timeline, minute by minute.",
+    cause:"Revealed by the facilitator afterwards, compare their fault log with your timeline, minute by minute.",
     fix:"Mitigate each fault, return staging to known-good, and confirm every undo in the plan actually ran.",
     prevent:"The postmortems and action items. Anything detected late gets a new alert or synthetic check before the next game day."}
 };
@@ -1050,28 +1050,28 @@ var DRILL={
 DRILL.p13={title:"The node drain that takes the site down",
   setup:"On the staging cluster, scale web to one replica, delete its PodDisruptionBudget and readiness probe, start a load test, then run `kubectl drain <node> --ignore-daemonsets --delete-emptydir-data` on the node running it.",
   symptoms:["The load test shows a burst of 502 and 503 responses lasting tens of seconds.","`kubectl get pods` shows the old pod Terminating while the new one is still starting.","The drain command reported success."],
-  hints:["How many web pods were serving at the moment of eviction? Watch `kubectl get pods -o wide -w` during the drain.","What would have made the drain wait? `kubectl get pdb -A`.","When did the new pod start receiving traffic — when its container started, or when it was ready? Watch `kubectl get endpointslices -w`."],
+  hints:["How many web pods were serving at the moment of eviction? Watch `kubectl get pods -o wide -w` during the drain.","What would have made the drain wait? `kubectl get pdb -A`.","When did the new pod start receiving traffic, when its container started, or when it was ready? Watch `kubectl get endpointslices -w`."],
   cause:"With one replica and no PDB, the eviction removed the only pod straight away. With no readiness probe, the replacement joined the Service before Next.js could serve, so requests failed until it warmed up.",
   fix:"Run at least two replicas, add a PDB with `minAvailable: 1`, add a readiness probe on the health route, and a short `preStop` sleep so the load balancer deregisters pods before they stop.",
-  prevent:"A policy check (for example Kyverno, or a CI lint) that rejects production Deployments with fewer than two replicas, no PDB or no readiness probe — and a drain in every upgrade rehearsal."};
+  prevent:"A policy check (for example Kyverno, or a CI lint) that rejects production Deployments with fewer than two replicas, no PDB or no readiness probe, and a drain in every upgrade rehearsal."};
 DRILL.p14={title:"The playbook that takes Nginx down",
   setup:"Change the Nginx config task to `shell: cp files/api.conf /etc/nginx/sites-enabled/api.conf` with `notify: restart nginx`, and make that handler `state: restarted`. Run the play three times, then put a typo in `files/api.conf` and run it again.",
-  symptoms:["Every run reports `changed=1` for the config task, even with no edits.","Nginx restarts on every run, dropping open connections.","After the typo, the play fails in the handler — and the site is down."],
+  symptoms:["Every run reports `changed=1` for the config task, even with no edits.","Nginx restarts on every run, dropping open connections.","After the typo, the play fails in the handler, and the site is down."],
   hints:["Run with `--check --diff`. What does Ansible think it would change?","How could a `shell` task possibly know whether the file already matches?","What does `nginx -t` do, and where could it run before anything restarts?"],
-  cause:"`shell` can’t compare state, so it always reports changed and always notifies the handler. The handler restarted Nginx — stop, then start — and a config that fails validation means the start never happens.",
+  cause:"`shell` can’t compare state, so it always reports changed and always notifies the handler. The handler restarted Nginx, stop, then start, and a config that fails validation means the start never happens.",
   fix:"Use `ansible.builtin.template`, run `nginx -t` with `changed_when: false` before handlers flush, and make the handler `state: reloaded` so an invalid config never replaces a working one.",
   prevent:"`ansible-lint` in CI (it flags commands that should be modules), a second-run idempotency check in Molecule, and reloads rather than restarts for config changes."};
 DRILL.p15={title:"The mock exam that says you’re not ready",
   checks:["I sat a full timed practice exam and analysed every wrong answer","My weakest domain has a dated study plan"],
   setup:"Take a full-length practice exam under real conditions: timed, one sitting, no notes, no second screen, phone in another room.",
   symptoms:["You run out of time, or finish with no time to review.","Your score is under 80%.","Several wrong answers were on topics you felt you knew."],
-  hints:["Sort wrong answers by exam domain. Is one domain most of the loss?","For each wrong answer, which constraint did you miss — ‘most cost-effective’, ‘least operational overhead’, ‘without downtime’?","Where did time go? Mark questions that took more than twice the average."],
+  hints:["Sort wrong answers by exam domain. Is one domain most of the loss?","For each wrong answer, which constraint did you miss, ‘most cost-effective’, ‘least operational overhead’, ‘without downtime’?","Where did time go? Mark questions that took more than twice the average."],
   cause:"Lost marks usually come from three places: one weak domain, misreading the constraint the question optimises for, and pacing. Pure knowledge gaps are often the smallest of the three.",
   fix:"Study the weakest domain with hands-on labs, underline the optimisation constraint in every practice question, and set time checkpoints (a third of the questions by a third of the time).",
   prevent:"A mistakes log reviewed daily, and a rule of two consecutive timed runs at 80% or better before the real exam."};
 DRILL.p16={title:"The recorded mock you’d fail",
   checks:["I did a recorded mock interview and reviewed the recording","I redid my weakest answer and practised it aloud"],
-  setup:"Ask a peer to prepare a broken environment or scenario you haven’t seen — for example the webhook drill from {job:p6} on their own staging. Record 30 minutes on video while you share your screen and think aloud.",
+  setup:"Ask a peer to prepare a broken environment or scenario you haven’t seen, for example the webhook drill from {job:p6} on their own staging. Record 30 minutes on video while you share your screen and think aloud.",
   symptoms:["Long silences while you read logs.","You jump to a fix before saying what you think is wrong.","You find the problem but run out of time to cover prevention."],
   hints:["Watch the recording at 1.5× speed and count the silent minutes.","Mark every moment you acted without first stating a hypothesis.","Did you ask about impact and recent changes in the first two minutes?"],
   cause:"Most failed troubleshooting rounds are communication failures. The interviewer can’t score reasoning they can’t hear, and jumping to fixes looks like guessing even when it works.",
@@ -1080,7 +1080,7 @@ DRILL.p16={title:"The recorded mock you’d fail",
 
 /* deep dives: worked examples per job */
 var DEEP={};
-DEEP.p1={verify:"Checked: the script passes `bash -n`. The Nginx file is an example to compare with `sudo nginx -T` — Cloudflare’s IP ranges change, so generate the `set_real_ip_from` lines from cloudflare.com/ips.",title:"Read the proxy in front of your API",
+DEEP.p1={verify:"Checked: the script passes `bash -n`. The Nginx file is an example to compare with `sudo nginx -T`, Cloudflare’s IP ranges change, so generate the `set_real_ip_from` lines from cloudflare.com/ips.",title:"Read the proxy in front of your API",
   intro:"An annotated Nginx site for an API behind Cloudflare. Compare it line by line with what `nginx -T` prints on your server.",
   files:[["/etc/nginx/sites-enabled/api.conf (example)",`server {
   listen 443 ssl;
@@ -1123,7 +1123,7 @@ check web  "https://\${WEB_HOST:?set WEB_HOST}/"                              ||
 check api  "https://\${API_HOST:?set API_HOST}/api/v1/health"                 || failed=1
 check feed "https://images.bashbop.com/brain-boost-updates/latest-mac.yml"   || failed=1
 exit "$failed"`]],
-  steps:[["Find yours","`sudo nginx -T` prints the full running config, every include expanded."],["Test before reload","`sudo nginx -t && sudo systemctl reload nginx` — reload keeps open connections; restart drops them."],["Bypass one layer at a time","`curl` the API on `127.0.0.1` from the server, then the public URL. The difference is what Nginx and Cloudflare add."],["Read the right log","`/var/log/nginx/error.log` explains 502 and 504 upstream errors; `pm2 logs` explains the app."]]};
+  steps:[["Find yours","`sudo nginx -T` prints the full running config, every include expanded."],["Test before reload","`sudo nginx -t && sudo systemctl reload nginx`, reload keeps open connections; restart drops them."],["Bypass one layer at a time","`curl` the API on `127.0.0.1` from the server, then the public URL. The difference is what Nginx and Cloudflare add."],["Read the right log","`/var/log/nginx/error.log` explains 502 and 504 upstream errors; `pm2 logs` explains the app."]]};
 
 DEEP.p2={verify:"Checked: the YAML parses. Adapt: branch protection must require the job name `checks`.",title:"One PR gate for develop and main",
   intro:"A single workflow that replaces today’s split between `main-branch-checks.yml` and `repoctx-ci.yml` for the checks that must block a merge.",
@@ -1165,7 +1165,7 @@ jobs:
 
 DEEP.p8={verify:"Checked: the YAML parses. Adapt: first add `latest-mac.yml` and the blockmaps to the mac job’s uploads, and create the `CF_R2_PUBLISH_TOKEN` and `CF_ACCOUNT_ID` secrets.",title:"Publish the update feed from CI",
   intro:"A `publish` job for Brain Boost Buddy’s `release.yml` that replaces the manual `npm run publish:r2` step once the mac job is fixed.",
-  files:[["release.yml — new job after mac and win",`  publish:
+  files:[["release.yml, new job after mac and win",`  publish:
     needs: [mac, win]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
@@ -1188,7 +1188,7 @@ DEEP.p8={verify:"Checked: the YAML parses. Adapt: first add `latest-mac.yml` and
         run: |
           curl -fsS https://images.bashbop.com/brain-boost-updates/latest-mac.yml \\
             | grep -q "version: \${GITHUB_REF_NAME#v}"`]],
-  steps:[["Upload the feed files","The mac job uploads only `.dmg` and `-mac.zip` today; add `latest-mac.yml` and blockmaps or there’s nothing to publish."],["Order matters","Installers first, `latest*.yml` last, so no app is told about a file that isn’t there yet."],["Scoped token","An R2-only API token for this bucket — not your personal Cloudflare login."],["Verify from outside","The `curl` sees what parents’ apps see, CDN cache included. Give `latest*.yml` a short cache lifetime."]]};
+  steps:[["Upload the feed files","The mac job uploads only `.dmg` and `-mac.zip` today; add `latest-mac.yml` and blockmaps or there’s nothing to publish."],["Order matters","Installers first, `latest*.yml` last, so no app is told about a file that isn’t there yet."],["Scoped token","An R2-only API token for this bucket, not your personal Cloudflare login."],["Verify from outside","The `curl` sees what parents’ apps see, CDN cache included. Give `latest*.yml` a short cache lifetime."]]};
 
 DEEP.p3={verify:"Checked: `docker compose config` accepts the compose file. Adapt: it needs the two `ARG`/`ENV` lines in the web Dockerfile, and the API path assumes both repos sit side by side.",title:"The whole of bashbop on one laptop",
   intro:"A compose file that starts web, API, Postgres and Redis with the same database versions API CI already uses.",
@@ -1225,7 +1225,7 @@ DEEP.p3={verify:"Checked: `docker compose config` accepts the compose file. Adap
     image: redis:7-alpine
 
 volumes:
-  pgdata:`],["bashbop-event-web/Dockerfile — builder stage with the build arg",`FROM base AS builder
+  pgdata:`],["bashbop-event-web/Dockerfile, builder stage with the build arg",`FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/.yarn ./.yarn
@@ -1284,11 +1284,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: ./deploy.sh production "\${{ needs.image.outputs.tag }}"`]],
-  steps:[["One image, every environment","The same sha goes to staging then production; nothing is rebuilt in between."],["Watch the trigger","Releases created with the default `GITHUB_TOKEN` don’t start other workflows. Your `release.yml` already accepts `RELEASE_PLEASE_TOKEN` — set it."],["Gate with environments","The production environment’s reviewer is the approval, and its secrets reach only that job."],["`deploy.sh` is your platform","ECS, a VPS running `docker compose pull`, or Fly — whatever your ADR chose. Rollback is the same script with the previous sha."]]};
+  steps:[["One image, every environment","The same sha goes to staging then production; nothing is rebuilt in between."],["Watch the trigger","Releases created with the default `GITHUB_TOKEN` don’t start other workflows. Your `release.yml` already accepts `RELEASE_PLEASE_TOKEN`, set it."],["Gate with environments","The production environment’s reviewer is the approval, and its secrets reach only that job."],["`deploy.sh` is your platform","ECS, a VPS running `docker compose pull`, or Fly, whatever your ADR chose. Rollback is the same script with the previous sha."]]};
 
 DEEP.p9={verify:"Checked: the TOML and YAML parse. Adapt: create the staging KV namespace and D1 database first and paste their ids.",title:"Give the Worker a staging copy and a pipeline",
   intro:"Environments in `wrangler.toml`, then a CI job that migrates D1 before deploying code.",
-  files:[["worker/wrangler.toml — staging block",`[env.staging]
+  files:[["worker/wrangler.toml, staging block",`[env.staging]
 name = "bbb-license-lookup-staging"
 
 [[env.staging.kv_namespaces]]
@@ -1299,7 +1299,7 @@ id = "<staging kv namespace id>"
 binding = "DB"
 database_name = "bbb-trials-staging"
 database_id = "<staging d1 id>"
-migrations_dir = "migrations"`],[".github/workflows/worker.yml — deploy steps",`      - uses: cloudflare/wrangler-action@v3
+migrations_dir = "migrations"`],[".github/workflows/worker.yml, deploy steps",`      - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: \${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -1313,7 +1313,7 @@ migrations_dir = "migrations"`],[".github/workflows/worker.yml — deploy steps"
           command: deploy --env staging`]],
   steps:[["Bindings don’t inherit","Each `[env.*]` block must redeclare its KV and D1 bindings, or that environment has none."],["Migrate before deploying","Apply D1 migrations first, so new code never queries a column that doesn’t exist yet."],["Secrets per environment","`wrangler secret put LS_API_KEY --env staging` with a Lemon Squeezy test-mode key."],["Scope the token","Workers Scripts and D1 edit on this account only."]]};
 
-DEEP.p5={verify:"Not machine-checked here (no Terraform installed). Written for Cloudflare provider v5 — run `terraform init && terraform validate` before using it.",title:"Cloudflare as code, starting with what exists",
+DEEP.p5={verify:"Not machine-checked here (no Terraform installed). Written for Cloudflare provider v5, run `terraform init && terraform validate` before using it.",title:"Cloudflare as code, starting with what exists",
   intro:"The first Terraform file for bashbop: one proxied DNS record and the R2 bucket both products already use.",
   files:[["infra/cloudflare/main.tf",`terraform {
   required_providers {
@@ -1338,9 +1338,9 @@ resource "cloudflare_r2_bucket" "assets" {
   account_id = var.account_id
   name       = "bashbopassets"
 }`]],
-  steps:[["Import, then plan to zero","`terraform import` each existing record and bucket (ID formats are in the provider docs) until `plan` shows no changes. Only then start editing."],["Pin the provider","v5 renamed resources — `cloudflare_record` became `cloudflare_dns_record`. `~> 5.0` stops a surprise major upgrade."],["State is sensitive","State can hold secrets. Keep it in a private, versioned bucket, never in Git."],["Plan in PRs, apply on merge","Reviewers read the plan output, not just the .tf diff."]]};
+  steps:[["Import, then plan to zero","`terraform import` each existing record and bucket (ID formats are in the provider docs) until `plan` shows no changes. Only then start editing."],["Pin the provider","v5 renamed resources, `cloudflare_record` became `cloudflare_dns_record`. `~> 5.0` stops a surprise major upgrade."],["State is sensitive","State can hold secrets. Keep it in a private, versioned bucket, never in Git."],["Plan in PRs, apply on merge","Reviewers read the plan output, not just the .tf diff."]]};
 
-DEEP.p6={verify:"Not machine-checked (TypeScript excerpt). The packages are the official OpenTelemetry, Prisma and Vercel ones — install them and let `tsc` confirm the imports.",title:"One trace from checkout to webhook",
+DEEP.p6={verify:"Not machine-checked (TypeScript excerpt). The packages are the official OpenTelemetry, Prisma and Vercel ones, install them and let `tsc` confirm the imports.",title:"One trace from checkout to webhook",
   intro:"OpenTelemetry in both apps, so a slow or failed booking shows every hop with its timing.",
   files:[["bashbop-api/src/tracing.ts",`import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
@@ -1357,15 +1357,15 @@ const sdk = new NodeSDK({
 });
 sdk.start();
 
-// src/main.ts — must be the very first import
+// src/main.ts, must be the very first import
 import './tracing';`],["bashbop-event-web/instrumentation.ts",`import { registerOTel } from '@vercel/otel';
 
 export function register() {
   registerOTel({ serviceName: 'bashbop-web' });
 }`]],
-  steps:[["Load order is everything","Instrumentation patches modules as they load. Import it after Nest and you get no spans."],["One trace, two apps","The web app’s outgoing fetch carries a `traceparent` header; the API continues the same trace."],["Error-budget alerts","99.5% over 30 days is 216 minutes. Page when the last hour burns budget about 14× faster than allowed — not on every error."],["Webhooks are their own SLI","Record provider event time against booking-confirmed time as a histogram."]]};
+  steps:[["Load order is everything","Instrumentation patches modules as they load. Import it after Nest and you get no spans."],["One trace, two apps","The web app’s outgoing fetch carries a `traceparent` header; the API continues the same trace."],["Error-budget alerts","99.5% over 30 days is 216 minutes. Page when the last hour burns budget about 14× faster than allowed, not on every error."],["Webhooks are their own SLI","Record provider event time against booking-confirmed time as a histogram."]]};
 
-DEEP.p7={verify:"Checked: the YAML parses. Adapt: add a web `/api/health` route first — only the API has one today, at `/api/v1/health`.",title:"A Deployment that survives a bad pod",
+DEEP.p7={verify:"Checked: the YAML parses. Adapt: add a web `/api/health` route first, only the API has one today, at `/api/v1/health`.",title:"A Deployment that survives a bad pod",
   intro:"The web app on Kubernetes with rolling updates, probes and a non-root user that matches the Dockerfile.",
   files:[["k8s/web/deployment.yaml",`apiVersion: apps/v1
 kind: Deployment
@@ -1417,7 +1417,7 @@ DEEP.p10={verify:"Checked: the JSON and YAML parse. Adapt: create the OIDC ident
       }
     }
   }]
-}`,"plain"],[".github/workflows/deploy.yml — production job",`  production:
+}`,"plain"],[".github/workflows/deploy.yml, production job",`  production:
     runs-on: ubuntu-latest
     environment: production               # must match the sub condition
     permissions:
@@ -1429,7 +1429,7 @@ DEEP.p10={verify:"Checked: the JSON and YAML parse. Adapt: create the OIDC ident
           role-to-assume: arn:aws:iam::<account-id>:role/bashbop-web-deploy
           aws-region: eu-west-2
       - run: aws sts get-caller-identity  # prints the role you assumed`]],
-  steps:[["Trust says who, policy says what","The trust policy decides which workflow may assume the role; a separate permissions policy decides what it can do. Keep both narrow."],["`sub` is the lock","`repo:BASHBOP/bashbop-event-web:environment:production` means only jobs in that environment can assume it — not a PR branch, not another repo."],["Credentials expire on their own","The action swaps GitHub’s token for temporary AWS credentials that last an hour by default. Nothing to rotate, nothing long-lived to leak."],["Prove it in the log","`aws sts get-caller-identity` prints the assumed role’s ARN, so a wrong role is visible immediately."]]};
+  steps:[["Trust says who, policy says what","The trust policy decides which workflow may assume the role; a separate permissions policy decides what it can do. Keep both narrow."],["`sub` is the lock","`repo:BASHBOP/bashbop-event-web:environment:production` means only jobs in that environment can assume it, not a PR branch, not another repo."],["Credentials expire on their own","The action swaps GitHub’s token for temporary AWS credentials that last an hour by default. Nothing to rotate, nothing long-lived to leak."],["Prove it in the log","`aws sts get-caller-identity` prints the assumed role’s ARN, so a wrong role is visible immediately."]]};
 
 DEEP.p11={verify:"Checked: the YAML parses and the verify command passes `bash -n`. Adapt: replace every `<commit-sha>` with the full SHA of that action’s release.",title:"A hardened build job with provenance",
   intro:"Deny-by-default permissions, SHA-pinned actions, and a signed provenance attestation you verify before every deploy.",
@@ -1461,9 +1461,9 @@ jobs:
         with:
           subject-name: ghcr.io/bashbop/bashbop-event-web
           subject-digest: \${{ steps.push.outputs.digest }}
-          push-to-registry: true`],["deploy step — verify before you ship",`# fails unless this exact image was attested by a workflow in the BASHBOP org
+          push-to-registry: true`],["deploy step, verify before you ship",`# fails unless this exact image was attested by a workflow in the BASHBOP org
 gh attestation verify "oci://ghcr.io/bashbop/bashbop-event-web:\${GITHUB_SHA}" --owner BASHBOP`]],
-  steps:[["Deny by default","`permissions: {}` at the top; each job lists only what it uses. A compromised step inherits nothing extra."],["SHAs with the version as a comment","Dependabot understands `@<sha> # v4.2.2` and bumps both together, so pinning doesn’t mean falling behind."],["Two permissions for attestations","`id-token: write` to sign through Sigstore and `attestations: write` to store the result."],["Verify where you deploy","Run `gh attestation verify` in the deploy job and stop if it fails — an attestation nobody checks protects nothing."]]};
+  steps:[["Deny by default","`permissions: {}` at the top; each job lists only what it uses. A compromised step inherits nothing extra."],["SHAs with the version as a comment","Dependabot understands `@<sha> # v4.2.2` and bumps both together, so pinning doesn’t mean falling behind."],["Two permissions for attestations","`id-token: write` to sign through Sigstore and `attestations: write` to store the result."],["Verify where you deploy","Run `gh attestation verify` in the deploy job and stop if it fails, an attestation nobody checks protects nothing."]]};
 
 DEEP.p12={verify:"Checked: the script passes `bash -n`. The fault scripts it calls are yours to write, each with `inject` and `undo`.",title:"The postmortem template and a safe fault injector",
   intro:"A postmortem that produces action items, and a script that injects one random fault into staging while logging it where you won’t look until the end.",
@@ -1509,9 +1509,9 @@ echo "$(date -u +%FT%TZ) inject $pick" >> "$HOME/gameday-facilitator.log"
 "./faults/$pick.sh" inject`]],
   steps:[["Numbers, not adjectives","Durations, counts and the detection delay come from timestamps, so the review argues about facts."],["Separate trigger from cause","The wrong secret was the trigger; the cause is that nothing alerted on failing webhooks for 22 minutes."],["Every action item is owned and dated","An item without an owner and a date is a wish. Link each one to a tracked issue."],["Make faults refuse production","The injector checks `TARGET_ENV` before doing anything, and every fault script ships with its own `undo`."]]};
 
-DEEP.p13={verify:"Checked: every YAML document parses. Not validated against a cluster here — run `kubectl apply --dry-run=server -f` on staging. The ExternalSecret uses `external-secrets.io/v1`; older operator releases use `v1beta1`.",
+DEEP.p13={verify:"Checked: every YAML document parses. Not validated against a cluster here, run `kubectl apply --dry-run=server -f` on staging. The ExternalSecret uses `external-secrets.io/v1`; older operator releases use `v1beta1`.",
   title:"Hardening the web Deployment for production",
-  intro:"Autoscaling, a disruption budget, zone spreading, graceful shutdown and secrets from AWS — the pieces that make the {job:p7} manifest production-grade.",
+  intro:"Autoscaling, a disruption budget, zone spreading, graceful shutdown and secrets from AWS, the pieces that make the {job:p7} manifest production-grade.",
   files:[["k8s/web/autoscaling.yaml",`apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -1541,7 +1541,7 @@ metadata:
 spec:
   minAvailable: 1
   selector:
-    matchLabels: { app: bashbop-web }`],["k8s/web/deployment.yaml — pod template additions",`spec:
+    matchLabels: { app: bashbop-web }`],["k8s/web/deployment.yaml, pod template additions",`spec:
   template:
     spec:
       terminationGracePeriodSeconds: 30
@@ -1572,9 +1572,9 @@ spec:
   dataFrom:
     - extract:
         key: bashbop/staging/api          # one JSON secret in Secrets Manager`]],
-  steps:[["Scale on real requests","70% of the CPU request only means something if requests match measured usage — set them from a week of data first."],["Slow down scale-down","A five-minute stabilisation window stops the HPA removing pods between traffic bursts."],["Spread before stacking","The topology constraint puts replicas in different AZs before doubling up, so losing a zone leaves capacity."],["Drain gracefully","The `preStop` sleep keeps a pod serving while the load balancer stops routing to it; the grace period must be longer than the sleep."]]};
+  steps:[["Scale on real requests","70% of the CPU request only means something if requests match measured usage, set them from a week of data first."],["Slow down scale-down","A five-minute stabilisation window stops the HPA removing pods between traffic bursts."],["Spread before stacking","The topology constraint puts replicas in different AZs before doubling up, so losing a zone leaves capacity."],["Drain gracefully","The `preStop` sleep keeps a pod serving while the load balancer stops routing to it; the grace period must be longer than the sleep."]]};
 
-DEEP.p14={verify:"Checked: both Ansible files parse as YAML. The Jenkinsfile isn’t machine-checked here — use Jenkins’ declarative linter (`jenkins-cli declarative-linter`) — and the test stage needs `jest-junit` installed.",
+DEEP.p14={verify:"Checked: both Ansible files parse as YAML. The Jenkinsfile isn’t machine-checked here, use Jenkins’ declarative linter (`jenkins-cli declarative-linter`), and the test stage needs `jest-junit` installed.",
   title:"An idempotent Nginx role and a declarative Jenkinsfile",
   intro:"The Nginx part of the API host as an Ansible role that only reloads on real changes, and the {job:p2} PR gate rewritten as a Jenkinsfile.",
   files:[["roles/nginx/tasks/main.yml",`- name: Install Nginx
@@ -1628,9 +1628,9 @@ DEEP.p14={verify:"Checked: both Ansible files parse as YAML. The Jenkinsfile isn
     always { junit allowEmptyResults: true, testResults: 'junit.xml' }
   }
 }`,"plain"]],
-  steps:[["Modules over commands","`apt` and `template` report changed only when they act, so the handler fires only on real changes."],["Validate before reloading","If `nginx -t` fails, the play stops before handlers run, so a broken config never reaches a live reload. Fix forward quickly — the bad file is on disk."],["Parallel stages share a workspace","Lint, types and tests run side by side like jobs in Actions, but on one agent — so they share `node_modules` instead of reinstalling."],["Credentials stay scoped","`withCredentials` exposes the secret only inside its block and masks the exact value in the log."]]};
+  steps:[["Modules over commands","`apt` and `template` report changed only when they act, so the handler fires only on real changes."],["Validate before reloading","If `nginx -t` fails, the play stops before handlers run, so a broken config never reaches a live reload. Fix forward quickly, the bad file is on disk."],["Parallel stages share a workspace","Lint, types and tests run side by side like jobs in Actions, but on one agent, so they share `node_modules` instead of reinstalling."],["Credentials stay scoped","`withCredentials` exposes the secret only inside its block and masks the exact value in the log."]]};
 
-DEEP.p15={verify:"Checked: the shell snippet passes `bash -n`. Domain weights follow the published CKA curriculum as of 2026 — confirm against the current curriculum before booking.",
+DEEP.p15={verify:"Checked: the shell snippet passes `bash -n`. Domain weights follow the published CKA curriculum as of 2026, confirm against the current curriculum before booking.",
   title:"An objective map and a CKA speed kit",
   intro:"Map the blueprint to what you’ve actually done, then set up the terminal habits that save minutes on every task.",
   files:[["cka-objective-map.md (excerpt)",`| Domain (weight)              | Objective                          | Where I did it               | Confidence |
@@ -1655,12 +1655,12 @@ k create rolebinding read-pods --role=pod-reader --user=jane $do > rolebinding.y
 # first moves when something is broken
 k get events -A --sort-by=.lastTimestamp | tail -20
 k describe pod "$POD" | sed -n '/Events:/,$p'`]],
-  steps:[["Map before you study","The table shows the two uncovered objectives immediately — that’s where the next two weeks go."],["Weights say where the marks are","Troubleshooting is 30% of the CKA and storage 10%; split practice time roughly the same way."],["Generate, then edit","`$do` turns any imperative command into YAML you can adjust — faster, with fewer indentation mistakes."],["Events first","Sorted events name most failures in seconds, before you open a single log."]]};
+  steps:[["Map before you study","The table shows the two uncovered objectives immediately, that’s where the next two weeks go."],["Weights say where the marks are","Troubleshooting is 30% of the CKA and storage 10%; split practice time roughly the same way."],["Generate, then edit","`$do` turns any imperative command into YAML you can adjust, faster, with fewer indentation mistakes."],["Events first","Sorted events name most failures in seconds, before you open a single log."]]};
 
-DEEP.p16={verify:"Not machine-checked (prose). Every number here is a placeholder showing the format — replace each one with your own measured before/after figures.",
+DEEP.p16={verify:"Not machine-checked (prose). Every number here is a placeholder showing the format, replace each one with your own measured before/after figures.",
   title:"Evidence-based CV bullets and a two-minute STAR story",
-  intro:"The format that turns this track into interview evidence. The numbers are placeholders — use only figures you measured.",
-  files:[["cv-experience.md (format example)",`BASHBOP LTD — Founder, engineering
+  intro:"The format that turns this track into interview evidence. The numbers are placeholders, use only figures you measured.",
+  files:[["cv-experience.md (format example)",`BASHBOP LTD, Founder, engineering
 
 - Rebuilt CI for a Next.js + NestJS platform with one required PR gate and cached builds:
   PR feedback 14 → 6 min, no type errors merged since.                (GitHub Actions, rulesets)
@@ -1680,7 +1680,7 @@ Action     Declared the incident on the first alert and posted updates every 15 
 Result     Mitigated 10 minutes after the alert, but detection took 22. I added a webhook
            4xx alert and a synthetic booking after each deploy; the next game day caught
            the same fault in 3 minutes.`,"plain"]],
-  steps:[["Lead with the result","Hiring managers skim. Put the measured change in the first line and the tools in brackets."],["Only numbers you measured","Every figure should come from your own before/after data — interviewers ask how you measured it."],["End with what changed","The second game day’s faster detection is the part that proves you learn from incidents."],["Two minutes, then stop","A tight story invites follow-up questions — the ones you’ve already prepared for."]]};
+  steps:[["Lead with the result","Hiring managers skim. Put the measured change in the first line and the tools in brackets."],["Only numbers you measured","Every figure should come from your own before/after data, interviewers ask how you measured it."],["End with what changed","The second game day’s faster detection is the part that proves you learn from incidents."],["Two minutes, then stop","A tight story invites follow-up questions, the ones you’ve already prepared for."]]};
 
 /* ------------------------------------------------------------------ helpers */
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
@@ -1761,7 +1761,7 @@ function publishNow(){
     else{setChip("error");}
   });
 }
-var CHIP={saved:"Progress saved to page",unsaved:"Unsaved changes",saving:"Saving…",local:"Saved in this browser",conflict:"Newer version loading",error:"Couldn’t save — try again"};
+var CHIP={saved:"Progress saved to page",unsaved:"Unsaved changes",saving:"Saving…",local:"Saved in this browser",conflict:"Newer version loading",error:"Couldn’t save, try again"};
 function setChip(s){
   chipState=s;var el=$("#chip");if(!el)return;
   el.setAttribute("data-s",s);
@@ -1799,7 +1799,7 @@ function renderSlide(i){
     var t=totals(), pct=t.t?Math.round(t.n/t.t*100):0;
     h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>pipeline · bashbop + Brain Boost Buddy</span><span>"+(state.started?"started "+esc(new Date(state.started+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})):"not started")+"</span></div>";
     h+="<h1 data-a style=\"--i:1\">Bashbop DevOps Track</h1>";
-    h+="<p class=\"lede\" data-a style=\"--i:2\">Eleven jobs and a capstone across bashbop and Brain Boost Buddy — from reading your own server to signed releases, cloud networks, supply-chain security, on-call and a full game day — then four job-ready jobs: production Kubernetes, Ansible and Jenkins, a certification, and interviews. Every lab is real work on your repos.</p>";
+    h+="<p class=\"lede\" data-a style=\"--i:2\">Eleven jobs and a capstone across bashbop and Brain Boost Buddy, from reading your own server to signed releases, cloud networks, supply-chain security, on-call and a full game day, then four job-ready jobs: production Kubernetes, Ansible and Jenkins, a certification, and interviews. Every lab is real work on your repos.</p>";
     h+="<div class=\"two\">";
     h+="<div class=\"run\" data-a style=\"--i:3\">";
     PHASES.forEach(function(p,pi){
@@ -1819,15 +1819,15 @@ function renderSlide(i){
     h+="<div class=\"loop\" data-a style=\"--i:2\"><div><span class=\"k\">1 · learn</span><h3>How it works</h3><p class=\"small muted\">Concepts plus a diagram of the mechanism underneath, not just its name.</p></div><div><span class=\"k\">2 · study</span><h3>Worked example</h3><p class=\"small muted\">Annotated config for your stack, with what was checked and what to adapt.</p></div><div><span class=\"k\">3 · apply</span><h3>Lab tasks</h3><p class=\"small muted\">Real changes to bashbop and Brain Boost Buddy.</p></div><div><span class=\"k\">4 · break</span><h3>Break-fix drill</h3><p class=\"small muted\">Break staging on purpose, diagnose from symptoms with hints, then reveal the answer.</p></div><div><span class=\"k\">5 · prove</span><h3>Checkpoint</h3><p class=\"small muted\">Exit criteria, five scenario questions and notes. A job passes when every box is ticked.</p></div></div>";
     h+="<div class=\"two\">";
     h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Moving around</h3><div class=\"keys\"><span><kbd>→</kbd> <kbd>space</kbd></span><span>Next slide</span><span><kbd>←</kbd></span><span>Previous slide</span><span><kbd>O</kbd></span><span>All slides overview</span><span><kbd>Home</kbd> <kbd>End</kbd></span><span>First / last slide</span><span>Top rail</span><span>Jump to any job; green is passed, amber is in progress</span></div></div>";
-    h+="<div class=\"panel\" data-a style=\"--i:4\"><h3 style=\"margin-bottom:12px\">How progress is kept</h3><p class=\"small muted\">"+(window.claude?"Ticks, notes and your start date save into this page as a new version about 15 seconds after you stop — so they follow you to any device. If this view can’t save to the page, they stay in this browser.":"Ticks, notes and your start date save in this browser as you go. Come back in the same browser to pick up where you left off.")+"</p><p class=\"small\" style=\"margin-top:12px\">Right now: <strong id=\"howsave\">"+CHIP[chipState]+"</strong></p></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:4\"><h3 style=\"margin-bottom:12px\">How progress is kept</h3><p class=\"small muted\">"+(window.claude?"Ticks, notes and your start date save into this page as a new version about 15 seconds after you stop, so they follow you to any device. If this view can’t save to the page, they stay in this browser.":"Ticks, notes and your start date save in this browser as you go. Come back in the same browser to pick up where you left off.")+"</p><p class=\"small\" style=\"margin-top:12px\">Right now: <strong id=\"howsave\">"+CHIP[chipState]+"</strong></p></div>";
     h+="</div>";
   }
   else if(sl.type==="audit"){
     h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>baseline · read from the repos on 13 Sep 2026</span></div>";
     h+="<h2 data-a style=\"--i:1\">Where both products start</h2>";
-    h+="<p class=\"lede\" data-a style=\"--i:2\">These findings are the first lab tasks — you learn each concept by fixing something real.</p>";
+    h+="<p class=\"lede\" data-a style=\"--i:2\">These findings are the first lab tasks, you learn each concept by fixing something real.</p>";
     h+="<div class=\"findings\" data-a style=\"--i:3\">";
-    FINDINGS.forEach(function(f){var k=pidx(f[3]);h+="<div class=\"finding\"><span class=\"pill "+f[0]+"\">"+(f[0]==="risk"?"risk":f[0]==="warn"?"gap":"tidy")+"</span><span><strong>"+esc(f[1])+"</strong> — "+md(f[2])+"</span><button class=\"fix\" type=\"button\" data-go=\""+(ps(k)+4)+"\">job "+(k+1)+" →</button></div>";});
+    FINDINGS.forEach(function(f){var k=pidx(f[3]);h+="<div class=\"finding\"><span class=\"pill "+f[0]+"\">"+(f[0]==="risk"?"risk":f[0]==="warn"?"gap":"tidy")+"</span><span><strong>"+esc(f[1])+"</strong>, "+md(f[2])+"</span><button class=\"fix\" type=\"button\" data-go=\""+(ps(k)+4)+"\">job "+(k+1)+" →</button></div>";});
     h+="</div>";
     h+="<div data-a style=\"--i:4\"><h3 style=\"margin-bottom:10px\">Already in good shape</h3><div class=\"strengths\">"+STRENGTHS.map(function(s){return "<span>"+esc(s)+"</span>";}).join("")+"</div></div>";
   }
@@ -1845,7 +1845,7 @@ function renderSlide(i){
     h+="<div class=\"loop\" data-a style=\"--i:2\"><div><span class=\"k\">mon · 1h</span><h3>Read</h3><p class=\"small muted\">One concept from the current job, plus its docs. Write three lines in the job’s notes.</p></div><div><span class=\"k\">wed · 2h</span><h3>Build</h3><p class=\"small muted\">One lab task as a real PR with full checks green.</p></div><div><span class=\"k\">sat · 1h</span><h3>Break</h3><p class=\"small muted\">Break something on staging on purpose and recover it. Tick the task only once it’s proven.</p></div></div>";
     h+="<div class=\"two\">";
     h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Rules for the whole run</h3><ul class=\"res\" style=\"gap:10px\"><li>Anything you do twice, automate.</li><li>Every piece of infrastructure gets a README or runbook entry.</li><li>Main being red is information to raise, never something to filter out.</li><li>Practise on staging; production is for things you’ve already rehearsed.</li></ul></div>";
-    h+="<div class=\"panel\" data-a style=\"--i:4\"><h3 style=\"margin-bottom:12px\">Where to go next</h3><ul class=\"res\"><li>roadmap.sh/devops — a checklist to find gaps</li><li>KodeKloud labs — timed practice for certifications</li><li>Google SRE Book & Workbook — free at sre.google</li><li>Gene Kim et al. — The Phoenix Project</li></ul></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:4\"><h3 style=\"margin-bottom:12px\">Where to go next</h3><ul class=\"res\"><li>roadmap.sh/devops, a checklist to find gaps</li><li>KodeKloud labs, timed practice for certifications</li><li>Google SRE Book & Workbook, free at sre.google</li><li>Gene Kim et al., The Phoenix Project</li></ul></div>";
     h+="</div>";
   }
   else{
@@ -1928,13 +1928,13 @@ function renderRail(){
   PHASES.forEach(function(p,pi){
     var s=phaseStats(p), here=SLIDES[cur].pi===pi;
     if(pi)r+="<span class=\"wire"+(phaseStats(PHASES[pi-1]).status==="passed"?" lit":"")+"\"></span>";
-    r+="<button type=\"button\" class=\"job"+(here?" here":"")+"\" data-go=\""+ps(pi)+"\" title=\""+esc(p.title)+" — "+s.n+"/"+s.total+"\"><span class=\"dot "+s.status+"\"></span><span class=\"jl\">"+esc(p.short)+"</span></button>";
+    r+="<button type=\"button\" class=\"job"+(here?" here":"")+"\" data-go=\""+ps(pi)+"\" title=\""+esc(p.title)+", "+s.n+"/"+s.total+"\"><span class=\"dot "+s.status+"\"></span><span class=\"jl\">"+esc(p.short)+"</span></button>";
   });
   $("#rail").innerHTML=r;
 }
 function renderChrome(){
   var sl=SLIDES[cur];
-  var ctx=sl.pi!=null?"Job "+(sl.pi+1)+" · "+PHASES[sl.pi].short+" — "+sl.label:sl.label;
+  var ctx=sl.pi!=null?"Job "+(sl.pi+1)+" · "+PHASES[sl.pi].short+", "+sl.label:sl.label;
   $("#lbl").textContent=(cur+1)+" / "+SLIDES.length+"  ·  "+ctx;
   $("#track").style.width=((cur+1)/SLIDES.length*100)+"%";
   $("#prev").disabled=cur===0;$("#next").disabled=cur===SLIDES.length-1;
