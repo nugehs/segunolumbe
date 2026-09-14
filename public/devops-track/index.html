@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bashbop DevOps Track</title>
-<meta name="description" content="An in-depth, progress-tracked DevOps track across bashbop and Brain Boost Buddy: eleven jobs and a capstone with mechanism diagrams, worked examples, break-fix drills and labs.">
+<meta name="description" content="An in-depth, progress-tracked DevOps track across bashbop and Brain Boost Buddy: eleven jobs and a capstone, plus a job-ready track with production Kubernetes, Ansible and Jenkins, certification and interviews.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚦</text></svg>">
 <link id="fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -95,6 +95,7 @@ p{margin:0;max-width:68ch}
 .run{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
 .runrow{display:grid;grid-template-columns:28px 1fr auto;gap:14px;align-items:center;padding:12px 16px;border:0;border-top:1px solid var(--line);background:none;text-align:left;cursor:pointer;width:100%}
 .runrow:first-child{border-top:0}
+.runsep{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);padding:12px 16px 8px;border-top:1px solid var(--line);background:var(--accent-soft)}
 .runrow:hover{background:var(--sunk)}
 .runrow .nm{font-weight:600}
 .runrow .meta{font:12px/1.3 var(--mono);color:var(--ink-3)}
@@ -620,6 +621,115 @@ var PHASES=[
         ["What turns a case study from a list of tools into evidence?","Numbers against a baseline (CI 14 → 6 minutes), decisions with their trade-offs, links to the actual PRs and dashboards, and an honest ‘what I’d change’."],
         ["Why confirm alerts fire before the game day?","Otherwise a silent fault can’t be told apart from a broken exercise, and you learn nothing about your monitoring."]],
   res:["Google SRE Workbook — ‘Incident Response’ (sre.google)","PagerDuty — Incident Response documentation (response.pagerduty.com)","AWS — Fault Injection Service and game days","Atlassian — Incident postmortem templates"]
+},
+{ id:"p13", part:"job", short:"K8s prod", title:"Production Kubernetes on a managed cluster", weeks:[39,43],
+  why:"{job:p7} ran bashbop on a laptop cluster. Production-grade is what hiring managers actually probe: a managed cluster, ingress with TLS, autoscaling that doesn’t flap, pods that survive node drains and upgrades, per-pod cloud identity, secrets from a secrets manager, RBAC, in-cluster monitoring and GitOps you can roll back. Build it for bashbop staging, run it for a month, then tear it down — the bill is the reason not to keep it.",
+  terms:[["Managed control plane","EKS runs the API server and etcd; you run the nodes and everything on them."],["Requests & limits","Requests drive scheduling and autoscaling; limits cap usage. Wrong requests break both."],["HPA","Scales replicas on CPU, memory or custom metrics — measured against requests."],["Karpenter / Cluster Autoscaler","Adds nodes when pods can’t be scheduled and removes empty ones."],["PodDisruptionBudget","Keeps a minimum number of pods running during drains and upgrades."],["Ingress / Gateway API","Routes external HTTP(S) to Services; a controller creates the real load balancer."],["RBAC & Pod Identity","Who may do what in the cluster, and which AWS role a pod gets — without node-wide credentials."],["External Secrets","Syncs secrets from AWS Secrets Manager into Kubernetes Secrets."]],
+  flowTitle:"A deploy on a production cluster",
+  flow:[["git","PR bumps the tag","manifests repository"],["gitops","Argo CD sync","staging auto, production manual"],["rollout","Deployment","maxUnavailable 0, readiness gates"],["scale","HPA + Karpenter","more pods, then more nodes"],["safety","PDB + probes","drains never drop below minimum"]],
+  hot:2,
+  callouts:[["warn","An EKS control plane bills hourly on top of nodes, load balancers and NAT. Give the staging cluster a budget alarm and a teardown date before you create it."],["info","Keep the manifests from {job:p7} — this job hardens them rather than starting again."]],
+  tasks:[
+    ["Provision a staging EKS cluster with Terraform (for example the `terraform-aws-modules/eks` module): private nodes across two AZs, with a managed node group or Karpenter.",""],
+    ["Install the AWS Load Balancer Controller and expose bashbop-web through an Ingress with a certificate from ACM.",""],
+    ["Set CPU and memory requests from a week of real usage (`kubectl top pods`), then add an HPA for web and API.",""],
+    ["Add PodDisruptionBudgets, run `kubectl drain` on a node during a load test, and confirm zero failed requests.",""],
+    ["Give the API an AWS role through EKS Pod Identity (or IRSA) and remove any node-level permissions it relied on.",""],
+    ["Sync Stripe, database and Redis secrets from AWS Secrets Manager with External Secrets Operator.",""],
+    ["Write RBAC: a read-only role for investigation and a namespace-scoped role for Argo CD.",""],
+    ["Install kube-prometheus-stack and alert on restart loops, an HPA pinned at max replicas, and node memory pressure.",""],
+    ["Enable network policy support in the VPC CNI, then allow only the ingress controller → web → API → Redis paths.",""],
+    ["Upgrade the staging cluster one minor version without downtime, following AWS’s upgrade checklist.",""],
+    ["Record the cluster’s monthly cost, then tear it down.",""]
+  ],
+  exit:["A node drain or cluster upgrade causes zero failed requests.","Pods get AWS access and secrets without node-wide credentials or secrets in Git.","I can explain every object in the bashbop namespace and why it’s there."],
+  quiz:[["Pods are `Pending` with ‘0/3 nodes are available: insufficient memory’. What are the two fixes, and which does Karpenter do?","Lower an over-stated memory request, or add capacity. Karpenter (or Cluster Autoscaler) adds a node that fits the pod; it can’t fix a wrong request."],
+        ["Your HPA never scales under load. What do you check first?","That pods have CPU requests (utilisation is a percentage of the request) and metrics-server is running — `kubectl get hpa` shows `<unknown>` targets when metrics are missing."],
+        ["Why can a `maxUnavailable: 0` rollout still drop requests?","Terminating pods can still receive traffic while the load balancer deregisters them. Without readiness probes, a `preStop` delay and graceful shutdown, requests hit pods that are stopping."],
+        ["What doesn’t a PodDisruptionBudget protect against?","Involuntary disruption — a node crash, the OOM killer, a zone outage. It only limits voluntary evictions such as drains and upgrades."],
+        ["Why per-pod AWS roles instead of an IAM role on the node?","Every pod on a node shares the node role, so one compromised pod gets all its permissions. Pod Identity or IRSA scopes access to the workload that needs it."]],
+  res:["Kubernetes Docs — Production environment; Specifying a Disruption Budget","AWS — Amazon EKS Best Practices Guide","Karpenter documentation","External Secrets Operator documentation","kube-prometheus-stack Helm chart"]
+},
+{ id:"p14", part:"job", short:"Enterprise", title:"Enterprise tooling: Ansible and Jenkins", weeks:[44,46],
+  why:"Many DevOps job ads still list Ansible and Jenkins, because large companies run fleets of long-lived servers and years of Jenkins pipelines. You don’t need to love them; you need to read an existing playbook or Jenkinsfile, change it safely, and explain how they compare with Terraform and GitHub Actions. Learn both by rebuilding things you already have.",
+  terms:[["Idempotency","Running a playbook twice changes nothing the second time — Ansible’s core promise."],["Inventory & groups","Which hosts exist and how they’re grouped: web, api, staging."],["Modules vs shell","`ansible.builtin.apt` knows the desired state; `shell` just runs commands and reports ‘changed’ every time."],["Roles & handlers","Reusable task bundles; handlers run once at the end when notified, such as reloading Nginx."],["Ansible Vault","Encrypts secrets inside the repository; the vault password lives outside it."],["Declarative Jenkinsfile","`pipeline { agent … stages { … } }` — Jenkins pipelines as code."],["Agents & credentials","Where builds run, and secrets bound into steps with `withCredentials`."],["Shared libraries","Reusable pipeline code across repositories — like reusable workflows in Actions."]],
+  flowTitle:"Where each tool fits",
+  flow:[["provision","Terraform","creates the VM and network"],["configure","Ansible","packages, users, Nginx, PM2"],["build","Jenkins or Actions","test, build, package"],["deploy","Ansible or GitOps","roll out to hosts or a cluster"],["verify","Smoke checks","health, logs, metrics"]],
+  hot:1,
+  callouts:[["info","The PM2 + Nginx host from {job:p1} is a perfect Ansible target: turn that hand-configured server into a playbook you can rerun on a blank VM."],["warn","Jenkins plugins are a well-known attack surface. Run Jenkins in a throwaway local container for this job — never on a public server."]],
+  tasks:[
+    ["Install Ansible and write an inventory for a throwaway staging VM (or two local VMs with Multipass).",""],
+    ["Write a playbook that configures the API host from {job:p1}: Node.js, a service user, PM2, the Nginx site and firewall rules.",""],
+    ["Run it twice and reach `changed=0` on the second run, replacing any `shell` task that always reports changed.",""],
+    ["Split it into `node`, `nginx` and `app` roles, with a handler that reloads Nginx only when its config changes.",""],
+    ["Encrypt the API environment file with Ansible Vault and deploy it with the right owner and `0600` permissions.",""],
+    ["Lint with `ansible-lint`, and test one role with Molecule against a container.",""],
+    ["Run Jenkins locally in Docker (`jenkins/jenkins:lts`) and create a multibranch pipeline for bashbop-event-web.",""],
+    ["Write a declarative Jenkinsfile mirroring the PR gate from {job:p2}: install, then lint, types and tests in parallel, with JUnit reports.",""],
+    ["Bind a credential with `withCredentials` and prove it’s masked in the console log.",""],
+    ["Write a one-page comparison: Jenkins vs GitHub Actions, and Ansible vs Terraform vs containers — when you’d pick each.",""]
+  ],
+  exit:["My playbook builds the API host from a blank VM and reruns with zero changes.","I can read an unfamiliar Jenkinsfile and explain every stage, agent and credential.","I can explain when Ansible, Terraform or Kubernetes is the right tool."],
+  quiz:[["A task runs `shell: apt-get install -y nginx` and reports ‘changed’ every run. Why does that matter, and what’s the fix?","It breaks idempotency: handlers fire every time and real drift hides in the noise. Use `ansible.builtin.apt` with `state: present`, which reports changed only when it installs."],
+        ["Terraform or Ansible to create an EC2 instance and install Nginx on it?","Terraform creates and tracks the instance in state; Ansible configures what runs inside it. Ansible can create cloud resources, but without state it can’t plan changes or detect drift the same way."],
+        ["A secret appears in the Jenkins log even though it’s inside `withCredentials`. How?","Masking replaces only the exact string. If a step transforms it — base64, URL-encoding, splitting — the printed text no longer matches and isn’t masked."],
+        ["What’s Jenkins’ equivalent of a reusable workflow, and of a runner label?","A shared library (`@Library`) for reusable pipeline code, and an agent label (`agent { label 'linux' }`) to choose where it runs."],
+        ["Why do handlers run at the end of a play rather than immediately?","So several config changes trigger one reload instead of many — and only if something actually changed."]],
+  res:["Ansible Docs — Getting started and tips for playbooks","ansible-lint and Molecule documentation","Jenkins Docs — Pipeline syntax","Jenkins Docs — Using credentials","Jeff Geerling — Ansible for DevOps"]
+},
+{ id:"p15", part:"job", short:"Certify", title:"Certification: prove it under exam conditions", weeks:[47,50],
+  why:"A certification won’t get you hired on its own, but it gets a CV past filters and forces you to fill the gaps you’ve skipped. Pick the one your target roles ask for: AWS Solutions Architect – Associate for cloud-heavy roles, or CKA for Kubernetes and platform roles. Most of this track maps onto both; this job turns that into a study plan and timed practice.",
+  terms:[["SAA-C03 format","65 questions in 130 minutes, pass at 720/1000. Domains: secure 30%, resilient 26%, high-performing 24%, cost-optimised 20%."],["CKA format","15–20 hands-on tasks in live clusters over two hours; pass at 66%. Troubleshooting is 30%."],["Blueprint mapping","Every exam objective linked to the job, lab or drill where you practised it."],["Timed practice","Full-length practice exams under the real time limit, reviewed question by question."],["Imperative speed","`kubectl create … --dry-run=client -o yaml` generates YAML faster than typing it."],["Mistakes log","What you believed, what’s true, and the doc link — reviewed daily."],["Exam logistics","ID rules, online proctoring room checks, and a booked date as the deadline."]],
+  flowTitle:"From track to exam",
+  flow:[["map","Blueprint","objectives → track jobs"],["gaps","Weak areas","what the track didn’t cover"],["study","Daily reps","docs, labs, flashcards"],["practice","Timed exams","80%+ twice in a row"],["sit","Exam day","booked, checked, rested"]],
+  hot:3,
+  callouts:[["info","A CKA purchase includes two killer.sh simulator sessions, deliberately harder than the real exam. Use one early to see the gap and one in the final week."],["warn","Brain dumps and leaked questions break exam agreements and can void a certification. Practise the skills, not the answers."]],
+  tasks:[
+    ["Read ten job ads for roles you want and count which certification they name.",""],
+    ["Download the official exam guide or curriculum and map every objective to a job, lab or drill you’ve done.",""],
+    ["List the objectives with no mapping and schedule those first.",""],
+    ["Book the exam four to six weeks out.",""],
+    ["Study 45–60 minutes a day: official docs for each gap area, then a hands-on lab for it.",""],
+    ["AWS path: take a full timed practice exam cold, then one per study week, writing down why each wrong answer was wrong.",""],
+    ["CKA path: do the first simulator session early, drill imperative `kubectl` until common objects take under a minute, and redo the simulator in the final week.",""],
+    ["Keep a mistakes log and review it every day.",""],
+    ["Score at least 80% on two consecutive timed practice runs before exam week.",""],
+    ["Run an exam-day check: ID, room and webcam rules, a stable connection and a quiet slot.",""]
+  ],
+  exit:["Every exam objective is mapped to something I’ve done or studied.","I scored at least 80% on two consecutive timed practice runs.","The exam is booked — or passed."],
+  quiz:[["An SAA question asks for the most cost-effective storage for logs you rarely read but must keep for seven years. What’s the likely answer?","S3 with a lifecycle rule moving objects to S3 Glacier Deep Archive — the cheapest storage for rarely accessed long-term data, accepting retrieval that takes hours."],
+        ["In the CKA a pod won’t start and you have eight minutes. What’s your order?","`kubectl describe pod` for events, `kubectl logs --previous` if it crashed, then the image, requests, node taints and PVC binding. Events usually name the cause within a minute."],
+        ["Why generate manifests with `--dry-run=client -o yaml` in the CKA?","It’s faster and avoids indentation mistakes: you edit generated YAML instead of writing it from memory under time pressure."],
+        ["SAA: a relational database must survive losing an Availability Zone with no data loss. Which feature?","RDS Multi-AZ — a synchronous standby in another AZ with automatic failover. Read replicas are asynchronous, so they can lose recent writes."],
+        ["Why map objectives to your own labs instead of just following a course?","Exam scenarios test judgement. Linking each objective to something you built makes recall concrete and exposes the gaps a course would skim past."]],
+  res:["AWS — Certified Solutions Architect – Associate exam guide","CNCF — CKA curriculum (github.com/cncf/curriculum)","Kubernetes Docs — kubectl quick reference","killer.sh — CKA simulator","AWS Skill Builder — official practice question sets"]
+},
+{ id:"p16", part:"job", short:"Interview", title:"Job search & interviews: turn the work into offers", weeks:[51,54],
+  why:"DevOps interviews test three things: can you debug under pressure, can you design something sensible and explain the trade-offs, and have you actually run production. You have two live products as evidence. This job turns that into a CV with measured results, stories you can tell in two minutes, and practice with people who push back.",
+  terms:[["STAR stories","Situation, task, action, result — with a number in the result."],["Troubleshooting round","A live broken system or scenario; they grade your method more than the fix."],["System design round","Design a CI/CD platform, logging pipeline or zero-downtime migration, talking through trade-offs."],["Take-home task","Usually Terraform, a pipeline or a Dockerfile, judged on clarity, safety and the README."],["Evidence bullets","Action, tool, measured result — ‘cut CI from 14 to 6 minutes’, not ‘worked on CI’."],["Mock interviews","Practice with someone who interrupts, challenges and scores you."],["Pipeline tracking","Applications, stages, follow-ups and outcomes in one sheet, reviewed weekly."]],
+  flowTitle:"A typical DevOps hiring loop",
+  flow:[["screen","Recruiter call","motivation, salary, logistics"],["technical","Troubleshooting","live scenario, thinking aloud"],["design","System design","CI/CD or platform trade-offs"],["behavioural","Stories","incidents, conflict, ownership"],["offer","Decision","references, negotiation"]],
+  hot:1,
+  callouts:[["info","Your capstone postmortem and case study from {job:p12} are your strongest interview material: a real incident, measured, with what you changed."],["warn","Never show bashbop or Brain Boost Buddy secrets, customer data or internal URLs in a take-home or screen share — sanitise every example first."]],
+  tasks:[
+    ["Rewrite your CV around evidence: at least five bullets from this track, each with a measured before/after number.",""],
+    ["Update your LinkedIn headline and About section for the roles you want, and feature the case study.",""],
+    ["Write six STAR stories: an outage, a failed deploy, a security fix, a cost cut, a disagreement, and something you automated.",""],
+    ["Tell each story aloud in under two minutes and record it; cut anything that isn’t action or result.",""],
+    ["Practise three system design prompts aloud on a whiteboard: CI/CD for 50 services, centralised logging, and a zero-downtime database migration.",""],
+    ["Do two live troubleshooting mocks where a peer breaks a staging environment you haven’t seen.",""],
+    ["Complete one realistic take-home (for example a Terraform module with tests and a README) inside its time limit, then review it as the hiring manager.",""],
+    ["Prepare your own questions: on-call load, deploy frequency, who owns infrastructure, how incidents are reviewed.",""],
+    ["Set up an application tracker, apply to at least five well-matched roles a week, and follow up after seven days.",""],
+    ["After every real interview, write down each question and a better answer, and practise it.",""]
+  ],
+  exit:["My CV has at least five evidence-backed bullets from this track.","I’ve done design, troubleshooting and behavioural mocks and acted on the feedback.","I apply every week, with a tracker and follow-ups."],
+  quiz:[["‘Tell me about an outage.’ What must your answer include?","What broke and the customer impact, how and how quickly it was detected, what you did first to mitigate, the root cause, and what you changed so it can’t recur — with numbers."],
+        ["In a design round they mention a tool you don’t know. What do you do?","Say so briefly, describe what you need that component to do, and design with a tool you know that fills the role. Clear reasoning beats name-dropping."],
+        ["‘The website is slow.’ How do you open a troubleshooting round?","Clarify before touching anything: all users or some, since when, what changed, which pages. Then work down the request path from the outside in, stating each hypothesis and the check that tests it."],
+        ["Why put numbers in CV bullets?","They make impact checkable and comparable: ‘rollback from 40 to 4 minutes’ shows scale and skill in one line — and invites a follow-up you’re ready for."],
+        ["What’s a strong question to ask them at the end?","‘Walk me through your last incident and what changed afterwards.’ It reveals on-call health, blame culture and whether reviews lead to action."]],
+  res:["Google SRE Book — ‘Being On-Call’ and ‘Postmortem Culture’","Alex Xu — System Design Interview, volume 1","Kim, Humble, Debois, Willis & Forsgren — The DevOps Handbook","Peer mock-interview platforms, or a local DevOps meetup","Your own capstone case study"]
 }
 ];
 
@@ -780,6 +890,27 @@ var HOW={
     svg:function(){return timeline("hw12",["Fault active","Detection","Response","Status updates"],[[0,5,58,"bookings stuck pending","fail"],[1,5,42,"undetected ≈ 22 min","gap"],[2,42,58,"mitigate"],[2,58,85,"resolve + verify","pass"],[3,44,85,"every 15 min"]],[[0,"0 min"],[25,"15"],[50,"30"],[75,"45"],[100,"60"]],[[5,"fault"],[42,"alert"],[58,"mitigated"],[85,"resolved"]],"Timeline over 60 minutes: a fault starts at 3 minutes, goes undetected until an alert at about 25 minutes, is mitigated at about 35 minutes and resolved at about 51 minutes, with status updates every 15 minutes.");}}
 };
 
+HOW.p13={title:"What happens after kubectl apply",
+  caption:"A Deployment becomes running pods through independent control loops that only ever talk to the API server. Nothing calls the scheduler or a kubelet directly.",
+  points:[["Everything goes through the API server","kubectl, controllers, the scheduler and kubelets never talk to each other — they read and write objects through the API server, which stores them in etcd."],["Controllers are loops, not scripts","Each watches for a gap between desired and observed state and acts. Delete a pod and the ReplicaSet controller simply notices one is missing."],["Scheduling uses requests, not usage","The scheduler filters nodes by unrequested capacity, taints and affinity, then scores them. A pod without requests can land anywhere and starve its neighbours."],["Ready is what routes traffic","Only pods whose readiness probe passes become Service endpoints — which is why probes decide whether a rollout drops requests."]],
+  svg:function(){return seq("hw13",["kubectl","API server","etcd","Controllers","Scheduler","kubelet"],[[0,1,"apply Deployment"],[1,1,"authn · RBAC · admission"],[1,2,"store desired"],[3,1,"watch → create ReplicaSet + Pods"],[4,1,"watch: Pods with no node"],[4,4,"filter + score nodes"],[4,1,"bind Pod to node-b"],[5,1,"watch: Pod bound to me"],[5,5,"pull image, start container","hot"],[5,1,"status: Ready (probe passed)"],[1,2,"store observed"]],"Sequence: kubectl applies a Deployment to the API server, which stores it in etcd; controllers create a ReplicaSet and Pods, the scheduler binds each Pod to a node, and the kubelet starts the container and reports Ready.");}};
+HOW.p14={title:"How Ansible and Jenkins actually run",
+  caption:"Left: Ansible connects to a host over SSH, checks the current state, changes only what differs and fires a handler once. Right: a Jenkins controller schedules a build on an agent and collects the results.",
+  points:[["Ansible is agentless push","A control node connects over SSH, copies a small module, runs it and reads JSON back. Nothing stays running on the host."],["Modules check before they change","Each module compares current state first, so ‘ok’ means already correct and ‘changed’ means it acted — the basis of idempotency."],["Jenkins splits controller and agents","The controller schedules and stores results; agents run builds. Building on the controller is a security and stability mistake."],["Both need real secret handling","Vault-encrypted variables for Ansible, the credentials store for Jenkins — never plain text in a repo or job config."]],
+  svg:function(){return seq("hw14",["Ansible control","api-1 host","Jenkins controller","Jenkins agent"],[[0,0,"read inventory + playbook"],[0,1,"SSH: run apt module"],[1,1,"nginx present → ok"],[0,1,"SSH: template api.conf"],[1,0,"changed → notify handler"],[0,1,"handler: reload nginx (once)","hot"],[2,2,"webhook: push to main"],[2,3,"run on agent label linux"],[3,3,"checkout, stages in parallel"],[3,2,"JUnit results + status"]],"Sequence: the Ansible control node runs modules on a host over SSH, gets ok or changed back and reloads Nginx once through a handler; separately, a Jenkins controller receives a webhook, schedules a build on an agent and collects results.");}};
+HOW.p15={title:"Six weeks from booking to exam",
+  caption:"Baseline early, close gaps first, study daily, and only sit the exam after two timed practice runs at 80% or better.",
+  points:[["Baseline before studying","A cold practice exam shows where you really are — usually not where you think."],["Gaps first, strengths never","Map objectives to what you’ve done, then spend study time only on the unmapped ones."],["Practise the format","Timed runs build pacing. For the CKA, speed with `kubectl` matters as much as knowledge."],["A booked date is the plan","Without a date, ‘almost ready’ lasts forever. Book it and fit the plan to it."]],
+  svg:function(){return timeline("hw15",["Map & gaps","Daily study","Practice exams","Simulator / labs","Exam"],[[0,0,15,"map objectives"],[0,15,32,"close top gaps","gap"],[1,15,92,"45–60 minutes a day"],[2,2,14,"cold baseline"],[2,36,47,"practice 1"],[2,58,69,"practice 2"],[2,78,90,"80%+ twice","pass"],[3,6,20,"simulator 1"],[3,79,92,"simulator 2"],[4,94,100,"exam","pass"]],[[0,"week 0"],[33,"week 2"],[67,"week 4"],[100,"week 6"]],[[94,"exam day"]],"Timeline over six weeks: map objectives and close gaps in the first two weeks, study daily throughout, take a cold baseline and then practice exams until scoring 80% twice, with simulator sessions early and late, and the exam at the end of week six.");}};
+HOW.p16={title:"How a troubleshooting round is scored",
+  caption:"The loop interviewers want to hear out loud: clarify, form a hypothesis, test it cheaply, narrow down, and finish with a fix plus prevention.",
+  points:[["Method beats the answer","Rubrics score how you narrow the problem. Candidates who find the bug by guessing still fail."],["Clarify before touching anything","Scope, impact and ‘what changed?’ often point straight at the cause."],["Cheap checks first","`curl`, logs and `kubectl describe` before restarts or redeploys — and say why you chose each."],["Always end with prevention","Naming the alert or test that would have caught it shows real production experience."]],
+  svg:function(){var i="hw16",h=svgOpen(i,1000,290,"Troubleshooting loop: clarify, hypothesise, test, narrow, then fix and prevent; if a test rules a hypothesis out, return to hypothesise. Below each step, what the interviewer scores.");
+    var st=[["Clarify","scope, impact, change"],["Hypothesise","most likely layer"],["Test","one cheap check"],["Narrow","rule in or out"],["Fix + prevent","mitigate, then root cause"]],sc=["asks before acting","reasons out loud","cheap checks first","follows evidence","names the alert"];
+    st.forEach(function(b,k){var x=20+k*195;h+=box(x,70,165,56,b[0],b[1],k===2?"hot":"")+txt(x+8,250,"bs",sc[k]);if(k<4)h+=arw(i,"M"+(x+165)+" 98 H"+(x+195));});
+    h+=arw(i,"M702 126 V176 H312 V126","ruled out → next hypothesis",507,168)+txt(20,226,"zl","WHAT THEY SCORE");
+    return h+"</svg>";}};
+
 /* architecture diagrams */
 function zone(x,y,w,h,l){return "<rect class=\"zone\" x=\""+x+"\" y=\""+y+"\" width=\""+w+"\" height=\""+h+"\" rx=\"10\"/><text class=\"zl\" x=\""+(x+12)+"\" y=\""+(y+20)+"\">"+esc(l)+"</text>";}
 function box(x,y,w,h,t,s,c){return "<rect class=\"box"+(c?" "+c:"")+"\" x=\""+x+"\" y=\""+y+"\" width=\""+w+"\" height=\""+h+"\" rx=\"8\"/><text class=\"bt\" x=\""+(x+12)+"\" y=\""+(y+h/2-4)+"\">"+esc(t)+"</text>"+(s?"<text class=\"bs\" x=\""+(x+12)+"\" y=\""+(y+h/2+13)+"\">"+esc(s)+"</text>":"");}
@@ -915,6 +1046,37 @@ var DRILL={
     fix:"Mitigate each fault, return staging to known-good, and confirm every undo in the plan actually ran.",
     prevent:"The postmortems and action items. Anything detected late gets a new alert or synthetic check before the next game day."}
 };
+
+DRILL.p13={title:"The node drain that takes the site down",
+  setup:"On the staging cluster, scale web to one replica, delete its PodDisruptionBudget and readiness probe, start a load test, then run `kubectl drain <node> --ignore-daemonsets --delete-emptydir-data` on the node running it.",
+  symptoms:["The load test shows a burst of 502 and 503 responses lasting tens of seconds.","`kubectl get pods` shows the old pod Terminating while the new one is still starting.","The drain command reported success."],
+  hints:["How many web pods were serving at the moment of eviction? Watch `kubectl get pods -o wide -w` during the drain.","What would have made the drain wait? `kubectl get pdb -A`.","When did the new pod start receiving traffic — when its container started, or when it was ready? Watch `kubectl get endpointslices -w`."],
+  cause:"With one replica and no PDB, the eviction removed the only pod straight away. With no readiness probe, the replacement joined the Service before Next.js could serve, so requests failed until it warmed up.",
+  fix:"Run at least two replicas, add a PDB with `minAvailable: 1`, add a readiness probe on the health route, and a short `preStop` sleep so the load balancer deregisters pods before they stop.",
+  prevent:"A policy check (for example Kyverno, or a CI lint) that rejects production Deployments with fewer than two replicas, no PDB or no readiness probe — and a drain in every upgrade rehearsal."};
+DRILL.p14={title:"The playbook that takes Nginx down",
+  setup:"Change the Nginx config task to `shell: cp files/api.conf /etc/nginx/sites-enabled/api.conf` with `notify: restart nginx`, and make that handler `state: restarted`. Run the play three times, then put a typo in `files/api.conf` and run it again.",
+  symptoms:["Every run reports `changed=1` for the config task, even with no edits.","Nginx restarts on every run, dropping open connections.","After the typo, the play fails in the handler — and the site is down."],
+  hints:["Run with `--check --diff`. What does Ansible think it would change?","How could a `shell` task possibly know whether the file already matches?","What does `nginx -t` do, and where could it run before anything restarts?"],
+  cause:"`shell` can’t compare state, so it always reports changed and always notifies the handler. The handler restarted Nginx — stop, then start — and a config that fails validation means the start never happens.",
+  fix:"Use `ansible.builtin.template`, run `nginx -t` with `changed_when: false` before handlers flush, and make the handler `state: reloaded` so an invalid config never replaces a working one.",
+  prevent:"`ansible-lint` in CI (it flags commands that should be modules), a second-run idempotency check in Molecule, and reloads rather than restarts for config changes."};
+DRILL.p15={title:"The mock exam that says you’re not ready",
+  checks:["I sat a full timed practice exam and analysed every wrong answer","My weakest domain has a dated study plan"],
+  setup:"Take a full-length practice exam under real conditions: timed, one sitting, no notes, no second screen, phone in another room.",
+  symptoms:["You run out of time, or finish with no time to review.","Your score is under 80%.","Several wrong answers were on topics you felt you knew."],
+  hints:["Sort wrong answers by exam domain. Is one domain most of the loss?","For each wrong answer, which constraint did you miss — ‘most cost-effective’, ‘least operational overhead’, ‘without downtime’?","Where did time go? Mark questions that took more than twice the average."],
+  cause:"Lost marks usually come from three places: one weak domain, misreading the constraint the question optimises for, and pacing. Pure knowledge gaps are often the smallest of the three.",
+  fix:"Study the weakest domain with hands-on labs, underline the optimisation constraint in every practice question, and set time checkpoints (a third of the questions by a third of the time).",
+  prevent:"A mistakes log reviewed daily, and a rule of two consecutive timed runs at 80% or better before the real exam."};
+DRILL.p16={title:"The recorded mock you’d fail",
+  checks:["I did a recorded mock interview and reviewed the recording","I redid my weakest answer and practised it aloud"],
+  setup:"Ask a peer to prepare a broken environment or scenario you haven’t seen — for example the webhook drill from {job:p6} on their own staging. Record 30 minutes on video while you share your screen and think aloud.",
+  symptoms:["Long silences while you read logs.","You jump to a fix before saying what you think is wrong.","You find the problem but run out of time to cover prevention."],
+  hints:["Watch the recording at 1.5× speed and count the silent minutes.","Mark every moment you acted without first stating a hypothesis.","Did you ask about impact and recent changes in the first two minutes?"],
+  cause:"Most failed troubleshooting rounds are communication failures. The interviewer can’t score reasoning they can’t hear, and jumping to fixes looks like guessing even when it works.",
+  fix:"Redo the same scenario with the clarify → hypothesise → test → narrow → prevent loop, narrating each step in one sentence.",
+  prevent:"One recorded mock a week until silences stay under 30 seconds and every action follows a stated hypothesis."};
 
 /* deep dives: worked examples per job */
 var DEEP={};
@@ -1347,6 +1509,179 @@ echo "$(date -u +%FT%TZ) inject $pick" >> "$HOME/gameday-facilitator.log"
 "./faults/$pick.sh" inject`]],
   steps:[["Numbers, not adjectives","Durations, counts and the detection delay come from timestamps, so the review argues about facts."],["Separate trigger from cause","The wrong secret was the trigger; the cause is that nothing alerted on failing webhooks for 22 minutes."],["Every action item is owned and dated","An item without an owner and a date is a wish. Link each one to a tracked issue."],["Make faults refuse production","The injector checks `TARGET_ENV` before doing anything, and every fault script ships with its own `undo`."]]};
 
+DEEP.p13={verify:"Checked: every YAML document parses. Not validated against a cluster here — run `kubectl apply --dry-run=server -f` on staging. The ExternalSecret uses `external-secrets.io/v1`; older operator releases use `v1beta1`.",
+  title:"Hardening the web Deployment for production",
+  intro:"Autoscaling, a disruption budget, zone spreading, graceful shutdown and secrets from AWS — the pieces that make the {job:p7} manifest production-grade.",
+  files:[["k8s/web/autoscaling.yaml",`apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: bashbop-web
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: bashbop-web
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70          # percent of the CPU request
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300     # don't flap between bursts
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: bashbop-web
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: { app: bashbop-web }`],["k8s/web/deployment.yaml — pod template additions",`spec:
+  template:
+    spec:
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone   # spread across AZs first
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels: { app: bashbop-web }
+      containers:
+        - name: web
+          envFrom:
+            - secretRef: { name: bashbop-web-env }
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sleep", "10"]   # let the load balancer deregister first`],["k8s/api/external-secret.yaml",`apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bashbop-api
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: aws-secrets-manager
+  target:
+    name: bashbop-api-env                 # the Kubernetes Secret it creates
+  dataFrom:
+    - extract:
+        key: bashbop/staging/api          # one JSON secret in Secrets Manager`]],
+  steps:[["Scale on real requests","70% of the CPU request only means something if requests match measured usage — set them from a week of data first."],["Slow down scale-down","A five-minute stabilisation window stops the HPA removing pods between traffic bursts."],["Spread before stacking","The topology constraint puts replicas in different AZs before doubling up, so losing a zone leaves capacity."],["Drain gracefully","The `preStop` sleep keeps a pod serving while the load balancer stops routing to it; the grace period must be longer than the sleep."]]};
+
+DEEP.p14={verify:"Checked: both Ansible files parse as YAML. The Jenkinsfile isn’t machine-checked here — use Jenkins’ declarative linter (`jenkins-cli declarative-linter`) — and the test stage needs `jest-junit` installed.",
+  title:"An idempotent Nginx role and a declarative Jenkinsfile",
+  intro:"The Nginx part of the API host as an Ansible role that only reloads on real changes, and the {job:p2} PR gate rewritten as a Jenkinsfile.",
+  files:[["roles/nginx/tasks/main.yml",`- name: Install Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Configure the API site
+  ansible.builtin.template:
+    src: api.conf.j2
+    dest: /etc/nginx/sites-enabled/api.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload nginx
+
+- name: Validate the full Nginx config before any handler runs
+  ansible.builtin.command: nginx -t
+  changed_when: false`],["roles/nginx/handlers/main.yml",`- name: Reload nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded`],["Jenkinsfile",`pipeline {
+  agent { label 'linux' }
+  options {
+    timeout(time: 30, unit: 'MINUTES')
+    disableConcurrentBuilds(abortPrevious: true)
+  }
+  stages {
+    stage('Install') {
+      steps { sh 'corepack enable && yarn install --immutable' }
+    }
+    stage('Checks') {
+      parallel {
+        stage('Lint')  { steps { sh 'yarn lint' } }
+        stage('Types') { steps { sh 'yarn tsc:check' } }
+        stage('Test')  { steps { sh 'yarn test --ci --reporters=default --reporters=jest-junit' } }
+      }
+    }
+    stage('Build') {
+      when { branch 'main' }
+      steps {
+        withCredentials([string(credentialsId: 'example-api-token', variable: 'API_TOKEN')]) {
+          sh 'yarn build'
+        }
+      }
+    }
+  }
+  post {
+    always { junit allowEmptyResults: true, testResults: 'junit.xml' }
+  }
+}`,"plain"]],
+  steps:[["Modules over commands","`apt` and `template` report changed only when they act, so the handler fires only on real changes."],["Validate before reloading","If `nginx -t` fails, the play stops before handlers run, so a broken config never reaches a live reload. Fix forward quickly — the bad file is on disk."],["Parallel stages share a workspace","Lint, types and tests run side by side like jobs in Actions, but on one agent — so they share `node_modules` instead of reinstalling."],["Credentials stay scoped","`withCredentials` exposes the secret only inside its block and masks the exact value in the log."]]};
+
+DEEP.p15={verify:"Checked: the shell snippet passes `bash -n`. Domain weights follow the published CKA curriculum as of 2026 — confirm against the current curriculum before booking.",
+  title:"An objective map and a CKA speed kit",
+  intro:"Map the blueprint to what you’ve actually done, then set up the terminal habits that save minutes on every task.",
+  files:[["cka-objective-map.md (excerpt)",`| Domain (weight)              | Objective                          | Where I did it               | Confidence |
+|------------------------------|------------------------------------|------------------------------|------------|
+| Troubleshooting (30%)        | Troubleshoot clusters and nodes    | Job 13 drill: node drain     | 3/5        |
+| Troubleshooting (30%)        | Monitor resource usage             | Job 13 lab: requests from top| 4/5        |
+| Cluster architecture (25%)   | Manage RBAC                        | Job 13 lab: read-only role   | 3/5        |
+| Cluster architecture (25%)   | Create clusters with kubeadm       | not covered                  | 1/5        |
+| Services & networking (20%)  | Define and enforce NetworkPolicies | Job 13 lab                   | 2/5        |
+| Workloads & scheduling (15%) | Autoscaling, ConfigMaps, Secrets   | Job 13 lab: HPA, ESO         | 4/5        |
+| Storage (10%)                | StorageClasses, PVs and PVCs       | not covered                  | 1/5        |`,"plain"],["~/.bashrc in the exam terminal",`alias k=kubectl
+complete -o default -F __start_kubectl k        # tab completion for the alias
+export do="--dry-run=client -o yaml"            # k create deploy web --image=nginx $do > web.yaml
+export now="--force --grace-period 0"           # k delete pod web-123 $now
+
+# generate, then edit: never type a manifest from scratch
+k create deployment web --image=nginx --replicas=2 $do > web.yaml
+k expose deployment web --port=80 --target-port=8080 $do > web-svc.yaml
+k create role pod-reader --verb=get,list,watch --resource=pods $do > role.yaml
+k create rolebinding read-pods --role=pod-reader --user=jane $do > rolebinding.yaml
+
+# first moves when something is broken
+k get events -A --sort-by=.lastTimestamp | tail -20
+k describe pod "$POD" | sed -n '/Events:/,$p'`]],
+  steps:[["Map before you study","The table shows the two uncovered objectives immediately — that’s where the next two weeks go."],["Weights say where the marks are","Troubleshooting is 30% of the CKA and storage 10%; split practice time roughly the same way."],["Generate, then edit","`$do` turns any imperative command into YAML you can adjust — faster, with fewer indentation mistakes."],["Events first","Sorted events name most failures in seconds, before you open a single log."]]};
+
+DEEP.p16={verify:"Not machine-checked (prose). Every number here is a placeholder showing the format — replace each one with your own measured before/after figures.",
+  title:"Evidence-based CV bullets and a two-minute STAR story",
+  intro:"The format that turns this track into interview evidence. The numbers are placeholders — use only figures you measured.",
+  files:[["cv-experience.md (format example)",`BASHBOP LTD — Founder, engineering
+
+- Rebuilt CI for a Next.js + NestJS platform with one required PR gate and cached builds:
+  PR feedback 14 → 6 min, no type errors merged since.                (GitHub Actions, rulesets)
+- Moved signed macOS/Windows app releases from a manual checklist to tag-driven CI with an
+  R2 update feed: release time 2 h → 15 min.                          (electron-builder, R2)
+- Defined SLOs for checkout and webhook lag; a game day showed time to detect a payment
+  failure falling from 22 min to 3 min.                               (OpenTelemetry, Grafana)
+- Codified Cloudflare DNS, R2 and a licence Worker in Terraform: staging rebuilds from code
+  in 40 min.                                                          (Terraform, Wrangler)`,"plain"],["star-outage.md",`"Tell me about an outage."  Target: under two minutes.
+
+Situation  Game day on staging: bookings stayed pending after successful Stripe payments.
+Task       I was incident commander and operator: restore confirmations, and find out why
+           monitoring missed it.
+Action     Declared the incident on the first alert and posted updates every 15 minutes.
+           Checked Stripe's webhook deliveries first (all 400s), traced them to a wrong
+           signing secret, restored it and resent the failed events.
+Result     Mitigated 10 minutes after the alert, but detection took 22. I added a webhook
+           4xx alert and a synthetic booking after each deploy; the next game day caught
+           the same fault in 3 minutes.`,"plain"]],
+  steps:[["Lead with the result","Hiring managers skim. Put the measured change in the first line and the tools in brackets."],["Only numbers you measured","Every figure should come from your own before/after data — interviewers ask how you measured it."],["End with what changed","The second game day’s faster detection is the part that proves you learn from incidents."],["Two minutes, then stop","A tight story invites follow-up questions — the ones you’ve already prepared for."]]};
+
 /* ------------------------------------------------------------------ helpers */
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
 function md(s){return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\{job:(p\d+)\}/g,function(m,id){return "job "+(pidx(id)+1);});}
@@ -1366,7 +1701,7 @@ if(local && local.updatedAt>embedded.updatedAt){state=local;dirty=true;}
 function normalise(s){s=s&&typeof s==="object"?s:{};return {v:1,updatedAt:+s.updatedAt||0,started:typeof s.started==="string"?s.started:"",done:s.done&&typeof s.done==="object"?s.done:{},notes:s.notes&&typeof s.notes==="object"?s.notes:{}};}
 
 function phaseStats(p){
-  var ids=[];p.tasks.forEach(function(_,i){ids.push(tid(p,"t",i));});p.exit.forEach(function(_,i){ids.push(tid(p,"x",i));});if(DRILL[p.id])DRILL_CHECKS.forEach(function(_,i){ids.push(tid(p,"d",i));});
+  var ids=[];p.tasks.forEach(function(_,i){ids.push(tid(p,"t",i));});p.exit.forEach(function(_,i){ids.push(tid(p,"x",i));});if(DRILL[p.id])(DRILL[p.id].checks||DRILL_CHECKS).forEach(function(_,i){ids.push(tid(p,"d",i));});
   var n=ids.filter(function(id){return state.done[id];}).length;
   return {n:n,total:ids.length,status:n===0?"queued":(n===ids.length?"passed":"running")};
 }
@@ -1464,17 +1799,18 @@ function renderSlide(i){
     var t=totals(), pct=t.t?Math.round(t.n/t.t*100):0;
     h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>pipeline · bashbop + Brain Boost Buddy</span><span>"+(state.started?"started "+esc(new Date(state.started+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})):"not started")+"</span></div>";
     h+="<h1 data-a style=\"--i:1\">Bashbop DevOps Track</h1>";
-    h+="<p class=\"lede\" data-a style=\"--i:2\">Eleven jobs and a capstone across bashbop and Brain Boost Buddy — from reading your own server to signed releases, cloud networks, supply-chain security, on-call and a full game day. Every lab is real work on your repos.</p>";
+    h+="<p class=\"lede\" data-a style=\"--i:2\">Eleven jobs and a capstone across bashbop and Brain Boost Buddy — from reading your own server to signed releases, cloud networks, supply-chain security, on-call and a full game day — then four job-ready jobs: production Kubernetes, Ansible and Jenkins, a certification, and interviews. Every lab is real work on your repos.</p>";
     h+="<div class=\"two\">";
     h+="<div class=\"run\" data-a style=\"--i:3\">";
     PHASES.forEach(function(p,pi){
       var s=phaseStats(p), td=targetDate(p);
+      if(p.part==="job"&&!(pi&&PHASES[pi-1].part==="job"))h+="<div class=\"runsep\">Job-ready track · if your goal is a DevOps role</div>";
       h+="<button class=\"runrow\" type=\"button\" data-go=\""+ps(pi)+"\"><span class=\"dot "+s.status+"\"></span><span><span class=\"nm\">"+esc(p.title)+"</span><div class=\"meta\">weeks "+p.weeks[0]+"–"+p.weeks[1]+(td?" · due "+esc(td):"")+(isLate(p)?" · behind":"")+"</div><div class=\"bar\"><span style=\"width:"+(s.total?s.n/s.total*100:0)+"%\"></span></div></span><span class=\"right\">"+s.n+"/"+s.total+"</span></button>";
     });
     h+="</div>";
     h+="<div style=\"display:flex;flex-direction:column;gap:22px\">";
     h+="<div class=\"stats\" data-a style=\"--i:4\"><div class=\"stat\"><div class=\"n\">"+pct+"%</div><div class=\"l\">complete</div></div><div class=\"stat\"><div class=\"n\">"+t.n+"<span class=\"muted\" style=\"font-size:22px\">/"+t.t+"</span></div><div class=\"l\">checks ticked</div></div><div class=\"stat\"><div class=\"n\">"+t.passed+"<span class=\"muted\" style=\"font-size:22px\">/"+PHASES.length+"</span></div><div class=\"l\">jobs passed</div></div></div>";
-    h+="<div class=\"panel\" data-a style=\"--i:5\"><div class=\"row\" style=\"justify-content:space-between\"><div class=\"field\"><label for=\"start\">Start date</label><input type=\"date\" id=\"start\" value=\""+esc(state.started)+"\"></div><button class=\"btn primary\" type=\"button\" id=\"resume\">"+(t.n?"Resume":"Start job 1")+" →</button></div><p class=\"small muted\" style=\"margin-top:12px\">Set a start date to get a due date per job. At a few hours a week, the full run is about nine months.</p></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:5\"><div class=\"row\" style=\"justify-content:space-between\"><div class=\"field\"><label for=\"start\">Start date</label><input type=\"date\" id=\"start\" value=\""+esc(state.started)+"\"></div><button class=\"btn primary\" type=\"button\" id=\"resume\">"+(t.n?"Resume":"Start job 1")+" →</button></div><p class=\"small muted\" style=\"margin-top:12px\">Set a start date to get a due date per job. At a few hours a week, the core run is about nine months, and the job-ready track adds about four more.</p></div>";
     h+="</div></div>";
   }
   else if(sl.type==="howto"){
@@ -1539,7 +1875,7 @@ function renderSlide(i){
       h+="<h2 data-a style=\"--i:1\">Drill: "+esc(DR.title)+"</h2>";
       h+="<div class=\"drill\" data-a style=\"--i:2\"><div class=\"panel\"><h3>Break it</h3><p class=\"small muted\">"+md(DR.setup)+"</p></div><div class=\"panel\"><h3>What you’ll see</h3><ul class=\"symptoms\">"+DR.symptoms.map(function(x){return "<li><span>"+md(x)+"</span></li>";}).join("")+"</ul></div><div class=\"panel\"><h3>Investigate</h3>"+DR.hints.map(function(x,k){return "<details class=\"hint\"><summary>Hint "+(k+1)+" of "+DR.hints.length+"</summary><p>"+md(x)+"</p></details>";}).join("")+"</div></div>";
       h+="<details class=\"reveal\" data-a style=\"--i:3\"><summary>"+(DR.open?"Suspects, fix and prevention":"Cause, fix and prevention")+"</summary><div class=\"reveal-body\"><div><h4>"+(DR.open?"Suspects":"Cause")+"</h4><p>"+md(DR.cause)+"</p></div><div><h4>Fix</h4><p>"+md(DR.fix)+"</p></div><div><h4>Prevent</h4><p>"+md(DR.prevent)+"</p></div></div></details>";
-      h+="<ul class=\"tasks\" data-a style=\"--i:4\">"+DRILL_CHECKS.map(function(t,k){var id=tid(p,"d",k),on=!!state.done[id];return "<li class=\"task"+(on?" done":"")+"\"><label><input type=\"checkbox\" class=\"settled\" data-task=\""+id+"\""+(on?" checked":"")+"><span class=\"tx\"><span class=\"main\">"+md(t)+"</span></span></label></li>";}).join("")+"</ul>";
+      h+="<ul class=\"tasks\" data-a style=\"--i:4\">"+(DR.checks||DRILL_CHECKS).map(function(t,k){var id=tid(p,"d",k),on=!!state.done[id];return "<li class=\"task"+(on?" done":"")+"\"><label><input type=\"checkbox\" class=\"settled\" data-task=\""+id+"\""+(on?" checked":"")+"><span class=\"tx\"><span class=\"main\">"+md(t)+"</span></span></label></li>";}).join("")+"</ul>";
     }
     else if(sl.type==="deep"){
       var D=DEEP[p.id];
