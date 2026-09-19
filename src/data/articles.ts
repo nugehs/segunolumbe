@@ -16,6 +16,155 @@ export type Article = {
 
 export const articles: Article[] = [
   {
+    slug: 'routing-coding-tasks-with-a-calibrated-model',
+    shortTitle: 'Routing to the right model',
+    title: 'How to Route a Coding Task to the Right Model Before You Spend on It',
+    description:
+      'A router that sends every task to the most expensive model is not a router. Two defects explain why our first one did, and both were found by running it rather than reasoning about it.',
+    domain: 'audit · 19 sep 2026',
+    publishDate: '2026-09-19',
+    category: 'audit',
+    tags: ['ai-agents', 'model-routing', 'calibration', 'cost', 'evals'],
+    canonicalUrl:
+      'https://geekienews.com/articles/routing-coding-tasks-with-a-calibrated-model/',
+    body: `Most coding agents spend the same model on every request. Fixing a typo in a confirmation message and tracking down why a fee calculation is wrong for free events cost the same, because nothing between the prompt and the model looks at the prompt.
+
+The obvious fix is a router: score the task first, then pick a cheap, mid, or premium model. The obvious fix has an obvious failure mode. A router that reads the prompt and concludes "use the biggest model" every time has cost you a network call and saved nothing.
+
+That is exactly what our first one did, on all five tasks we tested. This is the account of why, because the two defects behind it are the interesting part.
+
+## Split the question in half
+
+A router needs two things it cannot get from one place.
+
+It needs to know what the request is asking for, which is a language question. And it needs to know what the repository will do about it, which is a structural question with a deterministic answer: how contained the affected code is, how many owners it has, whether it touches paths that carry real risk.
+
+We already had the second half. [Òtítọ́](https://github.com/BASHBOP/otito) computes an agent-experience score, containment, and canonical risk flags from repository state alone, with no network and no model.
+
+For the first half we used [Jev](https://docs.typesafe.ai/concepts/system-one), TypeSafe's System One model. A System One model does not write prose. You give it a state and a set of typed questions, and it returns typed answers with calibrated probabilities: a Choice between named options, a Score along ordered levels, or a Noul, which is the probability that a yes-or-no statement is true.
+
+The temptation is to ask it the question you actually want answered:
+
+> Which model should I use for this task?
+
+Do not. There is no ground truth to calibrate that against, and it hands control flow to a vendor. Ask narrow questions with observable answers, take the probabilities, and combine them in code you can read. We asked three:
+
+| Question | Type | What it reads |
+| --- | --- | --- |
+| specificity | Score, 3 levels | How precisely the request names what must change |
+| blast_radius | Score, 3 levels | How far the implied edits reach |
+| novelty | Noul | Whether this needs new design or an existing pattern |
+
+One call answers all three against one state, and the answer arrives in about half a second.
+
+## The state is the whole game
+
+Our first run sent Jev the prompt and four numbers. It returned high uncertainty on every question.
+
+That was the correct answer. Nothing in that state said what "the publish confirmation copy" refers to, so there was nothing to be certain about. The model was not being vague; the question was unanswerable as posed.
+
+The fix was to send what the deterministic half already knew: the ranked files the request resolves to, and the reasons each one ranked.
+
+\`\`\`json
+{
+  "request": "migrate the session cookie format in the auth middleware",
+  "repository": { "agent_experience": 62, "containment": 16 },
+  "likely_files": [
+    { "path": "redux/slices/auth-slice.ts",
+      "why": ["path matches: auth", "symbol matches: session"] }
+  ],
+  "risk_flags": ["auth/security"]
+}
+\`\`\`
+
+Jev has never seen the repository. The repository tooling has never read the request as language. Each supplies exactly what the other cannot, and neither is asked to guess at the other's job.
+
+## Defect one: a question whose answer never moves
+
+The first version of the specificity question was a Noul:
+
+> Is this request ambiguous enough that a reasonable but wrong reading would produce the wrong change?
+
+Across five real requests, Jev answered between 0.57 and 0.81. Including the typo fix.
+
+Every one of those answers is defensible. For any one line request, some wrong reading exists. The problem is not accuracy, and no amount of calibration would help: a question whose answer sits in the same narrow band for every input you care about cannot separate your inputs. Its probabilities are noise with a decimal point.
+
+We replaced it with a Score over levels you can point at in the text:
+
+- 0: the request names the exact file, symbol, flag, or user-visible string
+- 1: the request names a feature or area, but not which code changes
+- 2: the request names only a symptom; what to change must be found first
+
+That question discriminates. The request to add a command line flag scored 0.59. The request to find out why a fee is wrong for free events scored 1.76, landing squarely on "names a symptom".
+
+The general rule is worth stating plainly. **Measure a question's variance across your real inputs before you give its answer any weight.** A calibrated probability tells you how often the answer is right. It does not tell you whether the question was worth asking.
+
+## Defect two: bands that belonged to a different number
+
+The router started from the repository's agent-experience score, then subtracted flat points for each of the three answers. Up to fourteen points for specificity, twelve for blast radius, eighteen for novelty.
+
+Then it banded the result at the same thresholds the agent-experience score uses: above 75 is cheap, above 45 is mid, below that is premium.
+
+Those thresholds were drawn for the agent-experience score. The router was applying them to a different quantity, one that could sit fifty points lower on the same axis. That is a category error, and it is sufficient on its own to push an entire corpus into the most expensive tier, which is what it did.
+
+The fix is not a friendlier set of numbers. Each term now takes a **share** of the base score rather than a flat count of points:
+
+\`\`\`
+penalty = 0.25 x (specificity / 2)
+        + 0.20 x (blast_radius / 2)
+        + 0.15 x novelty
+route   = base x (1 - penalty)
+\`\`\`
+
+The result stays on the axis its bands were drawn for, and it now means something you can say out loud: the repository's score, after what this particular request costs. Rescoring the identical Jev answers moved the corpus from a flat wall of premium to a range of 34 to 53, with the typo fix separating from the bug hunt.
+
+## What it looks like when it works
+
+Five requests drawn from a production Next.js application's own recent history:
+
+| Request | route | tier |
+| --- | --: | --- |
+| fix the typo in the publish confirmation copy | 49 | mid |
+| show organisers what happens after they publish | 53 | premium |
+| add a JSON flag to the seating export | 41 | premium |
+| the booking fee is wrong for free events | 34 | premium |
+| migrate the session cookie format in auth middleware | 40 | premium |
+
+Two details in that table are worth more than the routing itself.
+
+Nothing reaches the cheap tier. That is a true statement about the repository rather than a routing failure: with no CODEOWNERS file and low containment throughout, its agent-experience score tops out at 74, and cheap starts at 75. The router will not recommend a cheap model for a codebase whose own shape says changes there are not cheap.
+
+The second row routes premium from a mid band. Its confidence came back at 0.50, below our floor, and a low-confidence read escalates one tier. Every bump in the system moves toward the more capable model and never away from it. A router that can round down on a bad read is a router that ships bad changes cheaply.
+
+## The model is not the expensive part
+
+Measured across the corpus: 728 to 845 input tokens per decision, 534 to 764 milliseconds, and between $0.000019 and $0.000034. Jev bills input only.
+
+Two hundredths of a cent against a premium turn is not a trade-off worth thinking about. The deterministic half cost more: about five seconds locally, because the implementation computes its impact pass twice.
+
+If you are evaluating this pattern, budget latency and ignore the model spend.
+
+## What we have not proven
+
+The share weights, 0.25 and 0.20 and 0.15, and the band thresholds, were chosen by judgement. They have never been compared to an outcome. Writing them as fractions instead of points fixed a scale error; it did not make them correct.
+
+So the router ships advisory. It prints a decision and a recommended tier, and it does not pick the model for you.
+
+Promoting it past advisory needs a backtest, replaying the repository's history, recomputing the tier from the state as it was, and joining to what actually happened. The metric is not accuracy. It is **regret**: tasks routed cheap that ended in a revert or a follow-up fix, weighed against the spend avoided. A router with zero regret and zero savings is a router that sends everything to the biggest model, which is where this started.
+
+Five prompts in one repository is an anecdote, not a calibration.
+
+## Keep the router outside the gate
+
+One boundary makes all of this safe to adopt.
+
+The router runs before work starts and decides how much model to spend. A merge gate runs after the diff exists and decides whether the change may ship. They must not be the same system, and the second must never depend on a network call.
+
+Nothing the router says can make a change pass. If the model is down, unreachable, or unkeyed, the router falls back to a local estimate and labels itself as uncalibrated, and the gate does not notice, because the gate never asks.
+
+That is what makes a calibrated vendor model safe to put in front of your work. It is choosing what to spend, not deciding what is correct.`,
+  },
+  {
     slug: 'testing-ai-merge-gates',
     shortTitle: 'Testing merge gates',
     title: 'How to Test an AI Merge Gate Before You Trust It',
