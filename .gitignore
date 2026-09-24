@@ -2,7 +2,7 @@
 dist/
 # dependencies
 node_modules/
-# astro
+# astro (left over from the pre-Vite site)
 .astro/
 # env / logs / os
 .env
@@ -11,3 +11,7 @@ node_modules/
 .DS_Store
 .claude/
 *.heic
+# generated
+dist-ssr/
+tsconfig.tsbuildinfo
+.otito/

@@ -40,14 +40,6 @@ a {
   color: inherit;
 }
 
-button {
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: 0;
-  cursor: pointer;
-}
-
 /* ─── shell: fixed viewport, no page scroll ─── */
 .shell {
   display: grid;
@@ -181,14 +173,12 @@ button {
   flex-shrink: 0;
 }
 
-@media (max-width: 520px) {
-  .mode {
-    font-size: 12px;
-    padding: 12px 8px;
-  }
-}
-
 .mode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
   font-family: 'Bricolage Grotesque', system-ui, sans-serif;
   font-weight: 800;
   font-size: clamp(16px, 2vw, 20px);
@@ -209,6 +199,14 @@ button {
   color: var(--on-accent);
 }
 
+/* After the base .mode rule, or it never wins. */
+@media (max-width: 520px) {
+  .mode {
+    font-size: 12px;
+    padding: 12px 8px;
+  }
+}
+
 .mode-note {
   margin: 12px 0 20px;
   color: var(--ink-2);
@@ -226,6 +224,8 @@ button {
 }
 
 .page-link {
+  display: inline-block;
+  text-decoration: none;
   font-family: 'Bricolage Grotesque', system-ui, sans-serif;
   font-weight: 700;
   font-size: 13px;
@@ -270,6 +270,7 @@ button {
   align-items: flex-start;
   gap: 4px;
   text-align: left;
+  text-decoration: none;
   padding: 14px 14px;
   border: 1px solid transparent;
   border-bottom: 1px solid var(--line);
@@ -297,6 +298,10 @@ button {
 .roster-dom {
   font-size: 13px;
   color: var(--ink-3);
+}
+
+.roster-item:hover .roster-dom {
+  color: var(--ink-2);
 }
 
 .roster-item.on .roster-dom {
@@ -553,8 +558,7 @@ button {
   }
 }
 
-a:focus-visible,
-button:focus-visible {
+a:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 3px;
 }

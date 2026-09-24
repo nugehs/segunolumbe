@@ -15,7 +15,7 @@ export const now: Page = {
   title: 'Now',
   domain: 'q3 2026',
   body:
-    'Shipped Òtítọ́ v1.7.0 with a real gate-effectiveness corpus: one valid control passes and six adversarial changes are blocked for named reasons. Building the broader trust layer for AI-assisted software teams, growing BashBop, and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
+    'Shipped Òtítọ́ v1.15.0: the model router is now an MCP tool, so any host can get a cheap, mid, or premium tier before spending tokens, and a Claude Code prompt hook routes every request without anyone remembering to ask. Brain Boost Buddy reached v2.6.0 with weekly lesson-time scheduling. Growing BashBop and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
 };
 
 export const speaking: Page = {

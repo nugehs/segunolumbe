@@ -1,4 +1,6 @@
 export type Card = {
+  /** URL segment: /<section>/<slug>/. Changing it breaks inbound links. */
+  slug: string;
   name: string;
   domain: string;
   what: string;
@@ -7,6 +9,7 @@ export type Card = {
 
 export const products: Card[] = [
   {
+    slug: 'bashbop',
     name: 'BashBop',
     domain: 'events & ticketing',
     what:
@@ -14,13 +17,15 @@ export const products: Card[] = [
     links: [{ label: 'bashbop.com ↗', href: 'https://bashbop.com', site: true }],
   },
   {
+    slug: 'brain-boost-buddy',
     name: 'Brain Boost Buddy',
     domain: 'desktop · ks1-ks2',
     what:
-      'Laptop stays locked at login until your child clears a short quiz. Maths, English, and money for UK Years 2-6, plus SATs and 11+ practice. Built when screen time became a daily fight. Parent PIN on your side; unlock earned on theirs. Free for 7 days, then £2.99 a month.',
+      'Laptop stays locked at login until your child clears a short quiz. Maths, English, and money for UK Years 2-6, plus SATs and 11+ practice. Built when screen time became a daily fight. Parent PIN on your side; unlock earned on theirs. A weekly lesson-time schedule sleeps the laptop for set windows and can launch Zoom or Teams when a lesson starts. Free for 7 days, then £2.99 a month.',
     links: [{ label: 'brainboostbuddy.com ↗', href: 'https://brainboostbuddy.com', site: true }],
   },
   {
+    slug: 'snap-a-bird',
     name: 'Snap A Bird',
     domain: 'mobile · birds',
     what:

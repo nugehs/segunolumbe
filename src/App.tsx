@@ -1,91 +1,62 @@
-import { useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
 import ArticleBody from './components/ArticleBody';
-import type { Card as WorkItem } from './data/products';
 import { articles } from './data/articles';
-import { products } from './data/products';
-import { pages, type PageMode } from './data/pages';
-import { stack } from './data/stack';
-import { tools } from './data/tools';
+import { pages } from './data/pages';
+import { pageModes, sectionLabel, sectionNote, workModes } from './data/sections';
+import { headFor, syncHead } from './head';
+import { catalog, itemPath, resolveRoute, sectionPath, type Mode } from './routes';
 
-type WorkMode = 'tools' | 'products' | 'stack';
-type Mode = WorkMode | PageMode;
-
-const catalog: Record<WorkMode, WorkItem[]> = {
-  tools,
-  products,
-  stack,
+type Props = {
+  /** Server passes the path being prerendered; the client passes location.pathname. */
+  initialPath: string;
 };
 
-const workModes: { id: WorkMode; label: string; note: string }[] = [
-  {
-    id: 'tools',
-    label: 'Open source',
-    note:
-      'Context, contracts, compliance, governance. One verdict in CI, in your editor, and in the agent. Local-first. MCP-native. Static analysis, never the model.',
-  },
-  {
-    id: 'products',
-    label: 'Products',
-    note: 'Commercial products and apps. Proof I ship real systems.',
-  },
-  {
-    id: 'stack',
-    label: 'Background',
-    note: 'Day job at NBCUniversal, toolkit, and the engineering behind the tools.',
-  },
-];
+export default function App({ initialPath }: Props) {
+  const [path, setPath] = useState(initialPath);
+  const route = resolveRoute(path);
 
-const pageModes: { id: PageMode; label: string }[] = [
-  { id: 'writing', label: 'Writing' },
-  { id: 'now', label: 'Now' },
-  { id: 'speaking', label: 'Speaking' },
-];
+  useEffect(() => {
+    const onPopState = () => setPath(window.location.pathname);
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
-const rosterLabel: Record<WorkMode, string> = {
-  tools: 'Open source',
-  products: 'Products',
-  stack: 'Background',
-};
+  useEffect(() => {
+    syncHead(headFor(resolveRoute(path)));
+  }, [path]);
 
-function isWorkMode(mode: Mode): mode is WorkMode {
-  return mode in catalog;
-}
-
-export default function App() {
-  const [mode, setMode] = useState<Mode>('tools');
-  const [selected, setSelected] = useState<string>(tools[0].name);
-  const [selectedArticle, setSelectedArticle] = useState<string>(articles[0].slug);
-
-  const workItems = isWorkMode(mode) ? catalog[mode] : null;
-  const active =
-    workItems?.find((item) => item.name === selected) ?? workItems?.[0] ?? null;
-  const page = !isWorkMode(mode) ? pages[mode] : null;
-  const activeArticle =
-    mode === 'writing'
-      ? articles.find((item) => item.slug === selectedArticle) ?? articles[0]
-      : null;
-
-  function switchWork(next: WorkMode) {
-    setMode(next);
-    setSelected(catalog[next][0].name);
-  }
-
-  function switchPage(next: PageMode) {
-    setMode(next);
-    if (next === 'writing') {
-      setSelectedArticle(articles[0].slug);
+  // Every page is prerendered, so links work without JS; with JS, skip the reload.
+  function navigate(event: MouseEvent<HTMLAnchorElement>) {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
     }
+    const href = event.currentTarget.getAttribute('href');
+    if (!href) return;
+    event.preventDefault();
+    if (href !== window.location.pathname) window.history.pushState(null, '', href);
+    setPath(href);
   }
 
-  function pick(item: WorkItem) {
-    setSelected(item.name);
+  const mode: Mode | null = route.kind === 'not-found' ? null : route.mode;
+
+  function current(href: string, active: boolean) {
+    if (href === route.path) return 'page';
+    return active ? 'true' : undefined;
   }
 
-  const modeNote = isWorkMode(mode)
-    ? workModes.find((m) => m.id === mode)?.note
-    : mode === 'writing'
-      ? pages.writing.body
-      : page?.body;
+  const modeNote =
+    route.kind === 'work'
+      ? sectionNote[route.mode]
+      : route.kind === 'writing'
+        ? pages.writing.body
+        : null;
 
   return (
     <div className="shell">
@@ -114,7 +85,7 @@ export default function App() {
         </div>
         <div className="identity-links">
           <a href="https://github.com/nugehs">GitHub</a>
-          <a href="https://www.npmjs.com/search?q=%40nugehs">npm</a>
+          <a href="https://www.npmjs.com/~davidolu">npm</a>
           <a href="https://registry.modelcontextprotocol.io/?q=nugehs">MCP</a>
           <a href="https://www.linkedin.com/in/segunolumbe/">LinkedIn</a>
           <a href={`${import.meta.env.BASE_URL}olumbe-cv.pdf`}>Resume</a>
@@ -123,63 +94,70 @@ export default function App() {
       </aside>
 
       <main className="stage">
-        <div className="modebar" role="tablist" aria-label="Work">
-          {workModes.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              role="tab"
-              id={`tab-${m.id}`}
-              aria-selected={mode === m.id}
-              aria-controls="work-panel"
-              className={mode === m.id ? 'mode on' : 'mode'}
-              onClick={() => switchWork(m.id)}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
+        <nav className="modebar" aria-label="Work">
+          {workModes.map((m) => {
+            const href = sectionPath(m);
+            return (
+              <a
+                key={m}
+                href={href}
+                className={mode === m ? 'mode on' : 'mode'}
+                aria-current={current(href, mode === m)}
+                onClick={navigate}
+              >
+                {sectionLabel[m]}
+              </a>
+            );
+          })}
+        </nav>
 
         <nav className="pagenav" aria-label="More">
-          {pageModes.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              className={mode === m.id ? 'page-link on' : 'page-link'}
-              aria-current={mode === m.id ? 'page' : undefined}
-              onClick={() => switchPage(m.id)}
-            >
-              {m.label}
-            </button>
-          ))}
+          {pageModes.map((m) => {
+            const href = sectionPath(m);
+            return (
+              <a
+                key={m}
+                href={href}
+                className={mode === m ? 'page-link on' : 'page-link'}
+                aria-current={current(href, mode === m)}
+                onClick={navigate}
+              >
+                {sectionLabel[m]}
+              </a>
+            );
+          })}
         </nav>
 
         {modeNote ? <p className="mode-note">{modeNote}</p> : null}
 
-        {isWorkMode(mode) && active ? (
-          <div className="work" id="work-panel" role="tabpanel" aria-labelledby={`tab-${mode}`}>
-            <nav className="roster" aria-label={rosterLabel[mode]}>
-              {workItems!.map((item) => (
-                <button
-                  key={item.name}
-                  type="button"
-                  className={item.name === active.name ? 'roster-item on' : 'roster-item'}
-                  aria-current={item.name === active.name ? 'true' : undefined}
-                  onClick={() => pick(item)}
-                >
-                  <span className="roster-name">{item.name}</span>
-                  <span className="roster-dom">{item.domain}</span>
-                </button>
-              ))}
+        {route.kind === 'work' ? (
+          <div className="work">
+            <nav className="roster" aria-label={sectionLabel[route.mode]}>
+              {catalog[route.mode].map((item) => {
+                const href = itemPath(route.mode, item.slug);
+                const on = item.slug === route.item.slug;
+                return (
+                  <a
+                    key={item.slug}
+                    href={href}
+                    className={on ? 'roster-item on' : 'roster-item'}
+                    aria-current={current(href, on)}
+                    onClick={navigate}
+                  >
+                    <span className="roster-name">{item.name}</span>
+                    <span className="roster-dom">{item.domain}</span>
+                  </a>
+                );
+              })}
             </nav>
 
-            <article className="detail" key={`${mode}-${active.name}`}>
-              <p className="detail-dom">{active.domain}</p>
-              <h2>{active.name}</h2>
-              <p className="detail-what">{active.what}</p>
-              {active.links.length > 0 ? (
+            <article className="detail" key={route.path}>
+              <p className="detail-dom">{route.item.domain}</p>
+              <h2>{route.item.name}</h2>
+              <p className="detail-what">{route.item.what}</p>
+              {route.item.links.length > 0 ? (
                 <div className="detail-links">
-                  {active.links.map((link) => (
+                  {route.item.links.map((link) => (
                     <a key={link.href} className={link.site ? 'site' : undefined} href={link.href}>
                       {link.label}
                     </a>
@@ -188,48 +166,63 @@ export default function App() {
               ) : null}
             </article>
           </div>
-        ) : mode === 'writing' && activeArticle ? (
-          <div className="work" id="writing-panel">
+        ) : route.kind === 'writing' ? (
+          <div className="work">
             <nav className="roster" aria-label="Articles">
-              {articles.map((item) => (
-                <button
-                  key={item.slug}
-                  type="button"
-                  className={item.slug === activeArticle.slug ? 'roster-item on' : 'roster-item'}
-                  aria-current={item.slug === activeArticle.slug ? 'true' : undefined}
-                  onClick={() => setSelectedArticle(item.slug)}
-                >
-                  <span className="roster-name">{item.shortTitle}</span>
-                  <span className="roster-dom">{item.domain}</span>
-                </button>
-              ))}
+              {articles.map((item) => {
+                const href = itemPath('writing', item.slug);
+                const on = item.slug === route.article.slug;
+                return (
+                  <a
+                    key={item.slug}
+                    href={href}
+                    className={on ? 'roster-item on' : 'roster-item'}
+                    aria-current={current(href, on)}
+                    onClick={navigate}
+                  >
+                    <span className="roster-name">{item.shortTitle}</span>
+                    <span className="roster-dom">{item.domain}</span>
+                  </a>
+                );
+              })}
             </nav>
 
-            <article className="detail detail-article" key={activeArticle.slug}>
-              <p className="detail-dom">{activeArticle.category}</p>
-              <h2 className="detail-title-article">{activeArticle.title}</h2>
-              <p className="detail-what">{activeArticle.description}</p>
-              <ArticleBody markdown={activeArticle.body} />
+            <article className="detail detail-article" key={route.path}>
+              <p className="detail-dom">{route.article.category}</p>
+              <h2 className="detail-title-article">{route.article.title}</h2>
+              <p className="detail-what">{route.article.description}</p>
+              <ArticleBody markdown={route.article.body} />
               <div className="detail-links">
-                <a className="site" href={activeArticle.canonicalUrl}>
+                <a className="site" href={route.article.canonicalUrl}>
                   read on geekienews ↗
                 </a>
                 <a href="https://geekienews.com/rss.xml">rss ↗</a>
               </div>
             </article>
           </div>
-        ) : page ? (
-          <article className="detail detail-full" key={mode}>
-            <p className="detail-dom">{page.domain}</p>
-            <h2>{page.title}</h2>
-            <p className="detail-what">{page.body}</p>
+        ) : route.kind === 'page' ? (
+          <article className="detail detail-full" key={route.path}>
+            <p className="detail-dom">{pages[route.mode].domain}</p>
+            <h2>{pages[route.mode].title}</h2>
+            <p className="detail-what">{pages[route.mode].body}</p>
             <div className="detail-links">
               <a className="site" href="mailto:info@bashbop.com">
                 get in touch ↗
               </a>
             </div>
           </article>
-        ) : null}
+        ) : (
+          <article className="detail detail-full">
+            <p className="detail-dom">404</p>
+            <h2>Page not found</h2>
+            <p className="detail-what">Nothing lives at that address. The work is one click away.</p>
+            <div className="detail-links">
+              <a className="site" href="/" onClick={navigate}>
+                see the work
+              </a>
+            </div>
+          </article>
+        )}
       </main>
     </div>
   );

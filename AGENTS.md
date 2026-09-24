@@ -9,34 +9,40 @@ The products linked from this site live in separate repositories. Update links a
 ## Working safely
 
 - Preserve existing uncommitted work. Check `git status --short --branch` before editing and do not overwrite changes you did not create.
-- Use npm; `package-lock.json` is authoritative. Use `npm ci` for a clean install.
-- The site is Vite + React + TypeScript and is statically prerendered for GitHub Pages.
+- Use npm on Node 22 (`.nvmrc`); `package-lock.json` is authoritative. Use `npm ci` for a clean install.
+- The site is Vite + React + TypeScript. Every route is prerendered to its own HTML file for GitHub Pages.
 - Keep public assets in `public/`; `public/CNAME` is required for the custom domain.
 - Do not deploy, alter DNS, or change GitHub Pages settings unless the user explicitly asks.
 
 ## Content and architecture map
 
-- `src/App.tsx`: top-level page composition.
-- `src/data/products.ts`: product cards and links.
-- `src/data/tools.ts`: developer-tool cards and links.
-- `src/data/articles.ts`: article metadata/content sources.
-- `src/data/pages.ts`: static page content.
+- `src/App.tsx`: top-level page composition and client-side navigation.
+- `src/routes.ts`: path to route resolution and the list of prerendered paths.
+- `src/head.ts`: per-route title, description, canonical, and Open Graph tags.
+- `src/data/products.ts`, `tools.ts`, `stack.ts`: cards and links. `slug` is the URL segment.
+- `src/data/articles.ts`: embedded articles, canonical on GeekieNews.
+- `src/data/pages.ts`: Writing, Now, and Speaking copy.
+- `src/data/sections.ts`: section labels and notes.
 - `src/components/ArticleBody.tsx`: article rendering.
 - `src/styles/global.css`: global design system and responsive styling.
-- `src/entry-server.tsx` and `scripts/prerender.mjs`: static prerender path.
-- `.github/workflows/deploy.yml`: GitHub Pages deployment.
+- `src/entry-server.tsx` and `scripts/prerender.mjs`: prerender every route, plus `404.html` and `sitemap.xml`.
+- `tests/`: Vitest suite.
+- `.github/workflows/ci.yml`: checks on pull requests. `.github/workflows/deploy.yml`: GitHub Pages deployment.
 
-Prefer editing the appropriate data module over hardcoding repeated content in JSX. Keep internal links and prerendered routes aligned with `public/sitemap.xml` and metadata when pages are added or renamed.
+Prefer editing the appropriate data module over hardcoding repeated content in JSX. Pages, head tags, and the sitemap are generated from the data and `src/routes.ts`, so a new card or article needs only a unique slug. Renaming a slug breaks inbound links.
+
+Card and page copy renders as plain text: no Markdown. Photos in `public/` must have EXIF stripped (a test enforces it).
 
 ## Validation
 
-For ordinary changes, run:
+For every change, run the full checks and the build:
 
 ```bash
+npm run check
 npm run build
 ```
 
-Then spot-check the generated site with `npm run preview`, including mobile layout, keyboard focus, reduced motion, article routes, metadata, and outbound links when affected. The build may update `tsconfig.tsbuildinfo`; do not discard a pre-existing change to that file without checking ownership.
+Then spot-check the generated site with `npm run preview`, including mobile layout, keyboard focus, reduced motion, article routes, metadata, and outbound links when affected.
 
 ## Product invariants
 

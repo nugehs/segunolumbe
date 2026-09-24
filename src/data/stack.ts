@@ -2,6 +2,7 @@ import type { Card } from './products';
 
 export const stack: Card[] = [
   {
+    slug: 'day-job',
     name: 'Day job',
     domain: 'nbcuniversal · ott',
     what:
@@ -9,6 +10,7 @@ export const stack: Card[] = [
     links: [],
   },
   {
+    slug: 'stack',
     name: 'Stack',
     domain: 'whatever fits',
     what:
@@ -16,6 +18,7 @@ export const stack: Card[] = [
     links: [],
   },
   {
+    slug: 'compliance',
     name: 'Compliance',
     domain: 'controls that ship',
     what:
@@ -26,6 +29,7 @@ export const stack: Card[] = [
     ],
   },
   {
+    slug: 'ai',
     name: 'AI',
     domain: 'generation + trust',
     what:

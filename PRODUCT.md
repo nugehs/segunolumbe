@@ -18,7 +18,7 @@ Bold, loud, hard to ignore. Direct founder voice: practical stories, no fluff, p
 
 ## Anti-references
 
-- The current cream/paper + red accent + mono-label look
+- The original cream/paper + red accent + mono-label look
 - Generic SaaS landings (identical cards, soft gradients, Inter-default typography)
 - Terminal/hacker aesthetics (neon on black, green code, monospaced costume)
 
