@@ -5,6 +5,7 @@ const mcp = (name: string) =>
 
 export const tools: Card[] = [
   {
+    slug: 'gate',
     name: 'gate',
     domain: 'unified verdict · mcp',
     what:
@@ -18,23 +19,25 @@ export const tools: Card[] = [
     ],
   },
   {
+    slug: 'otito',
     name: 'Òtítọ́',
-    domain: 'trust harness · v1.7.0',
+    domain: 'trust harness · v1.15.0',
     what:
-      'Models generate the change. Òtítọ́ proves whether it is safe to merge. It gives agents deterministic repository context, then checks changed-file risk, secrets, validation, ownership, CI, and review readiness. v1.7.0 adds a gate-effectiveness corpus: one valid control passes and six adversarial changes must fail for named reasons.',
+      'Models generate the change. Òtítọ́ proves whether it is safe to merge. It gives agents deterministic repository context, then checks changed-file risk, secrets, validation, ownership, CI, and review readiness. v1.15.0 makes the model router an MCP tool, so any host can score a task before spending tokens and get a cheap, mid, or premium tier, advisory only and never touching the gate. v1.14.0 stopped the router sending one-file changes to the premium tier by trusting repository signals over a model\'s self-reported confidence, and v1.11.0 added otito calibrate, which grades the risk flags against the repository\'s own fix history.',
     links: [
-      { label: 'v1.7.0 ↗', href: 'https://github.com/BASHBOP/otito/releases/tag/v1.7.0' },
+      { label: 'v1.15.0 ↗', href: 'https://github.com/BASHBOP/otito/releases/tag/v1.15.0' },
       {
         label: 'mcp ↗',
         href: 'https://registry.modelcontextprotocol.io/?q=io.github.BASHBOP%2Fotito',
         site: true,
       },
       { label: 'site ↗', href: 'https://bashbop.github.io/otito/' },
-      { label: 'npm ↗', href: 'https://www.npmjs.com/package/@bashbop/otito/v/1.7.0' },
+      { label: 'npm ↗', href: 'https://www.npmjs.com/package/@bashbop/otito' },
       { label: 'github ↗', href: 'https://github.com/BASHBOP/otito' },
     ],
   },
   {
+    slug: 'tieline',
     name: 'tieline',
     domain: 'contract drift · mcp',
     what:
@@ -46,6 +49,7 @@ export const tools: Card[] = [
     ],
   },
   {
+    slug: 'bouncer',
     name: 'bouncer',
     domain: 'compliance · mcp',
     what:
@@ -57,6 +61,7 @@ export const tools: Card[] = [
     ],
   },
   {
+    slug: 'aiglare',
     name: 'aiglare',
     domain: 'ai governance · mcp',
     what:

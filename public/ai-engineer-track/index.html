@@ -10,20 +10,21 @@
 <link id="fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
 <style id="app-css">
 :root{
-  --ground:#F3F2F7;--surface:#FFFFFF;--sunk:#EBE9F2;--ink:#17152B;--ink-2:#4B4862;--ink-3:#7A7791;--line:#D9D6E4;
+  --ground:#F3F2F7;--surface:#FFFFFF;--sunk:#EBE9F2;--ink:#17152B;--ink-2:#4B4862;--ink-3:#68657E;--line:#D9D6E4;
   --accent:#5B3FD1;--accent-ink:#FFFFFF;--accent-soft:#EAE5FB;
-  --pass:#1F8A4C;--pass-soft:#DDF1E5;--run:#B86E00;--run-soft:#FBEBD2;--fail:#C9362B;--fail-soft:#F8E0DD;--queued:#9C99B0;
+  --pass:#1F8A4C;--pass-soft:#DDF1E5;--run:#B86E00;--run-soft:#FBEBD2;--fail:#C9362B;--fail-soft:#F8E0DD;--queued:#838096;
+  --pass-tx:#00783D;--run-tx:#985A00;--fail-tx:#C02C23;
   --display:"Archivo","Arial Narrow",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --ground:#100F1A;--surface:#181726;--sunk:#201E31;--ink:#EAE8F4;--ink-2:#A9A5BF;--ink-3:#747089;--line:#2D2A42;
+  --ground:#100F1A;--surface:#181726;--sunk:#201E31;--ink:#EAE8F4;--ink-2:#A9A5BF;--ink-3:#8A86A0;--line:#2D2A42;
   --accent:#AB97FF;--accent-ink:#100F1A;--accent-soft:#261F45;
-  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#5F5B75;color-scheme:dark;}}
+  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#716D88;--pass-tx:#4CC784;--run-tx:#F0A93B;--fail-tx:#F0685C;color-scheme:dark;}}
 :root[data-theme="dark"]{
-  --ground:#100F1A;--surface:#181726;--sunk:#201E31;--ink:#EAE8F4;--ink-2:#A9A5BF;--ink-3:#747089;--line:#2D2A42;
+  --ground:#100F1A;--surface:#181726;--sunk:#201E31;--ink:#EAE8F4;--ink-2:#A9A5BF;--ink-3:#8A86A0;--line:#2D2A42;
   --accent:#AB97FF;--accent-ink:#100F1A;--accent-soft:#261F45;
-  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#5F5B75;color-scheme:dark;}
+  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#716D88;--pass-tx:#4CC784;--run-tx:#F0A93B;--fail-tx:#F0685C;color-scheme:dark;}
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -59,6 +60,7 @@ code{font:0.86em/1.4 var(--mono);background:var(--sunk);border:1px solid var(--l
 /* stage */
 .stage{overflow:hidden;position:relative}
 .slide{position:absolute;inset:0;overflow-y:auto;padding:clamp(24px,5vh,56px) clamp(18px,5vw,64px) 40px}
+.slide:focus{outline:none}
 .inner{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
 .slide.in-next{animation:inR .42s cubic-bezier(.2,.7,.2,1) both}
 .slide.in-prev{animation:inL .42s cubic-bezier(.2,.7,.2,1) both}
@@ -81,11 +83,11 @@ p{margin:0;max-width:68ch}
 .small{font-size:14px}
 
 .pill{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:5px;white-space:nowrap}
-.pill.passed{background:var(--pass-soft);color:var(--pass)}
-.pill.running{background:var(--run-soft);color:var(--run)}
+.pill.passed{background:var(--pass-soft);color:var(--pass-tx)}
+.pill.running{background:var(--run-soft);color:var(--run-tx)}
 .pill.queued{background:var(--sunk);color:var(--ink-2)}
-.pill.risk{background:var(--fail-soft);color:var(--fail)}
-.pill.warn{background:var(--run-soft);color:var(--run)}
+.pill.risk{background:var(--fail-soft);color:var(--fail-tx)}
+.pill.warn{background:var(--run-soft);color:var(--run-tx)}
 .pill.info{background:var(--sunk);color:var(--ink-2)}
 
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:22px;align-items:start}
@@ -211,10 +213,10 @@ textarea{width:100%;min-height:120px;resize:vertical;background:var(--sunk);bord
 .arch .ln.pass{stroke:var(--pass);stroke-width:2}
 .arch .al{font:11px var(--mono);fill:var(--ink-2);paint-order:stroke;stroke:var(--sunk);stroke-width:4px;stroke-linejoin:round}
 .arch .al.w{stroke:var(--surface)}
-.arch .al.gapt{fill:var(--run)}
+.arch .al.gapt{fill:var(--run-tx)}
 .arch .al.hott{fill:var(--accent)}
-.arch .al.failt{fill:var(--fail)}
-.arch .al.passt{fill:var(--pass)}
+.arch .al.failt{fill:var(--fail-tx)}
+.arch .al.passt{fill:var(--pass-tx)}
 .arch .lane{stroke:var(--line);stroke-width:1.5;stroke-dasharray:3 4}
 .arch .lh{fill:var(--surface);stroke:var(--ink-3);stroke-width:1.5}
 .arch .note{fill:var(--accent-soft);stroke:none}
@@ -311,7 +313,9 @@ details.reveal summary::-webkit-details-marker{display:none}
   .node{flex:0 0 auto}
   .link{flex:0 0 26px;width:2px;height:auto;align-self:center;background-image:linear-gradient(180deg,var(--accent) 50%,transparent 50%);background-size:2px 12px}
   .link::after{right:-4px;top:auto;bottom:-1px;border:5px solid transparent;border-top-color:var(--accent);border-bottom:0}
-  .ovbtn{display:none}
+  .bottom{gap:10px;padding:10px 16px}
+  .ovbtn{padding:9px 10px}
+  .ovbtn kbd{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -716,7 +720,7 @@ var PHASES=[
     ["Rewrite your CV with at least six AI evidence bullets, each with a measured result.",""],
     ["Update your LinkedIn headline and featured section for AI engineer roles.",""],
     ["Give a 15-minute talk on evals for small teams at a meetup, or record one, and collect the questions.",""],
-    ["Read ten target job ads. If several name a certification (for example AWS Certified Machine Learning Engineer – Associate, or Microsoft’s Azure AI Engineer Associate), book the most requested and map its exam guide to this track.","Skip it if your target roles don’t ask."],
+    ["Read ten target job ads. If several name a certification (for example AWS Certified Machine Learning Engineer Associate, or Microsoft’s Azure AI Engineer Associate), book the most requested and map its exam guide to this track.","Skip it if your target roles don’t ask."],
     ["Ask two engineers to review the portfolio cold for ten minutes and tell you what they think you can do. Close the gap between that and what you intended.",""]
   ],
   exit:["A stranger can verify three pieces of my AI work in ten minutes from my site.","My CV has at least six AI bullets with measured results.","I’ve published at least two write-ups and one talk or demo."],
@@ -725,7 +729,7 @@ var PHASES=[
         ["‘Built a RAG chatbot with LangChain and Pinecone.’ How do you improve that bullet?","Lead with the outcome and the method: ‘Rebuilt a support bot with Postgres hybrid search and abstention: recall@4 41% to 92%, wrong answers down by two-thirds.’"],
         ["Is a certification worth it for AI engineering roles?","Only when your target roles name one, which is more common in cloud-heavy enterprises. It helps you through filters; the portfolio is what convinces people in interviews."],
         ["Why show a failure in your demo?","It shows the guardrails and your judgement. An honest abstain or a blocked injection is more credible than a flawless happy path."]],
-  res:["Your capstone case study from {m:a11}","AWS, Certified Machine Learning Engineer – Associate exam guide","Microsoft Learn, Azure AI Engineer Associate certification","Julia Evans, blog posts on writing and blogging (jvns.ca)","swyx, Learn in Public (swyx.io)"]
+  res:["Your capstone case study from {m:a11}","AWS, Certified Machine Learning Engineer Associate exam guide","Microsoft Learn, Azure AI Engineer Associate certification","Julia Evans, blog posts on writing and blogging (jvns.ca)","swyx, Learn in Public (swyx.io)"]
 },
 { id:"a15", part:"job", short:"Interview", title:"AI engineer interviews: turn the work into offers", weeks:[43,46],
   why:"AI engineer loops usually test four things: can you design an LLM system and defend its trade-offs, can you code under time pressure (often a tool loop or retrieval), do you understand the fundamentals, and have you shipped AI to real users. You have the evidence. This module turns it into answers that land, and practice with people who push back.",
@@ -2033,24 +2037,30 @@ function taskList(p,kind,items){
   return "<ul class=\"tasks\">"+items.map(function(t,k){var id=tid(p,kind,k),on=!!state.done[id],main=typeof t==="string"?t:t[0],why=typeof t==="string"?"":t[1];return "<li class=\"task"+(on?" done":"")+"\"><label><input type=\"checkbox\" class=\"settled\" data-task=\""+id+"\""+(on?" checked":"")+"><span class=\"tx\"><span class=\"main\">"+md(main)+"</span>"+(why?"<span class=\"why\">"+md(why)+"</span>":"")+"</span></label></li>";}).join("")+"</ul>";
 }
 
+function startedLabel(){return state.started?"started "+new Date(state.started+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"}):"not started";}
+function runRows(){
+  var h="";
+  PHASES.forEach(function(p,pi){
+    var s=phaseStats(p), td=targetDate(p);
+    if(p.part==="job"&&!(pi&&PHASES[pi-1].part==="job"))h+="<div class=\"runsep\">Job-ready track · if your goal is an AI engineer role</div>";
+    h+="<button class=\"runrow\" type=\"button\" data-go=\""+ps(pi)+"\"><span class=\"dot "+s.status+"\"></span><span><span class=\"nm\">"+(pi+1)+". "+esc(p.title)+"</span><div class=\"meta\">weeks "+p.weeks[0]+"–"+p.weeks[1]+(td?" · due "+esc(td):"")+(isLate(p)?" · behind":"")+"</div><div class=\"bar\"><span style=\"width:"+(s.total?s.n/s.total*100:0)+"%\"></span></div></span><span class=\"right\">"+s.n+"/"+s.total+"</span></button>";
+  });
+  return h;
+}
+
 function renderSlide(i){
   var sl=SLIDES[i], h="";
   if(sl.type==="cover"){
     var t=totals(), pct=t.t?Math.round(t.n/t.t*100):0;
-    h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>run · bashbop + Snap A Bird + your Claude agents</span><span>"+(state.started?"started "+esc(new Date(state.started+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})):"not started")+"</span></div>";
+    h+="<div class=\"eyebrow\" data-a style=\"--i:0\"><span>run · bashbop + Snap A Bird + your Claude agents</span><span id=\"started\">"+esc(startedLabel())+"</span></div>";
     h+="<h1 data-a style=\"--i:1\">Bashbop AI Engineer Track</h1>";
     h+="<p class=\"lede\" data-a style=\"--i:2\">Eleven modules on code you already run: tokens and cost, structured output, evals, agents, retrieval, vision, guardrails, LLMOps, shipping, fine-tuning and a capstone. Then four job-ready modules: ML fundamentals, agent platforms, a public portfolio and interviews. Every lab changes a real repo, and every change has to prove itself with an eval.</p>";
     h+="<div class=\"two\">";
-    h+="<div class=\"run\" data-a style=\"--i:3\">";
-    PHASES.forEach(function(p,pi){
-      var s=phaseStats(p), td=targetDate(p);
-      if(p.part==="job"&&!(pi&&PHASES[pi-1].part==="job"))h+="<div class=\"runsep\">Job-ready track · if your goal is an AI engineer role</div>";
-      h+="<button class=\"runrow\" type=\"button\" data-go=\""+ps(pi)+"\"><span class=\"dot "+s.status+"\"></span><span><span class=\"nm\">"+(pi+1)+". "+esc(p.title)+"</span><div class=\"meta\">weeks "+p.weeks[0]+"–"+p.weeks[1]+(td?" · due "+esc(td):"")+(isLate(p)?" · behind":"")+"</div><div class=\"bar\"><span style=\"width:"+(s.total?s.n/s.total*100:0)+"%\"></span></div></span><span class=\"right\">"+s.n+"/"+s.total+"</span></button>";
-    });
-    h+="</div>";
+    h+="<div class=\"run\" id=\"run\" data-a style=\"--i:3\">"+runRows()+"</div>";
     h+="<div style=\"display:flex;flex-direction:column;gap:22px\">";
     h+="<div class=\"stats\" data-a style=\"--i:4\"><div class=\"stat\"><div class=\"n\">"+pct+"%</div><div class=\"l\">complete</div></div><div class=\"stat\"><div class=\"n\">"+t.n+"<span class=\"muted\" style=\"font-size:22px\">/"+t.t+"</span></div><div class=\"l\">checks ticked</div></div><div class=\"stat\"><div class=\"n\">"+t.passed+"<span class=\"muted\" style=\"font-size:22px\">/"+PHASES.length+"</span></div><div class=\"l\">modules passed</div></div></div>";
-    h+="<div class=\"panel\" data-a style=\"--i:5\"><div class=\"row\" style=\"justify-content:space-between\"><div class=\"field\"><label for=\"start\">Start date</label><input type=\"date\" id=\"start\" value=\""+esc(state.started)+"\"></div><button class=\"btn primary\" type=\"button\" id=\"resume\">"+(t.n?"Resume":"Start module 1")+" →</button></div><p class=\"small muted\" style=\"margin-top:12px\">Set a start date to get a due date per module. At six to eight hours a week, the core run is about seven and a half months and the job-ready track adds about three and a half.</p></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:5\"><div class=\"row\" style=\"justify-content:space-between\"><div class=\"field\"><label for=\"start\">Start date</label><input type=\"date\" id=\"start\" value=\""+esc(state.started)+"\"></div><button class=\"btn primary\" type=\"button\" id=\"resume\">"+(t.n?"Resume":"Start module 1")+" →</button></div><p class=\"small muted\" style=\"margin-top:12px\">Set a start date to get a due date per module. At six to eight hours a week, the core run is about seven and a half months and the job-ready track adds about three and a half.</p>"+
+      "<div class=\"row\" style=\"margin-top:14px;gap:8px\"><button class=\"btn\" type=\"button\" id=\"export\">Export progress</button><button class=\"btn\" type=\"button\" id=\"import\">Import</button><input type=\"file\" id=\"importfile\" accept=\"application/json,.json\" hidden></div><p class=\"small muted\" style=\"margin-top:8px\">Browsers can clear saved site data, so keep an export as a backup or to move to another device.</p></div>";
     h+="<div class=\"panel\" data-a style=\"--i:6\"><h3 style=\"margin-bottom:10px\">Budget before you start</h3><p class=\"small muted\">Set a hard monthly spend limit in every provider console you use (OpenAI, Anthropic, DeepSeek) and a separate API key per project, so a runaway eval loop costs pounds, not hundreds. Most labs run on staging data or synthetic data, never on real customer messages.</p></div>";
     h+="</div></div>";
   }
@@ -2059,8 +2069,8 @@ function renderSlide(i){
     h+="<h2 data-a style=\"--i:1\">Understand the mechanism, change real code, break it, prove it with numbers.</h2>";
     h+="<div class=\"loop\" data-a style=\"--i:2\"><div><span class=\"k\">1 · learn</span><h3>How it works</h3><p class=\"small muted\">Concepts plus a diagram of what actually happens underneath.</p></div><div><span class=\"k\">2 · study</span><h3>Worked example</h3><p class=\"small muted\">Annotated code for your stack, with what was checked and what to adapt.</p></div><div><span class=\"k\">3 · apply</span><h3>Lab tasks</h3><p class=\"small muted\">Real changes to bashbop-api, Snap A Bird and the agent repos.</p></div><div><span class=\"k\">4 · break</span><h3>Break-fix drill</h3><p class=\"small muted\">Break it on staging on purpose, diagnose from symptoms with hints, then reveal the answer.</p></div><div><span class=\"k\">5 · prove</span><h3>Checkpoint</h3><p class=\"small muted\">Exit criteria, scenario questions and notes. A module passes when every box is ticked.</p></div></div>";
     h+="<div class=\"two\">";
-    h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Moving around</h3><div class=\"keys\"><span><kbd>→</kbd> <kbd>space</kbd></span><span>Next slide</span><span><kbd>←</kbd></span><span>Previous slide</span><span><kbd>O</kbd></span><span>All slides overview</span><span><kbd>Home</kbd> <kbd>End</kbd></span><span>First / last slide</span><span>Top rail</span><span>Jump to any module; green is passed, amber is in progress</span></div></div>";
-    h+="<div class=\"panel\" data-a style=\"--i:4\"><h3 style=\"margin-bottom:12px\">How progress is kept</h3><p class=\"small muted\">"+(window.claude?"Ticks, notes and your start date save into this page as a new version about 15 seconds after you stop, so they follow you to any device. If this view can’t save to the page, they stay in this browser.":"Ticks, notes and your start date save in this browser as you go. Come back in the same browser to pick up where you left off.")+"</p><p class=\"small\" style=\"margin-top:12px\">Right now: <strong id=\"howsave\">"+CHIP[chipState]+"</strong></p></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:3\"><h3 style=\"margin-bottom:12px\">Moving around</h3><div class=\"keys\"><span><kbd>→</kbd></span><span>Next slide</span><span><kbd>←</kbd></span><span>Previous slide</span><span><kbd>space</kbd></span><span>Scroll down, then next slide</span><span><kbd>O</kbd></span><span>All slides overview</span><span><kbd>Home</kbd> <kbd>End</kbd></span><span>First / last slide</span><span>Top rail</span><span>Jump to any module; green is passed, amber is in progress</span></div></div>";
+    h+="<div class=\"panel\" data-a style=\"--i:4\"><h3 style=\"margin-bottom:12px\">How progress is kept</h3><p class=\"small muted\">"+(window.claude?"Ticks, notes and your start date save into this page as a new version about 15 seconds after you stop, so they follow you to any device. If this view can’t save to the page, they stay in this browser.":"Ticks, notes and your start date save in this browser as you go. Browsers can clear saved site data (Safari does after about a week without a visit), so use Export progress on the first slide now and then, and Import to restore it or carry on in another browser.")+"</p><p class=\"small\" style=\"margin-top:12px\">Right now: <strong id=\"howsave\">"+CHIP[chipState]+"</strong></p></div>";
     h+="<div class=\"panel\" data-a style=\"--i:5\"><h3 style=\"margin-bottom:12px\">Languages and providers</h3><p class=\"small muted\">bashbop-api is NestJS on the OpenAI SDK with DeepSeek and Ollama behind it; the agents and Snap A Bird’s rescan use Anthropic’s SDK. Labs stay in whichever language and SDK the repo already uses. New Claude code uses `claude-opus-5` unless an eval shows a cheaper model holds quality for that route.</p></div>";
     h+="</div>";
   }
@@ -2168,42 +2178,53 @@ document.getElementById("root").innerHTML=
   "<div class=\"app\">"+
    "<header class=\"top\"><div class=\"brand\"><i></i>AI Engineer Track</div><nav class=\"rail\" id=\"rail\" aria-label=\"Modules\"></nav><div class=\"chip\" id=\"chip\" role=\"status\"></div></header>"+
    "<main class=\"stage\" id=\"stage\"></main>"+
-   "<footer class=\"bottom\"><div class=\"nav\"><button type=\"button\" id=\"prev\" aria-label=\"Previous slide\">←</button><button type=\"button\" id=\"next\" aria-label=\"Next slide\">→</button></div><div class=\"where\"><span class=\"lbl\" id=\"lbl\"></span><div class=\"track\"><span id=\"track\"></span></div></div><button class=\"ovbtn\" type=\"button\" id=\"ovbtn\">All slides <kbd>O</kbd></button></footer>"+
-  "</div><div class=\"overview\" id=\"overview\" hidden></div>";
+   "<footer class=\"bottom\"><div class=\"nav\"><button type=\"button\" id=\"prev\" aria-label=\"Previous slide\">←</button><button type=\"button\" id=\"next\" aria-label=\"Next slide\">→</button></div><div class=\"where\"><span class=\"lbl\" id=\"lbl\" aria-live=\"polite\" aria-atomic=\"true\"></span><div class=\"track\"><span id=\"track\"></span></div></div><button class=\"ovbtn\" type=\"button\" id=\"ovbtn\">All slides <kbd>O</kbd></button></footer>"+
+  "</div><div class=\"overview\" id=\"overview\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"ovtitle\" hidden></div>";
 
 function renderRail(){
-  var r="";
+  var r="", rail=$("#rail"), a=document.activeElement;
+  // rebuilding the rail destroys a focused module button, so put focus back on its replacement
+  var had=a&&rail.contains(a)?a.getAttribute("data-go"):null;
   PHASES.forEach(function(p,pi){
     var s=phaseStats(p), here=SLIDES[cur].pi===pi;
     if(pi)r+="<span class=\"wire"+(phaseStats(PHASES[pi-1]).status==="passed"?" lit":"")+"\"></span>";
     r+="<button type=\"button\" class=\"job"+(here?" here":"")+"\" data-go=\""+ps(pi)+"\" title=\""+esc((pi+1)+". "+p.title)+", "+s.n+"/"+s.total+"\"><span class=\"dot "+s.status+"\"></span><span class=\"jl\">"+esc(p.short)+"</span></button>";
   });
-  $("#rail").innerHTML=r;
+  rail.innerHTML=r;
+  if(had!==null){var b=rail.querySelector("[data-go=\""+had+"\"]");if(b)b.focus();}
 }
 function renderChrome(){
   var sl=SLIDES[cur];
   var ctx=sl.pi!=null?"Module "+(sl.pi+1)+" · "+PHASES[sl.pi].short+": "+sl.label:sl.label;
-  $("#lbl").textContent=(cur+1)+" / "+SLIDES.length+"  ·  "+ctx;
+  // #lbl is a polite live region, so only touch it when the slide actually changes
+  var txt=(cur+1)+" / "+SLIDES.length+"  ·  "+ctx, lbl=$("#lbl");
+  if(lbl.textContent!==txt)lbl.textContent=txt;
   $("#track").style.width=((cur+1)/SLIDES.length*100)+"%";
   $("#prev").disabled=cur===0;$("#next").disabled=cur===SLIDES.length-1;
   renderRail();
 }
 function show(i,dir,animate){
   i=Math.max(0,Math.min(SLIDES.length-1,i));
-  var stage=$("#stage");
+  var stage=$("#stage"), a=document.activeElement;
+  // re-rendering removes whatever had focus inside the slide: keep it on the same control
+  // when the slide is only redrawn, otherwise move it to the new slide
+  var lost=!!a&&stage.contains(a), keep=lost&&i===cur&&a.id?a.id:"";
   var el=document.createElement("section");
   el.className="slide"+(animate?" animate "+(dir<0?"in-prev":"in-next"):"");
   el.setAttribute("aria-label",SLIDES[i].label);
+  el.tabIndex=-1;
   cur=i;
   el.innerHTML=renderSlide(i);
   stage.innerHTML="";stage.appendChild(el);
   try{history.replaceState(null,"","#s-"+(i+1));}catch(e){}
   renderChrome();
+  if(lost){var f=keep&&document.getElementById(keep);(f||el).focus({preventScroll:true});}
 }
-function go(i){if(i===cur)return;show(i,i>cur?1:-1,true);closeOverview();}
+function go(i){if(i!==cur)show(i,i>cur?1:-1,true);closeOverview(true);}
 
+var ovOpener=null;
 function openOverview(){
-  var o=$("#overview"),h="<div class=\"ovgrid\"><div class=\"row\" style=\"justify-content:space-between\"><h2>All slides</h2><button class=\"btn\" type=\"button\" id=\"ovclose\">Close <kbd>Esc</kbd></button></div>";
+  var o=$("#overview"),h="<div class=\"ovgrid\"><div class=\"row\" style=\"justify-content:space-between\"><h2 id=\"ovtitle\">All slides</h2><button class=\"btn\" type=\"button\" id=\"ovclose\">Close <kbd>Esc</kbd></button></div>";
   var start=[];for(var k=0;k<HEAD;k++)start.push(k);
   var groups=[{name:"Start",idx:start}];
   PHASES.forEach(function(p,pi){var b=ps(pi),idx=[];for(var j=0;j<PER;j++)idx.push(b+j);groups.push({name:"Module "+(pi+1)+" · "+p.title,pi:pi,idx:idx});});
@@ -2211,10 +2232,20 @@ function openOverview(){
   groups.forEach(function(g){
     h+="<div class=\"ovgroup\"><h3>"+(g.pi!=null?"<span class=\"dot "+phaseStats(PHASES[g.pi]).status+"\"></span>":"")+esc(g.name)+"</h3><div class=\"ovcards\">"+g.idx.map(function(k){return "<button type=\"button\" class=\"ovcard"+(k===cur?" cur":"")+"\" data-go=\""+k+"\"><span>"+(k+1)+"</span>"+esc(SLIDES[k].label)+"</button>";}).join("")+"</div></div>";
   });
+  ovOpener=document.activeElement;
   o.innerHTML=h+"</div>";o.hidden=false;
-  var c=o.querySelector(".ovcard.cur");if(c)c.focus();
+  // modal: the page behind can't be focused or tabbed to while the overview is open
+  $(".app").inert=true;
+  (o.querySelector(".ovcard.cur")||$("#ovclose")).focus();
 }
-function closeOverview(){var o=$("#overview");if(!o.hidden){o.hidden=true;o.innerHTML="";}}
+// toSlide: a slide was picked, so focus lands on it; otherwise focus returns to the opener
+function closeOverview(toSlide){
+  var o=$("#overview");if(o.hidden)return;
+  o.hidden=true;o.innerHTML="";$(".app").inert=false;
+  var b=ovOpener;ovOpener=null;
+  if(toSlide||!b||b===document.body||!b.isConnected)b=$("#stage .slide");
+  if(b)b.focus({preventScroll:true});
+}
 
 /* ------------------------------------------------------------------ events */
 document.addEventListener("click",function(e){
@@ -2229,7 +2260,28 @@ document.addEventListener("click",function(e){
     if(target<0)target=PHASES.length-1;
     go(ps(target)+(phaseStats(PHASES[target]).n?4:0));
   }
+  else if(e.target.closest("#export"))exportProgress();
+  else if(e.target.closest("#import"))$("#importfile").click();
 });
+function exportProgress(){
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"}));
+  a.download="ai-engineer-track-progress-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+}
+function importProgress(file){
+  var r=new FileReader();
+  r.onload=function(){
+    var s;try{s=JSON.parse(r.result);}catch(e){s=null;}
+    // ticks are keyed by this track's module ids (a1-t0, a4-x2…), which keeps the other track's export out
+    if(!s||typeof s!=="object"||!s.done||typeof s.done!=="object"||!Object.keys(s.done).every(function(k){return /^a\d+-[txd]\d+$/.test(k);})){alert("That file isn’t an AI Engineer Track progress export.");return;}
+    s=normalise(s);
+    if(!confirm("Replace the progress in this browser with this file ("+Object.keys(s.done).length+" checks ticked)?"))return;
+    state=s;change();show(cur,0,false);
+  };
+  r.readAsText(file);
+}
 document.addEventListener("change",function(e){
   var t=e.target;
   if(t.matches("input[data-task]")){
@@ -2243,7 +2295,15 @@ document.addEventListener("change",function(e){
     if(eb&&sl.pi!=null){var st=phaseStats(PHASES[sl.pi]).status;eb.className="pill "+st+" st";eb.textContent=STL[st];}
     renderRail();change();
   } else if(t.id==="start"){
-    state.started=t.value||"";change();show(cur,0,false);
+    // Chrome fires change on every keystroke once the date is valid (year 0002, 0020…);
+    // wait for a real year, and update the rows in place so the field keeps focus
+    var v=t.value||"";
+    if(v&&!(+v.slice(0,4)>=2000))return;
+    state.started=v;change();
+    var run=$("#run"),st=$("#started");
+    if(run)run.innerHTML=runRows();if(st)st.textContent=startedLabel();
+  } else if(t.id==="importfile"&&t.files&&t.files[0]){
+    importProgress(t.files[0]);t.value="";
   }
 });
 var noteTimer;
@@ -2262,16 +2322,41 @@ document.addEventListener("keydown",function(e){
   if(tag==="TEXTAREA"||tag==="INPUT"){return;}
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   var ov=!$("#overview").hidden;
+  if(ov&&e.key==="Tab"){
+    // the page behind is inert; also wrap Tab so focus never leaves the dialog for the browser UI
+    var fb=$("#overview").querySelectorAll("button"),first=fb[0],last=fb[fb.length-1];
+    if(e.shiftKey&&document.activeElement===first){last.focus();e.preventDefault();}
+    else if(!e.shiftKey&&document.activeElement===last){first.focus();e.preventDefault();}
+    return;
+  }
   if(e.key==="Escape"&&ov){closeOverview();return;}
   if(e.key==="o"||e.key==="O"){ov?closeOverview():openOverview();e.preventDefault();return;}
   if(ov)return;
-  if(e.key==="ArrowRight"||e.key==="PageDown"||(e.key===" "&&tag!=="BUTTON"&&tag!=="SUMMARY")){go(cur+1);e.preventDefault();}
-  else if(e.key==="ArrowLeft"||e.key==="PageUp"){go(cur-1);e.preventDefault();}
+  var space=e.key===" "&&tag!=="BUTTON"&&tag!=="SUMMARY";
+  if(e.key==="ArrowRight"){go(cur+1);e.preventDefault();}
+  else if(e.key==="ArrowLeft"){go(cur-1);e.preventDefault();}
+  else if(e.key==="PageDown"||(space&&!e.shiftKey)){if(!page(1))go(cur+1);e.preventDefault();}
+  else if(e.key==="PageUp"||(space&&e.shiftKey)){if(!page(-1))go(cur-1);e.preventDefault();}
   else if(e.key==="Home"){go(0);e.preventDefault();}
   else if(e.key==="End"){go(SLIDES.length-1);e.preventDefault();}
 });
+// scroll the current slide by a screen; false when already at that end
+function page(d){
+  var s=$("#stage .slide");if(!s)return false;
+  var room=d>0?s.scrollHeight-s.clientHeight-s.scrollTop:s.scrollTop;
+  if(room<4)return false;
+  s.scrollBy({top:d*Math.max(80,s.clientHeight-80),behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
+  return true;
+}
+// a swipe that starts on something that scrolls sideways (code, diagrams, the rail) is a scroll, not a slide change
+function inHScroller(el){
+  for(;el&&el!==document.body;el=el.parentElement){
+    if(el.scrollWidth>el.clientWidth+1&&/auto|scroll/.test(getComputedStyle(el).overflowX))return true;
+  }
+  return false;
+}
 var tx=null;
-document.addEventListener("touchstart",function(e){if(e.touches.length===1)tx=[e.touches[0].clientX,e.touches[0].clientY];},{passive:true});
+document.addEventListener("touchstart",function(e){tx=e.touches.length===1&&$("#overview").hidden&&!inHScroller(e.target)?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
 document.addEventListener("touchend",function(e){
   if(!tx)return;var dx=e.changedTouches[0].clientX-tx[0],dy=e.changedTouches[0].clientY-tx[1];tx=null;
   if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)go(cur+(dx<0?1:-1));
