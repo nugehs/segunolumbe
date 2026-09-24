@@ -10,20 +10,21 @@
 <link id="fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
 <style id="app-css">
 :root{
-  --ground:#F2F4F7;--surface:#FFFFFF;--sunk:#E9EDF3;--ink:#142033;--ink-2:#4A5669;--ink-3:#7A8699;--line:#D5DBE4;
+  --ground:#F2F4F7;--surface:#FFFFFF;--sunk:#E9EDF3;--ink:#142033;--ink-2:#4A5669;--ink-3:#5F6A7C;--line:#D5DBE4;
   --accent:#2A4FD6;--accent-ink:#FFFFFF;--accent-soft:#E3E9FB;
-  --pass:#1F8A4C;--pass-soft:#DDF1E5;--run:#B86E00;--run-soft:#FBEBD2;--fail:#C9362B;--fail-soft:#F8E0DD;--queued:#9AA5B5;
+  --pass:#1F8A4C;--pass-soft:#DDF1E5;--run:#B86E00;--run-soft:#FBEBD2;--fail:#C9362B;--fail-soft:#F8E0DD;--queued:#7A8494;
+  --pass-tx:#00783D;--run-tx:#985A00;--fail-tx:#C02C23;
   --display:"Archivo","Arial Narrow",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --ground:#0E141D;--surface:#161E2A;--sunk:#1C2533;--ink:#E6EBF2;--ink-2:#A3AEBF;--ink-3:#6F7B8E;--line:#283345;
+  --ground:#0E141D;--surface:#161E2A;--sunk:#1C2533;--ink:#E6EBF2;--ink-2:#A3AEBF;--ink-3:#818EA1;--line:#283345;
   --accent:#86A2FF;--accent-ink:#0E141D;--accent-soft:#1D2848;
-  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#5C687A;color-scheme:dark;}}
+  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#697587;--pass-tx:#4CC784;--run-tx:#F0A93B;--fail-tx:#F0685C;color-scheme:dark;}}
 :root[data-theme="dark"]{
-  --ground:#0E141D;--surface:#161E2A;--sunk:#1C2533;--ink:#E6EBF2;--ink-2:#A3AEBF;--ink-3:#6F7B8E;--line:#283345;
+  --ground:#0E141D;--surface:#161E2A;--sunk:#1C2533;--ink:#E6EBF2;--ink-2:#A3AEBF;--ink-3:#818EA1;--line:#283345;
   --accent:#86A2FF;--accent-ink:#0E141D;--accent-soft:#1D2848;
-  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#5C687A;color-scheme:dark;}
+  --pass:#4CC784;--pass-soft:#16301F;--run:#F0A93B;--run-soft:#33260F;--fail:#F0685C;--fail-soft:#3A1B18;--queued:#697587;--pass-tx:#4CC784;--run-tx:#F0A93B;--fail-tx:#F0685C;color-scheme:dark;}
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -59,6 +60,7 @@ code{font:0.86em/1.4 var(--mono);background:var(--sunk);border:1px solid var(--l
 /* stage */
 .stage{overflow:hidden;position:relative}
 .slide{position:absolute;inset:0;overflow-y:auto;padding:clamp(24px,5vh,56px) clamp(18px,5vw,64px) 40px}
+.slide:focus{outline:none}
 .inner{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
 .slide.in-next{animation:inR .42s cubic-bezier(.2,.7,.2,1) both}
 .slide.in-prev{animation:inL .42s cubic-bezier(.2,.7,.2,1) both}
@@ -81,12 +83,12 @@ p{margin:0;max-width:68ch}
 .small{font-size:14px}
 
 .pill{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:5px;white-space:nowrap}
-.pill.passed{background:var(--pass-soft);color:var(--pass)}
-.pill.running{background:var(--run-soft);color:var(--run)}
+.pill.passed{background:var(--pass-soft);color:var(--pass-tx)}
+.pill.running{background:var(--run-soft);color:var(--run-tx)}
 .pill.queued{background:var(--sunk);color:var(--ink-2)}
-.pill.risk{background:var(--fail-soft);color:var(--fail)}
-.pill.warn{background:var(--run-soft);color:var(--run)}
-.pill.good{background:var(--pass-soft);color:var(--pass)}
+.pill.risk{background:var(--fail-soft);color:var(--fail-tx)}
+.pill.warn{background:var(--run-soft);color:var(--run-tx)}
+.pill.good{background:var(--pass-soft);color:var(--pass-tx)}
 
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;align-items:start}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
@@ -143,7 +145,7 @@ kbd{font:600 12px var(--mono);border:1px solid var(--line);border-bottom-width:2
 .node .t{font:700 16px/1.2 var(--display);font-stretch:106%}
 .node .s{font-size:13px;color:var(--ink-2)}
 .node.gap{border-style:dashed;border-color:var(--run)}
-.node.gap .tag{color:var(--run)}
+.node.gap .tag{color:var(--run-tx)}
 .node.hot{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .link{flex:0 0 34px;align-self:center;height:2px;background-image:linear-gradient(90deg,var(--accent) 50%,transparent 50%);background-size:12px 2px;animation:flow 1s linear infinite;position:relative}
 .link::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:var(--accent);border-right:0}
@@ -199,7 +201,7 @@ textarea{width:100%;min-height:120px;resize:vertical;background:var(--sunk);bord
 .arch .ln.gap{stroke:var(--run);stroke-dasharray:5 4}
 .arch .ah{fill:var(--ink-3)}
 .arch .al{font:11px var(--mono);fill:var(--ink-2);paint-order:stroke;stroke:var(--sunk);stroke-width:4px;stroke-linejoin:round}
-.arch .al.gapt{fill:var(--run)}
+.arch .al.gapt{fill:var(--run-tx)}
 .arch .al.w{stroke:var(--surface)}
 .jobchips{display:flex;flex-wrap:wrap;gap:8px}
 .jobchips button{font-size:14px;border:1px solid var(--line);border-radius:6px;padding:6px 10px;background:var(--surface);cursor:pointer;display:flex;gap:8px;align-items:center}
@@ -232,7 +234,7 @@ pre.code .c{color:var(--ink-3)}
 .arch .ln.hot{stroke:var(--accent);stroke-width:2}
 .arch .ln.fail{stroke:var(--fail);stroke-width:2}
 .arch .al.hott{fill:var(--accent)}
-.arch .al.failt{fill:var(--fail)}
+.arch .al.failt{fill:var(--fail-tx)}
 .arch .tbar{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
 .arch .tbar.gap{fill:var(--run-soft);stroke:var(--run)}
 .arch .tbar.fail{fill:var(--fail-soft);stroke:var(--fail)}
@@ -446,7 +448,7 @@ var PHASES=[
 },
 { id:"p4", short:"Delivery", title:"Continuous delivery: merge is the only way to prod", weeks:[15,17],
   why:"Release Please already versions the web app on merge to main (the API uses semantic-release). Right now that version never turns into a deploy. This job connects the two: an immutable image per release, automatic staging, a gated production step, and a rollback you’ve actually practised.",
-  terms:[["Immutable tags","Deploy `:<git-sha>`, never a moving `:latest`."],["Registry","GHCR or ECR, where built images live."],["Environments","GitHub `staging` and `production`, each with its own secrets and allowed branches. Required reviewers on private repos need Enterprise."],["OIDC","Short-lived cloud credentials for CI instead of stored keys."],["Rolling / blue-green","Replacing versions without dropping requests."],["Expand–contract migrations","Schema changes that both old and new app versions tolerate."],["Feature flags","Ship code dark; the API already has `FEATURE_FLAGS_ENABLED`."]],
+  terms:[["Immutable tags","Deploy `:<git-sha>`, never a moving `:latest`."],["Registry","GHCR or ECR, where built images live."],["Environments","GitHub `staging` and `production`, each with its own secrets and allowed branches. Required reviewers on private repos need Enterprise."],["OIDC","Short-lived cloud credentials for CI instead of stored keys."],["Rolling / blue-green","Replacing versions without dropping requests."],["Expand/contract migrations","Schema changes that both old and new app versions tolerate."],["Feature flags","Ship code dark; the API already has `FEATURE_FLAGS_ENABLED`."]],
   flowTitle:"From merge to production",
   flow:[["release","Release Please","tags the version on main"],["build","Image :sha","pushed to the registry"],["staging","Deploy + sanity","`yarn test:sanity` against staging"],["gate","Promotion","a person runs the prod workflow"],["prod","Deploy","migrations first, then app"],["safety","Verify / roll back","previous sha in < 5 min"]],
   hot:3,
@@ -460,7 +462,7 @@ var PHASES=[
     ["Authenticate CI to your cloud with OIDC; delete any long-lived deploy keys.",""],
     ["Deploy the API as the image from {job:p3}, through the same pipeline, instead of a build started in Coolify.",""],
     ["Run database migrations as a gated step before the new API version starts.",""],
-    ["Practise one expand–contract change on a harmless column (add → backfill → switch → remove).",""],
+    ["Practise one expand/contract change on a harmless column (add → backfill → switch → remove).",""],
     ["Rollback drill: redeploy the previous sha on staging, time it, and write the steps down.",""]
   ],
   exit:["Nobody deploys from a laptop, merge is the only path.","Rolling back production takes under five minutes and is written down.","Migrations never break the version that is still running."],
@@ -680,7 +682,7 @@ var PHASES=[
   res:["Ansible Docs, Getting started and tips for playbooks","ansible-lint and Molecule documentation","Jenkins Docs, Pipeline syntax","Jenkins Docs, Using credentials","Jeff Geerling, Ansible for DevOps"]
 },
 { id:"p15", part:"job", short:"Certify", title:"Certification: prove it under exam conditions", weeks:[47,50],
-  why:"A certification won’t get you hired on its own, but it gets a CV past filters and forces you to fill the gaps you’ve skipped. Pick the one your target roles ask for: AWS Solutions Architect – Associate for cloud-heavy roles, or CKA for Kubernetes and platform roles. Most of this track maps onto both; this job turns that into a study plan and timed practice.",
+  why:"A certification won’t get you hired on its own, but it gets a CV past filters and forces you to fill the gaps you’ve skipped. Pick the one your target roles ask for: AWS Solutions Architect Associate for cloud-heavy roles, or CKA for Kubernetes and platform roles. Most of this track maps onto both; this job turns that into a study plan and timed practice.",
   terms:[["SAA-C03 format","65 questions in 130 minutes, pass at 720/1000. Domains: secure 30%, resilient 26%, high-performing 24%, cost-optimised 20%."],["CKA format","15–20 hands-on tasks in live clusters over two hours; pass at 66%. Troubleshooting is 30%."],["Blueprint mapping","Every exam objective linked to the job, lab or drill where you practised it."],["Timed practice","Full-length practice exams under the real time limit, reviewed question by question."],["Imperative speed","`kubectl create … --dry-run=client -o yaml` generates YAML faster than typing it."],["Mistakes log","What you believed, what’s true, and the doc link, reviewed daily."],["Exam logistics","ID rules, online proctoring room checks, and a booked date as the deadline."]],
   flowTitle:"From track to exam",
   flow:[["map","Blueprint","objectives → track jobs"],["gaps","Weak areas","what the track didn’t cover"],["study","Daily reps","docs, labs, flashcards"],["practice","Timed exams","80%+ twice in a row"],["sit","Exam day","booked, checked, rested"]],
@@ -704,7 +706,7 @@ var PHASES=[
         ["Why generate manifests with `--dry-run=client -o yaml` in the CKA?","It’s faster and avoids indentation mistakes: you edit generated YAML instead of writing it from memory under time pressure."],
         ["SAA: a relational database must survive losing an Availability Zone with no data loss. Which feature?","RDS Multi-AZ, a synchronous standby in another AZ with automatic failover. Read replicas are asynchronous, so they can lose recent writes."],
         ["Why map objectives to your own labs instead of just following a course?","Exam scenarios test judgement. Linking each objective to something you built makes recall concrete and exposes the gaps a course would skim past."]],
-  res:["AWS, Certified Solutions Architect – Associate exam guide","CNCF, CKA curriculum (github.com/cncf/curriculum)","Kubernetes Docs, kubectl quick reference","killer.sh, CKA simulator","AWS Skill Builder, official practice question sets"]
+  res:["AWS, Certified Solutions Architect Associate exam guide","CNCF, CKA curriculum (github.com/cncf/curriculum)","Kubernetes Docs, kubectl quick reference","killer.sh, CKA simulator","AWS Skill Builder, official practice question sets"]
 },
 { id:"p16", part:"job", short:"Interview", title:"Job search & interviews: turn the work into offers", weeks:[51,54],
   why:"DevOps interviews test three things: can you debug under pressure, can you design something sensible and explain the trade-offs, and have you actually run production. You have two live products as evidence. This job turns that into a CV with measured results, stories you can tell in two minutes, and practice with people who push back.",
@@ -745,7 +747,7 @@ var EXTRA={
   p2:{quiz:[["Your required check is named `checks`. You rename the job to `quality`. What happens to PRs?","The ruleset keeps waiting for a `checks` status that never reports (‘Expected, waiting for status’), so merges block. Update the ruleset in the same change."],["A job is skipped by an `if:` condition; a whole workflow is skipped by a `paths` filter. How does each affect a required check?","A job skipped by `if:` reports success. A workflow that never starts reports nothing, so a required check from it stays pending."]]},
   p8:{quiz:[["The mac job was green on v2.3.1 and red from v2.4.0. What do you compare before touching the certificate?","The runner image version at the top of both logs, and `electron-builder` in `package-lock.json` between the tags, and whether v2.3.1 signed at all or skipped signing."],["A parent on 2.5.0 never gets 2.5.2, but fresh installs work. Where do you look?","The feed URL and channel that 2.5.0 was built with, the `version` and `sha512` in the `latest*.yml` it reads, and 2.5.0’s own updater code, old builds only ever run the update logic they shipped with."]]},
   p3:{quiz:[["A container restarts every few seconds with exit code 137. What happened?","It received SIGKILL (128 + 9), usually from the out-of-memory killer at the memory limit. `docker inspect` shows `OOMKilled: true`."],["Why does editing app code rebuild in seconds, but editing `package.json` takes minutes?","Only layers from the first changed instruction onward rebuild. Dependencies install in an early layer keyed on `package.json` and the lockfile, so only dependency changes invalidate it."]]},
-  p4:{quiz:[["Production breaks after a release that included a migration. Roll back or roll forward?","Roll the app back only if the migration is backward compatible. If it dropped or renamed something the old version needs, roll forward with a fix, the reason for expand–contract."],["What does a canary release give you that blue-green doesn’t?","Gradual exposure: a small share of real traffic hits the new version first, so a bad release hurts fewer users. Blue-green switches everyone at once, but switches back just as fast."]]},
+  p4:{quiz:[["Production breaks after a release that included a migration. Roll back or roll forward?","Roll the app back only if the migration is backward compatible. If it dropped or renamed something the old version needs, roll forward with a fix, the reason for expand/contract."],["What does a canary release give you that blue-green doesn’t?","Gradual exposure: a small share of real traffic hits the new version first, so a bad release hurts fewer users. Blue-green switches everyone at once, but switches back just as fast."]]},
   p9:{quiz:[["`startTrial` uses one `INSERT OR IGNORE … WHERE NOT EXISTS` statement. What bug does that prevent?","A race. With a separate ‘check this device’ query followed by an insert, two parallel activations could both see no trial and both insert. One statement makes check and insert atomic."],["A Worker works in `wrangler dev` but throws on an undefined binding after `wrangler deploy --env production`. Why?","Bindings don’t inherit into environments. The `[env.production]` block has to redeclare every KV, D1 and R2 binding, and secrets must be set per environment."]]},
   p5:{quiz:[["After renaming a resource block, `plan` wants to destroy and recreate a DNS record. How do you rename safely?","Add a `moved` block from the old address to the new one (or run `terraform state mv`), then re-plan until it shows no changes."],["What should never go in committed Terraform variables, and what still needs protecting even then?","Secrets such as API tokens and database passwords; pass them via environment variables or a secrets manager. State can still contain secret values, so the state bucket must be private too."]]},
   p6:{title:"Observability & on-call: hear about outages before users do",
@@ -853,7 +855,7 @@ var HOW={
       arw(i,"M245 272 V346","SG: from API",238,314,"end")+arw(i,"M595 272 V346","SG: from API",588,314,"end")+
       arw(i,"M320 374 H520","replication",420,366)+
       arw(i,"M300 216 V180 H410 V142","egress",355,174)+arw(i,"M410 86 V52 H930 V216","to the internet",670,46)+"</svg>";}},
-  p4:{title:"Expand–contract: renaming a column with zero downtime",
+  p4:{title:"Expand/contract: renaming a column with zero downtime",
     caption:"Renaming a column safely takes four releases. At every step the version being deployed and the one it replaces both work with the schema that exists, so a rollback never meets a missing column.",
     points:[["Rolling deploys run two versions","For a few minutes old and new pods serve traffic against one database, so every schema change must suit both."],["Expand, migrate, contract","Add the new shape, dual-write, backfill, switch reads, stop the old writes, and only then drop the old column."],["Rollback stays safe","Until the final release, rolling back one step never meets a column that isn’t there."],["Migrations run before the app","`prisma migrate deploy` in a gated step, so new code never starts against an older schema."]],
     svg:function(){return timeline("hw6",["Schema","Writes","Reads","Backfill"],[[0,0,15,"venue"],[0,15,85,"venue + location_name"],[0,85,100,"new only","pass"],[1,0,15,"venue"],[1,15,65,"both columns"],[1,65,100,"location_name"],[2,0,40,"venue"],[2,40,100,"location_name"],[3,18,38,"copy old rows","gap"]],[[0,"before"],[15,"R1"],[40,"R2"],[65,"R3"],[85,"R4"],[100,"done"]],[[15,"R1 add column"],[40,"R2 read new"],[65,"R3 stop old writes"],[85,"R4 drop venue"]],"Timeline of renaming venue to location_name over four releases: add the column and dual-write, backfill, switch reads, stop writing the old column, then drop it.");}},
@@ -1003,7 +1005,7 @@ var DRILL={
     symptoms:["The pipeline is green.","During the rollout errors spike: `P2022: The column … does not exist in the current database`.","Rolling back makes it worse, the old version now fails on every query touching that table."],
     hints:["Which version logs the errors? Put the image sha or version on every log line.","Line up the migration step’s timestamp with the first error.","Read the generated SQL in `prisma/migrations/`. Did Prisma rename the column, or drop it and add a new one?"],
     cause:"The migration removed the old column while the old version was still serving traffic. Prisma turns a field rename into drop-and-add by default, so that column’s data was lost too.",
-    fix:"Roll forward: restore the old column in a new migration (recovering its data from backup), then redo the change as expand–contract over several releases.",
+    fix:"Roll forward: restore the old column in a new migration (recovering its data from backup), then redo the change as expand/contract over several releases.",
     prevent:"Fail `migration-check.yml` on `DROP COLUMN`, renames and type changes unless the PR is labelled as a contract step, and lint migrations with a tool such as Squawk."},
   p9:{title:"Staging says everyone is offline",
     setup:"Add the `[env.staging]` block from this job’s worked example and run `wrangler deploy --env staging`, but don’t set any secrets for staging.",
@@ -1953,52 +1955,73 @@ document.getElementById("root").innerHTML=
   "<div class=\"app\">"+
    "<header class=\"top\"><div class=\"brand\"><i></i>DevOps Track</div><nav class=\"rail\" id=\"rail\" aria-label=\"Jobs\"></nav><div class=\"chip\" id=\"chip\" role=\"status\"></div></header>"+
    "<main class=\"stage\" id=\"stage\"></main>"+
-   "<footer class=\"bottom\"><div class=\"nav\"><button type=\"button\" id=\"prev\" aria-label=\"Previous slide\">←</button><button type=\"button\" id=\"next\" aria-label=\"Next slide\">→</button></div><div class=\"where\"><span class=\"lbl\" id=\"lbl\"></span><div class=\"track\"><span id=\"track\"></span></div></div><button class=\"ovbtn\" type=\"button\" id=\"ovbtn\">All slides <kbd>O</kbd></button></footer>"+
-  "</div><div class=\"overview\" id=\"overview\" hidden></div>";
+   "<footer class=\"bottom\"><div class=\"nav\"><button type=\"button\" id=\"prev\" aria-label=\"Previous slide\">←</button><button type=\"button\" id=\"next\" aria-label=\"Next slide\">→</button></div><div class=\"where\"><span class=\"lbl\" id=\"lbl\" aria-live=\"polite\" aria-atomic=\"true\"></span><div class=\"track\"><span id=\"track\"></span></div></div><button class=\"ovbtn\" type=\"button\" id=\"ovbtn\">All slides <kbd>O</kbd></button></footer>"+
+  "</div><div class=\"overview\" id=\"overview\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"ovtitle\" hidden></div>";
 
 function renderRail(){
-  var r="";
+  var r="", rail=$("#rail"), a=document.activeElement;
+  // rebuilding the rail destroys a focused job button, so put focus back on its replacement
+  var had=a&&rail.contains(a)?a.getAttribute("data-go"):null;
   PHASES.forEach(function(p,pi){
     var s=phaseStats(p), here=SLIDES[cur].pi===pi;
     if(pi)r+="<span class=\"wire"+(phaseStats(PHASES[pi-1]).status==="passed"?" lit":"")+"\"></span>";
     r+="<button type=\"button\" class=\"job"+(here?" here":"")+"\" data-go=\""+ps(pi)+"\" title=\""+esc(p.title)+", "+s.n+"/"+s.total+"\"><span class=\"dot "+s.status+"\"></span><span class=\"jl\">"+esc(p.short)+"</span></button>";
   });
-  $("#rail").innerHTML=r;
+  rail.innerHTML=r;
+  if(had!==null){var b=rail.querySelector("[data-go=\""+had+"\"]");if(b)b.focus();}
 }
 function renderChrome(){
   var sl=SLIDES[cur];
   var ctx=sl.pi!=null?"Job "+(sl.pi+1)+" · "+PHASES[sl.pi].short+", "+sl.label:sl.label;
-  $("#lbl").textContent=(cur+1)+" / "+SLIDES.length+"  ·  "+ctx;
+  // #lbl is a polite live region, so only touch it when the slide actually changes
+  var txt=(cur+1)+" / "+SLIDES.length+"  ·  "+ctx, lbl=$("#lbl");
+  if(lbl.textContent!==txt)lbl.textContent=txt;
   $("#track").style.width=((cur+1)/SLIDES.length*100)+"%";
   $("#prev").disabled=cur===0;$("#next").disabled=cur===SLIDES.length-1;
   renderRail();
 }
 function show(i,dir,animate){
   i=Math.max(0,Math.min(SLIDES.length-1,i));
-  var stage=$("#stage");
+  var stage=$("#stage"), a=document.activeElement;
+  // re-rendering removes whatever had focus inside the slide: keep it on the same control
+  // when the slide is only redrawn, otherwise move it to the new slide
+  var lost=!!a&&stage.contains(a), keep=lost&&i===cur&&a.id?a.id:"";
   var el=document.createElement("section");
   el.className="slide"+(animate?" animate "+(dir<0?"in-prev":"in-next"):"");
   el.setAttribute("aria-label",SLIDES[i].label);
+  el.tabIndex=-1;
   cur=i;
   el.innerHTML=renderSlide(i);
   stage.innerHTML="";stage.appendChild(el);
   try{history.replaceState(null,"","#s-"+(i+1));}catch(e){}
   renderChrome();
+  if(lost){var f=keep&&document.getElementById(keep);(f||el).focus({preventScroll:true});}
 }
-function go(i){if(i===cur)return;show(i,i>cur?1:-1,true);closeOverview();}
+function go(i){if(i!==cur)show(i,i>cur?1:-1,true);closeOverview(true);}
 
+var ovOpener=null;
 function openOverview(){
-  var o=$("#overview"),h="<div class=\"ovgrid\"><div class=\"row\" style=\"justify-content:space-between\"><h2>All slides</h2><button class=\"btn\" type=\"button\" id=\"ovclose\">Close <kbd>Esc</kbd></button></div>";
+  var o=$("#overview"),h="<div class=\"ovgrid\"><div class=\"row\" style=\"justify-content:space-between\"><h2 id=\"ovtitle\">All slides</h2><button class=\"btn\" type=\"button\" id=\"ovclose\">Close <kbd>Esc</kbd></button></div>";
   var groups=[{name:"Start",idx:[0,1,2,3,4]}];
   PHASES.forEach(function(p,pi){var b=ps(pi);groups.push({name:"Job "+(pi+1)+" · "+p.title,pi:pi,idx:[b,b+1,b+2,b+3,b+4,b+5,b+6]});});
   groups.push({name:"Finish",idx:[SLIDES.length-1]});
   groups.forEach(function(g){
     h+="<div class=\"ovgroup\"><h3>"+(g.pi!=null?"<span class=\"dot "+phaseStats(PHASES[g.pi]).status+"\"></span>":"")+esc(g.name)+"</h3><div class=\"ovcards\">"+g.idx.map(function(k){return "<button type=\"button\" class=\"ovcard"+(k===cur?" cur":"")+"\" data-go=\""+k+"\"><span>"+(k+1)+"</span>"+esc(SLIDES[k].label)+"</button>";}).join("")+"</div></div>";
   });
+  ovOpener=document.activeElement;
   o.innerHTML=h+"</div>";o.hidden=false;
-  var c=o.querySelector(".ovcard.cur");if(c)c.focus();
+  // modal: the page behind can't be focused or tabbed to while the overview is open
+  $(".app").inert=true;
+  (o.querySelector(".ovcard.cur")||$("#ovclose")).focus();
 }
-function closeOverview(){var o=$("#overview");if(!o.hidden){o.hidden=true;o.innerHTML="";}}
+// toSlide: a slide was picked, so focus lands on it; otherwise focus returns to the opener
+function closeOverview(toSlide){
+  var o=$("#overview");if(o.hidden)return;
+  o.hidden=true;o.innerHTML="";$(".app").inert=false;
+  var b=ovOpener;ovOpener=null;
+  if(toSlide||!b||b===document.body||!b.isConnected)b=$("#stage .slide");
+  if(b)b.focus({preventScroll:true});
+}
 
 /* ------------------------------------------------------------------ events */
 document.addEventListener("click",function(e){
@@ -2027,7 +2050,8 @@ function importProgress(file){
   var r=new FileReader();
   r.onload=function(){
     var s;try{s=JSON.parse(r.result);}catch(e){s=null;}
-    if(!s||typeof s!=="object"||!s.done||typeof s.done!=="object"){alert("That file isn’t a DevOps Track progress export.");return;}
+    // ticks are keyed by this track's job ids (p1-t0, p4-x2…), which keeps the other track's export out
+    if(!s||typeof s!=="object"||!s.done||typeof s.done!=="object"||!Object.keys(s.done).every(function(k){return /^p\d+-[txd]\d+$/.test(k);})){alert("That file isn’t a DevOps Track progress export.");return;}
     s=normalise(s);
     if(!confirm("Replace the progress in this browser with this file ("+Object.keys(s.done).length+" checks ticked)?"))return;
     state=s;change();show(cur,0,false);
@@ -2074,6 +2098,13 @@ document.addEventListener("keydown",function(e){
   if(tag==="TEXTAREA"||tag==="INPUT"){return;}
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   var ov=!$("#overview").hidden;
+  if(ov&&e.key==="Tab"){
+    // the page behind is inert; also wrap Tab so focus never leaves the dialog for the browser UI
+    var fb=$("#overview").querySelectorAll("button"),first=fb[0],last=fb[fb.length-1];
+    if(e.shiftKey&&document.activeElement===first){last.focus();e.preventDefault();}
+    else if(!e.shiftKey&&document.activeElement===last){first.focus();e.preventDefault();}
+    return;
+  }
   if(e.key==="Escape"&&ov){closeOverview();return;}
   if(e.key==="o"||e.key==="O"){ov?closeOverview():openOverview();e.preventDefault();return;}
   if(ov)return;
