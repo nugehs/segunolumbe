@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig(
   // The learning tracks are hand-written standalone HTML; tests/tracks.test.ts syntax-checks their scripts.
-  { ignores: ['dist', 'dist-ssr', 'public', '.otito'] },
+  { ignores: ['dist', 'dist-ssr', 'public', '.solumbe'] },
   js.configs.recommended,
   tseslint.configs.recommended,
   {

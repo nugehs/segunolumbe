@@ -39,7 +39,7 @@ A router needs two things it cannot get from one place.
 
 It needs to know what the request is asking for, which is a language question. And it needs to know what the repository will do about it, which is a structural question with a deterministic answer: how contained the affected code is, how many owners it has, whether it touches paths that carry real risk.
 
-We already had the second half. [Òtítọ́](https://github.com/BASHBOP/otito) computes an agent-experience score, containment, and canonical risk flags from repository state alone, with no network and no model.
+We already had the second half. [Òtítọ́](https://github.com/BASHBOP/solumbe) computes an agent-experience score, containment, and canonical risk flags from repository state alone, with no network and no model.
 
 For the first half we used [Jev](https://docs.typesafe.ai/concepts/system-one), TypeSafe's System One model. A System One model does not write prose. You give it a state and a set of typed questions, and it returns typed answers with calibrated probabilities: a Choice between named options, a Score along ordered levels, or a Noul, which is the probability that a yes-or-no statement is true.
 
@@ -227,7 +227,7 @@ This is closer to testing a compiler or policy engine than benchmarking a langua
 
 ## A practical seven-case matrix
 
-[Òtítọ́ v1.7.0](https://github.com/BASHBOP/otito/releases/tag/v1.7.0) includes a small gate-effectiveness corpus. It runs the real staged local gate inside isolated temporary Git repositories. The current suite contains one valid control and six adversarial cases:
+[Òtítọ́ v1.7.0](https://github.com/BASHBOP/solumbe/releases/tag/v1.7.0) includes a small gate-effectiveness corpus. It runs the real staged local gate inside isolated temporary Git repositories. The current suite contains one valid control and six adversarial cases:
 
 1. **Valid control** — a normal source change with validation and policy in place must pass.
 2. **Secret file** — adding \`.env.production\` must fail the secret-safety check.
@@ -237,7 +237,7 @@ This is closer to testing a compiler or policy engine than benchmarking a langua
 6. **Unverified ownership** — company governance must not allow a local process to self-certify GitHub ownership and review controls.
 7. **Scope drift** — a reporting export added for an unrelated request must fail the required intent-to-diff convergence score.
 
-On 17 August 2026, the suite produced seven expected results: the valid control passed and all six unsafe cases were blocked at their named checks. The cases and thresholds are public in the [evaluation corpus](https://github.com/BASHBOP/otito/blob/main/evals/corpus.json), and the command is reproducible:
+On 17 August 2026, the suite produced seven expected results: the valid control passed and all six unsafe cases were blocked at their named checks. The cases and thresholds are public in the [evaluation corpus](https://github.com/BASHBOP/solumbe/blob/main/evals/corpus.json), and the command is reproducible:
 
 \`\`\`
 npx --yes --package=@bashbop/otito@1.7.0 -- otito eval --gate-effectiveness
@@ -450,9 +450,9 @@ These layers must stay distinct. A local test run cannot prove a hosted check pa
 
 ## What proof looks like in practice
 
-[Òtítọ́](https://bashbop.github.io/otito/) is the open-source trust harness I am building around this boundary. It gives agents deterministic repository context before editing and produces changed-file risk, secret safety, validation, ownership, CI, and review-readiness evidence before merge.
+[Òtítọ́](https://bashbop.github.io/solumbe/) is the open-source trust harness I am building around this boundary. It gives agents deterministic repository context before editing and produces changed-file risk, secret safety, validation, ownership, CI, and review-readiness evidence before merge.
 
-[Version 1.7.0](https://github.com/BASHBOP/otito/releases/tag/v1.7.0) adds a gate-effectiveness evaluation that invokes the real staged local gate against seven committed cases:
+[Version 1.7.0](https://github.com/BASHBOP/solumbe/releases/tag/v1.7.0) adds a gate-effectiveness evaluation that invokes the real staged local gate against seven committed cases:
 
 - one valid control must pass;
 - a secret file must be blocked;
