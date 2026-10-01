@@ -7,7 +7,7 @@ export const SITE_URL = 'https://segunolumbe.com';
 const NAME = 'Oluwasegun Olumbe';
 const HOME_TITLE = `${NAME}: founder & software architect`;
 const HOME_DESCRIPTION =
-  'Founder of BashBop. Building deterministic AI dev tools: gate, Òtítọ́, tieline, bouncer, aiglare. Static analysis, never the model. Local-first, MCP-native.';
+  'Founder of BashBop. Building deterministic AI dev tools: gate, Solumbe, tieline, bouncer, aiglare. Static analysis, never the model. Local-first, MCP-native.';
 
 export type Head = {
   title: string;

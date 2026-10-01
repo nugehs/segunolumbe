@@ -31,7 +31,7 @@ describe('site copy', () => {
     }
   });
 
-  it('quotes one Òtítọ́ version everywhere', () => {
+  it('quotes one Solumbe version everywhere', () => {
     const otito = tools.find((tool) => tool.slug === 'otito');
     const version = otito?.domain.match(/v(\d+\.\d+\.\d+)/)?.[1];
     expect(version).toBeDefined();
@@ -39,7 +39,7 @@ describe('site copy', () => {
     expect(release?.href).toMatch(new RegExp(`/tag/v${version}$`));
     expect(release?.label).toContain(`v${version}`);
     for (const text of [pages.now.body, ...plainText]) {
-      for (const [, mentioned] of text.matchAll(/Òtítọ́ v(\d+\.\d+\.\d+)/g)) expect(mentioned).toBe(version);
+      for (const [, mentioned] of text.matchAll(/(?:Solumbe|Òtítọ́) v(\d+\.\d+\.\d+)/g)) expect(mentioned).toBe(version);
     }
   });
 

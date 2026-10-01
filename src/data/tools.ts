@@ -20,20 +20,20 @@ export const tools: Card[] = [
   },
   {
     slug: 'otito',
-    name: 'Òtítọ́',
-    domain: 'trust harness · v1.15.0',
+    name: 'Solumbe',
+    domain: 'trust harness · v4.0.0',
     what:
-      'Models generate the change. Òtítọ́ proves whether it is safe to merge. It gives agents deterministic repository context, then checks changed-file risk, secrets, validation, ownership, CI, and review readiness. v1.15.0 makes the model router an MCP tool, so any host can score a task before spending tokens and get a cheap, mid, or premium tier, advisory only and never touching the gate. v1.14.0 stopped the router sending one-file changes to the premium tier by trusting repository signals over a model\'s self-reported confidence, and v1.11.0 added otito calibrate, which grades the risk flags against the repository\'s own fix history.',
+      'Models generate the change. Solumbe proves whether it is safe to merge. It gives agents deterministic repository context, then checks changed-file risk, secrets, validation, ownership, CI, and review readiness. v4.0.0 is the rename from Òtítọ́: package, CLI, and MCP server all move to Solumbe, behaviour unchanged. The 3.x line let one context pack span a web app and its API, and let model routing make a share of requests follow the cheap, mid, or premium tier it picks instead of only recommending one. Routing stays advisory to the gate, and solumbe calibrate still grades the risk flags against the repository\'s own fix history.',
     links: [
-      { label: 'v1.15.0 ↗', href: 'https://github.com/BASHBOP/otito/releases/tag/v1.15.0' },
+      { label: 'v4.0.0 ↗', href: 'https://github.com/BASHBOP/solumbe/releases/tag/v4.0.0' },
       {
         label: 'mcp ↗',
-        href: 'https://registry.modelcontextprotocol.io/?q=io.github.BASHBOP%2Fotito',
+        href: 'https://registry.modelcontextprotocol.io/?q=io.github.BASHBOP%2Fsolumbe',
         site: true,
       },
-      { label: 'site ↗', href: 'https://bashbop.github.io/otito/' },
-      { label: 'npm ↗', href: 'https://www.npmjs.com/package/@bashbop/otito' },
-      { label: 'github ↗', href: 'https://github.com/BASHBOP/otito' },
+      { label: 'site ↗', href: 'https://bashbop.github.io/solumbe/' },
+      { label: 'npm ↗', href: 'https://www.npmjs.com/package/@bashbop/solumbe' },
+      { label: 'github ↗', href: 'https://github.com/BASHBOP/solumbe' },
     ],
   },
   {
