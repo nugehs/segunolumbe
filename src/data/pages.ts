@@ -15,7 +15,7 @@ export const now: Page = {
   title: 'Now',
   domain: 'q3 2026',
   body:
-    'Shipped Òtítọ́ v1.15.0: the model router is now an MCP tool, so any host can get a cheap, mid, or premium tier before spending tokens, and a Claude Code prompt hook routes every request without anyone remembering to ask. Brain Boost Buddy reached v2.6.0 with weekly lesson-time scheduling. Growing BashBop and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
+    'Shipped Solumbe v4.0.0, the new name for Òtítọ́: model routing can now make a share of requests follow the tier it picks instead of only recommending one, and one context pack can span a web app and its API. Brain Boost Buddy reached v2.6.0 with weekly lesson-time scheduling. Growing BashBop and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
 };
 
 export const speaking: Page = {
