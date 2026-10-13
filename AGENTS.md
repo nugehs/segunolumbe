@@ -19,11 +19,14 @@ The products linked from this site live in separate repositories. Update links a
 - `src/App.tsx`: top-level page composition and client-side navigation.
 - `src/routes.ts`: path to route resolution and the list of prerendered paths.
 - `src/head.ts`: per-route title, description, canonical, and Open Graph tags.
-- `src/data/products.ts`, `tools.ts`, `stack.ts`: cards and links. `slug` is the URL segment.
+- `src/data/products.ts`, `tools.ts`, `stack.ts`: cards and links. `slug` is the URL segment. A card's optional `caseStudy` (problem, constraints, architecture, decisions, what broke, outcome) is what its page renders below the summary.
 - `src/data/articles.ts`: embedded articles, canonical on GeekieNews.
 - `src/data/pages.ts`: Writing, Now, and Speaking copy.
 - `src/data/sections.ts`: section labels and notes.
+- `src/data/skills.ts`: the skills band on the home page. List only what a card or case study backs.
 - `src/components/ArticleBody.tsx`: article rendering.
+- `src/data/drafts/`: case studies that are written but not published. Nothing imports them, so they are neither rendered nor bundled; do not import one unless asked to publish it.
+- `src/components/CaseStudy.tsx`: case-study rendering, including the architecture diagram. A section with no content is left out.
 - `src/styles/global.css`: global design system and responsive styling.
 - `src/entry-server.tsx` and `scripts/prerender.mjs`: prerender every route, plus `404.html` and `sitemap.xml`.
 - `tests/`: Vitest suite.
@@ -31,7 +34,7 @@ The products linked from this site live in separate repositories. Update links a
 
 Prefer editing the appropriate data module over hardcoding repeated content in JSX. Pages, head tags, and the sitemap are generated from the data and `src/routes.ts`, so a new card or article needs only a unique slug. Renaming a slug breaks inbound links.
 
-Card and page copy renders as plain text: no Markdown. Photos in `public/` must have EXIF stripped (a test enforces it).
+Card, case-study, and page copy renders as plain text: no Markdown. Case-study claims come from the product's own repository and docs; never ship a placeholder (a test fails on one). Photos in `public/` must have EXIF stripped (a test enforces it).
 
 ## Validation
 

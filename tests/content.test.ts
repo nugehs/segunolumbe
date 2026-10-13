@@ -2,26 +2,71 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { pages } from '../src/data/pages';
-import { products, type Card } from '../src/data/products';
+import { products, type Card, type CaseStudy } from '../src/data/products';
 import { sectionNote } from '../src/data/sections';
+import { skills } from '../src/data/skills';
 import { stack } from '../src/data/stack';
 import { tools } from '../src/data/tools';
 
 const root = new URL('../', import.meta.url);
 const read = (path: string) => readFileSync(new URL(path, root), 'utf8');
 const cards: Card[] = [...tools, ...products, ...stack];
+const caseStudies = cards.flatMap((card) => (card.caseStudy ? [{ slug: card.slug, study: card.caseStudy }] : []));
+
+function caseStudyText(study: CaseStudy): string[] {
+  const more = study.architecture.more ?? [];
+  const nodes = [
+    ...study.architecture.layers,
+    ...(study.architecture.aside ? [study.architecture.aside] : []),
+    ...more.flatMap((part) => part.layers),
+  ];
+  return [
+    study.problem,
+    ...study.constraints,
+    study.architecture.intro,
+    ...more.flatMap((part) => [part.title, part.intro]),
+    ...nodes.flatMap((group) => [group.label, ...group.nodes.flatMap((node) => [node.name, node.role])]),
+    ...study.decisions.flatMap((decision) => [decision.chose, decision.over, decision.why]),
+    ...study.broke.flatMap((entry) => [entry.what, entry.cause, entry.fix]),
+    ...study.outcome,
+  ];
+}
 
 // Card and page copy renders as plain text, so Markdown shows up literally.
 const plainText = [
-  ...cards.flatMap((card) => [card.name, card.domain, card.what]),
+  ...cards.flatMap((card) => [card.name, card.domain, card.what, ...(card.stack ?? [])]),
+  ...caseStudies.flatMap(({ study }) => caseStudyText(study)),
   ...Object.values(pages).flatMap((page) => [page.title, page.domain, page.body]),
   ...Object.values(sectionNote),
+  ...skills.flatMap((group) => [group.area, ...group.items]),
 ];
 
 describe('site copy', () => {
   it('has no Markdown syntax in plain-text fields', () => {
     for (const text of plainText) {
       expect(text, text).not.toMatch(/`|\*\*|\]\(/);
+    }
+  });
+
+  it('ships no placeholder or empty line in a case study', () => {
+    expect(caseStudies.length).toBeGreaterThan(0);
+    for (const { slug, study } of caseStudies) {
+      for (const text of caseStudyText(study)) {
+        expect(text.trim(), slug).not.toBe('');
+        expect(text, slug).not.toMatch(/\bTODO\b|\bTBD\b|lorem ipsum/i);
+      }
+    }
+  });
+
+  it('gives every case study an architecture and at least two argued decisions', () => {
+    for (const { slug, study } of caseStudies) {
+      expect(study.architecture.layers.length, slug).toBeGreaterThanOrEqual(2);
+      const layers = [...study.architecture.layers, ...(study.architecture.more ?? []).flatMap((part) => part.layers)];
+      for (const layer of layers) expect(layer.nodes.length, `${slug} ${layer.label}`).toBeGreaterThan(0);
+      expect(study.decisions.length, slug).toBeGreaterThanOrEqual(2);
+      // The decision title and each failure are React keys, so they must not repeat.
+      expect(new Set(study.decisions.map((decision) => decision.chose)).size, slug).toBe(study.decisions.length);
+      expect(new Set(study.broke.map((entry) => entry.what)).size, slug).toBe(study.broke.length);
     }
   });
 
