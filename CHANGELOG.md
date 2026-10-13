@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.3.0] — 2026-10-13
+
+### Added
+- Case studies: a card can carry a `caseStudy`, and its page then explains the problem, constraints, architecture (a layered diagram in plain HTML), key decisions with what was rejected and why, what broke and the fix, and the outcome. A study can carry a second diagram for another subsystem; BashBop's shows its event assistant (retrieval-augmented answers) beside the payment path. Seven are published: gate, Solumbe, tieline, bouncer, aiglare, BashBop, and Snap A Bird, each written from its own repositories and docs. Brain Boost Buddy's is written but unpublished, in `src/data/drafts/`.
+- A skills band on the home page, grouped as AI engineering, backend, clients, and delivery.
+- Section pages list every project with its summary, stack, and links, instead of showing only the first one.
+- Tests fail on a placeholder in a case study, on a case study with fewer than two decisions, and on a page without exactly one `h1`.
+
+### Changed
+- Layout: the fixed, non-scrolling shell is now a scrolling page with one masthead for all six sections, a home hero, and a sibling roster beside each write-up.
+- Theme: the dark indigo and yellow palette is now light, with a cool off-white page, slate text, one indigo accent, a tinted hero with a dot grid, and rounded corners. Type is unchanged. Every text pair still meets WCAG AA.
+- Solumbe's card copy is shorter; the detail moved into its case study.
+
+### Fixed
+- The Background AI card called the trust harness by its old name.
+- Snap A Bird's summary said BirdNET and 964 UK birds. The app runs a MobileNet V3 image classifier on the phone, and the 964 species are worldwide.
+- gate's summary said the other four tools feed it; its merge-readiness check does not run Solumbe yet.
+- tieline's summary said drift shows up as a 500. A call to a route that is not there is a 404.
+- The social share image was the old cream and red design and named a retired tool. It is redrawn in the light theme.
+
 ## [1.2.0] — 2026-09-24
 
 ### Added

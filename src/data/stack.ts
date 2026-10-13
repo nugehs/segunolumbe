@@ -33,7 +33,7 @@ export const stack: Card[] = [
     name: 'AI',
     domain: 'generation + trust',
     what:
-      'Frontier models already plan, search, edit, and recover. The durable work is the independent trust layer around them: deterministic context before the edit, exact validation after it, permissions, review evidence, and a human merge decision. Òtítọ́ is that trust harness; gate, tieline, bouncer, and aiglare extend the same fail-closed approach across delivery, contracts, compliance, and AI governance.',
+      'Frontier models already plan, search, edit, and recover. The durable work is the independent trust layer around them: deterministic context before the edit, exact validation after it, permissions, review evidence, and a human merge decision. Solumbe is that trust harness; gate, tieline, bouncer, and aiglare extend the same fail-closed approach across delivery, contracts, compliance, and AI governance. On the product side, BashBop\'s event assistant answers from retrieved records, with a deterministic fact check and evals. I have also built agents on the Anthropic SDK in three patterns: a ReAct loop, an orchestrator with specialists, and generate-then-evaluate.',
     links: [
       {
         label: 'mcp registry ↗',

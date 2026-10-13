@@ -10,15 +10,16 @@ Hiring managers, collaborators, and engineers who land on a personal site to dec
 
 ## Product Purpose
 
-Personal portfolio for Oluwasegun Olumbe, engineer and founder in London. It presents BashBop, Brain Boost Buddy, Snap A Bird, and the open-source tools (gate, Solumbe, tieline, bouncer, aiglare) with equal weight. Success is a visitor leaving convinced he builds both products and tools, and clicking through to the work.
+Personal portfolio for Oluwasegun Olumbe, engineer and founder in London, built to get him hired: it should show the AI engineering a hiring manager is scanning for (RAG, evals, MCP servers, agents) as case studies with architecture and reasons, not as a list of claims. It presents BashBop, Brain Boost Buddy, Snap A Bird, and the open-source tools (gate, Solumbe, tieline, bouncer, aiglare) with equal weight. Success is a visitor leaving convinced he builds both products and tools, and clicking through to the work.
 
 ## Brand Personality
 
-Bold, loud, hard to ignore. Direct founder voice: practical stories, no fluff, presence that fills the viewport.
+Light, gentle, and technical. Direct founder voice: practical stories, no fluff. The page stays calm so the work can be specific.
 
 ## Anti-references
 
 - The original cream/paper + red accent + mono-label look
+- The dark indigo and yellow, fixed-viewport look it had before the light theme
 - Generic SaaS landings (identical cards, soft gradients, Inter-default typography)
 - Terminal/hacker aesthetics (neon on black, green code, monospaced costume)
 
