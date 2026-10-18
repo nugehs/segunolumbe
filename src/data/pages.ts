@@ -13,9 +13,9 @@ export const writing: Page = {
 
 export const now: Page = {
   title: 'Now',
-  domain: 'q3 2026',
+  domain: 'q4 2026',
   body:
-    'Shipped Solumbe v4.0.0, the new name for Òtítọ́: model routing can now make a share of requests follow the tier it picks instead of only recommending one, and one context pack can span a web app and its API. Brain Boost Buddy reached v2.6.0 with weekly lesson-time scheduling. Growing BashBop and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
+    'Shipped Solumbe v4.7.1, the new name for Òtítọ́: a request can now declare the files it will touch before the edit, and the gate fails any file that was never declared. The gate delegates to gitleaks, Semgrep, and osv-scanner where they are installed, attestation records can be signed, and Claude can now answer the request read alongside Jev. Brain Boost Buddy reached v2.6.0 with weekly lesson-time scheduling. Growing BashBop and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
 };
 
 export const speaking: Page = {
