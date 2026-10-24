@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0] — 2026-10-24
+
+### Added
+- A new GeekieNews article, "When Your Benchmark and Your Git History Disagree", mirrored into the writing section: Solumbe 4.8.0's history-replay eval.
+
+### Changed
+- Solumbe is now shown as v4.8.0 on the card, the release link, and the Now page, with copy for the 4.8.0 work (dependency-aware ranking, runtime version pins, the history replay).
+- Renamed the remaining "Òtítọ́" mentions to Solumbe across the three earlier articles, the page meta tags, and the learning tracks (`otito-ci.yml` is now `solumbe-ci.yml`), matching the v4.0.0 rename. Historical references keep "then called Òtítọ́" and the 1.7.0 command keeps its old package name.
+
 ## [1.3.0] — 2026-10-13
 
 ### Added

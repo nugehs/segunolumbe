@@ -148,7 +148,7 @@ export const tools: Card[] = [
   {
     slug: 'otito',
     name: 'Solumbe',
-    domain: 'trust harness · v4.7.1',
+    domain: 'trust harness · v4.8.0',
     what:
       'Models generate the change. Solumbe proves whether it is safe to merge. It gives an agent deterministic repository context before the edit, then gates the exact staged tree on changed-file risk, secrets, scope, validation, and ownership. No server, no account, and no code leaves the machine. Formerly Òtítọ́: the package, CLI, and MCP server were renamed in v4.0.0, behaviour unchanged.',
     stack: ['Node.js', 'JavaScript (ESM)', 'TypeScript compiler', 'MCP over stdio', 'Git', 'GitHub Actions'],
@@ -302,7 +302,7 @@ export const tools: Card[] = [
       ],
     },
     links: [
-      { label: 'v4.7.1 ↗', href: 'https://github.com/BASHBOP/solumbe/releases/tag/v4.7.1' },
+      { label: 'v4.8.0 ↗', href: 'https://github.com/BASHBOP/solumbe/releases/tag/v4.8.0' },
       {
         label: 'mcp ↗',
         href: 'https://registry.modelcontextprotocol.io/?q=io.github.BASHBOP%2Fsolumbe',
