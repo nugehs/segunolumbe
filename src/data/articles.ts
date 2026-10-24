@@ -16,6 +16,88 @@ export type Article = {
 
 export const articles: Article[] = [
   {
+    slug: 'when-the-benchmark-and-the-history-disagree',
+    shortTitle: 'Benchmark vs history',
+    title: 'When Your Benchmark and Your Git History Disagree',
+    description:
+      'A hand-labelled corpus said our repository context was good. Replaying a real project\'s own commits said it was not. The gap between the two numbers is the useful part, and it is why Solumbe 4.8.0 reads dependency work differently.',
+    domain: 'audit · 24 oct 2026',
+    publishDate: '2026-10-24',
+    category: 'audit',
+    tags: ['ai-agents', 'evals', 'retrieval', 'context', 'solumbe'],
+    canonicalUrl:
+      'https://geekienews.com/articles/when-the-benchmark-and-the-history-disagree/',
+    body: `A context engine ranks the files a request is likely to touch, so an agent reads the right code before it edits. Solumbe's corpus said ours was good: precision@5 of 0.838, recall 1.0, 36 of 36 cases passing. Then we replayed a real project's own commits, and the same engine scored hit@5 of 0.37.
+
+Both numbers are true. The gap between them is the point of this post.
+
+## A corpus you wrote tests what you expected
+
+Our corpus is 36 retrieval cases, each hand-labelled on a small synthetic fixture: a request, and the files that request should rank. Every case passes. That is useful, and it is also the problem.
+
+You write a case when you can already picture the answer. The fixtures are a dozen files with clean names, and the labels are what you decided the right ranking was. A suite like that catches a regression, because a change that breaks a case you already got right is a real signal. It cannot tell you how far the engine is from right on work you did not anticipate, because every situation in it is one you did anticipate.
+
+The thresholds show the same ceiling. They are set at baseline-minus-slack: high enough to trip on a regression, low enough to stay green today. A suite tuned to pass is not measuring the distance to correct. It is guarding a line you already cleared.
+
+## A commit is a labelled case you did not write
+
+There is a second source of labels, and you did not have to write any of them. Every commit in a real repository is a request and its answer: the subject line is what someone wanted, and the files the commit changed are the files the work needed.
+
+\`solumbe eval --history\` replays them:
+
+\`\`\`
+solumbe eval --history ../bashbop-api --commits 30 [--k 5]
+npm run eval:history -- ../bashbop-api
+\`\`\`
+
+For each commit it exports the parent tree with \`git archive\` into a temporary directory, builds the context pack there from the cleaned subject, and scores the pack against what the commit actually changed. The subject loses its conventional-commit prefix, so \`fix(gate):\` does not hand the engine a path hint the real requester never gave. The inspected repository is only read; nothing in it runs, and each temporary tree is deleted after.
+
+What counts as expected is deliberately narrow. A file the commit modified, deleted or renamed counts. A file it added does not, because that file did not exist on the parent tree the engine saw. A changelog does not, because every change touches it by convention. A changed test counts toward pack recall but not the primary metrics, because tests live in their own section of the pack. A changed file the code map does not index at all is reported separately as a coverage gap, since no ranking could have named it.
+
+It reports hit@k, recall@k, precision@k, MRR, pack recall, and the share of changed files the code map does not index. It skips merges, releases, version bumps, bot commits, and anything with more than \`--max-files\` expected files, and it skips a subject it has already seen so a re-landed change is not counted twice.
+
+## The first replay
+
+The first run took the 30 most recent eligible commits of bashbop-api and scored them with the engine before and after a change to how dependency work is ranked. k = 5.
+
+| Engine | Commits | hit@5 | recall@5 | MRR | pack recall | unindexed |
+|---|---:|---:|---:|---:|---:|---:|
+| Before | 27 | 0.37 | 0.205 | 0.182 | 0.212 | 0.14 |
+| After | 29 | 0.414 | 0.214 | 0.239 | 0.218 | 0.061 |
+
+Read the first row against the corpus. On synthetic cases the same engine recalls every expected file. On a real project's own history it puts a changed file in the top five about a third of the time. Neither number is wrong. They measure different things, and only one of them is the thing I actually ship.
+
+Recall@5 has a ceiling well below 1.0 here, and that is not a defect to fix. A commit's diff is a noisy label: it carries files the request never named, a refactor dragged along, a doc touched in passing. So the history numbers are for comparing two engine versions on the same commits, not for reading in isolation. The comparison is the product; the absolute value is not.
+
+The same first run scored differently across repositories: hit@5 of 0.75 on Solumbe's own repository, 0.741 on a mobile app, and 0.345 on an events web app. The engine is not uniformly good or bad. It is good on some codebases and weak on others, and until this ran I could not have told you which.
+
+## What the history changed
+
+The low scores were not noise. Reading the misses told me what the engine could not see.
+
+Dependency work was the clearest. A commit that patched several vulnerable packages, and a commit that made a Dependabot batch install, lint, test and build, both scored nothing. The engine matched \`shell-quote\` to a quote-templates controller on the word "quote", pulled in every Handlebars template on "handlebars", and ranked an upgrade modal on "upgrade". The lockfile it actually needed to change was never listed, because the code map did not index manifests or lockfiles at all.
+
+So Solumbe 4.8.0 indexes them. A request that upgrades, bumps, audits or patches dependencies now owns the lockfile and the manifest that declares the named package, and a package the request names is read whole instead of scoring unrelated source files on its words. After the change, both dependency commits hit, and the share of changed files the code map does not index dropped from 0.14 to 0.061. Runtime version pins moved the same way: \`.nvmrc\` and \`.tool-versions\` now classify as configuration and gate a merge, because moving the project from Node 20 to 22 changes what CI runs.
+
+Not every miss is fixed. A request that names a script under \`public/\` almost word for word still ranks it sixth. A feature-flag file whose keys name the mechanism rather than the feature still does not surface. Those are recorded in the corpus as known gaps: they run and report, and they do not count toward the pass line, so a miss is logged the day it is found instead of waiting for someone to invent a fixture.
+
+## The same lesson, one release earlier
+
+Replaying real work had already caught a different bug one version before. Running Solumbe's own merge gate on another repository, a five-file branch scored 49 out of 100. Sixteen files were counted, not five. Three of them were payment files, flagged as money-flow drift, from commits that had merged to the main branch while the branch was open.
+
+The gate had been diffing from the base branch's current tip, so once the base moved on, every file those later commits changed looked like a reversed change of this one. It now diffs from the merge base. I did not find that by reasoning about the diff logic. I found it because a real branch produced a score that was obviously wrong, and a wrong number on real input is louder than a passing test on an invented one.
+
+## What this does not prove
+
+The replay is a measurement, not a gate. It has no thresholds, and it is not part of the quality suite. The numbers depend entirely on which repository and which commits you read, so a single run tells you nothing in isolation; only the before-and-after on the same commits means anything.
+
+The sample is small. Thirty commits of one repository, then a handful of others once. Commit subjects are a rough stand-in for what a person would actually ask an agent, and they skip merges and bots, which removes some of the hardest cases rather than facing them.
+
+And a passing corpus is still worth keeping. It guards against regressions cheaply and runs in a second. The mistake is reading its green as evidence the engine is good, when all it proves is that the engine still does the things I already taught it to do.
+
+Write the benchmark to catch what you understand. Replay the history to find what you do not. When the two disagree, the history is the one telling you something new.`,
+  },
+  {
     slug: 'routing-coding-tasks-with-a-calibrated-model',
     shortTitle: 'Routing to the right model',
     title: 'How to Route a Coding Task to the Right Model Before You Spend on It',
@@ -39,7 +121,7 @@ A router needs two things it cannot get from one place.
 
 It needs to know what the request is asking for, which is a language question. And it needs to know what the repository will do about it, which is a structural question with a deterministic answer: how contained the affected code is, how many owners it has, whether it touches paths that carry real risk.
 
-We already had the second half. [Òtítọ́](https://github.com/BASHBOP/solumbe) computes an agent-experience score, containment, and canonical risk flags from repository state alone, with no network and no model.
+We already had the second half. [Solumbe](https://github.com/BASHBOP/solumbe) (then called Òtítọ́) computes an agent-experience score, containment, and canonical risk flags from repository state alone, with no network and no model.
 
 For the first half we used [Jev](https://docs.typesafe.ai/concepts/system-one), TypeSafe's System One model. A System One model does not write prose. You give it a state and a set of typed questions, and it returns typed answers with calibrated probabilities: a Choice between named options, a Score along ordered levels, or a Noul, which is the probability that a yes-or-no statement is true.
 
@@ -227,7 +309,7 @@ This is closer to testing a compiler or policy engine than benchmarking a langua
 
 ## A practical seven-case matrix
 
-[Òtítọ́ v1.7.0](https://github.com/BASHBOP/solumbe/releases/tag/v1.7.0) includes a small gate-effectiveness corpus. It runs the real staged local gate inside isolated temporary Git repositories. The current suite contains one valid control and six adversarial cases:
+[Solumbe v1.7.0](https://github.com/BASHBOP/solumbe/releases/tag/v1.7.0), then published under the name Òtítọ́, includes a small gate-effectiveness corpus. It runs the real staged local gate inside isolated temporary Git repositories. The current suite contains one valid control and six adversarial cases:
 
 1. **Valid control** — a normal source change with validation and policy in place must pass.
 2. **Secret file** — adding \`.env.production\` must fail the secret-safety check.
@@ -237,7 +319,7 @@ This is closer to testing a compiler or policy engine than benchmarking a langua
 6. **Unverified ownership** — company governance must not allow a local process to self-certify GitHub ownership and review controls.
 7. **Scope drift** — a reporting export added for an unrelated request must fail the required intent-to-diff convergence score.
 
-On 17 August 2026, the suite produced seven expected results: the valid control passed and all six unsafe cases were blocked at their named checks. The cases and thresholds are public in the [evaluation corpus](https://github.com/BASHBOP/solumbe/blob/main/evals/corpus.json), and the command is reproducible:
+On 17 August 2026, the suite produced seven expected results: the valid control passed and all six unsafe cases were blocked at their named checks. The cases and thresholds are public in the [evaluation corpus](https://github.com/BASHBOP/solumbe/blob/main/evals/corpus.json), and the command is reproducible (1.7.0 was published under the old package name):
 
 \`\`\`
 npx --yes --package=@bashbop/otito@1.7.0 -- otito eval --gate-effectiveness
@@ -369,7 +451,7 @@ Trust it provisionally because its claims are specific, reproducible, independen
     category: 'essay',
     tags: ['static-analysis', 'ai-agents', 'verification', 'trust-harness', 'ai-governance'],
     canonicalUrl: 'https://geekienews.com/articles/missing-verification-layer/',
-    body: `_Updated 17 August 2026 to reflect the rise of stronger native agent harnesses and the v1.7.0 gate-effectiveness proof in Òtítọ́._
+    body: `_Updated 17 August 2026 to reflect the rise of stronger native agent harnesses and the v1.7.0 gate-effectiveness proof in Solumbe (then called Òtítọ́)._
 
 An AI agent can touch forty files in ninety seconds. It can invent an API endpoint that never existed, skip a compliance control, and merge with confidence because the _reasoning_ sounded right.
 
@@ -450,9 +532,9 @@ These layers must stay distinct. A local test run cannot prove a hosted check pa
 
 ## What proof looks like in practice
 
-[Òtítọ́](https://bashbop.github.io/solumbe/) is the open-source trust harness I am building around this boundary. It gives agents deterministic repository context before editing and produces changed-file risk, secret safety, validation, ownership, CI, and review-readiness evidence before merge.
+[Solumbe](https://bashbop.github.io/solumbe/) (then called Òtítọ́) is the open-source trust harness I am building around this boundary. It gives agents deterministic repository context before editing and produces changed-file risk, secret safety, validation, ownership, CI, and review-readiness evidence before merge.
 
-[Version 1.7.0](https://github.com/BASHBOP/solumbe/releases/tag/v1.7.0) adds a gate-effectiveness evaluation that invokes the real staged local gate against seven committed cases:
+[Version 1.7.0](https://github.com/BASHBOP/solumbe/releases/tag/v1.7.0), then published under the name Òtítọ́, adds a gate-effectiveness evaluation that invokes the real staged local gate against seven committed cases:
 
 - one valid control must pass;
 - a secret file must be blocked;

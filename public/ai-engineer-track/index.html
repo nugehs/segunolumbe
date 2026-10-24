@@ -681,7 +681,7 @@ var PHASES=[
   flowTitle:"An agent calling a bashbop MCP server",
   flow:[["host","Agent host","Claude Code, Desktop or your app"],["discover","tools/list","names, schemas, descriptions"],["call","tools/call","scoped by the user’s grant"],["server","bashbop MCP","read-only queries, rate limits"],["result","Tool result","small, structured, audited"]],
   hot:3,
-  callouts:[["info","gate, Òtítọ́, tieline, bouncer and aiglare are already official MCP servers. The gap is a remote server on your own product data with real authorization."],["warn","An MCP server is an API for a model that reads untrusted text. Every tool needs the auth, rate limits and least privilege of a public endpoint."]],
+  callouts:[["info","gate, Solumbe, tieline, bouncer and aiglare are already official MCP servers. The gap is a remote server on your own product data with real authorization."],["warn","An MCP server is an API for a model that reads untrusted text. Every tool needs the auth, rate limits and least privilege of a public endpoint."]],
   tasks:[
     ["Write a local stdio MCP server for bashbop with three read-only tools: search events, get event details, and get the booking summary for an event you own.","The worked example has the skeleton."],
     ["Test it in the MCP Inspector and in Claude Code, and rewrite tool descriptions until the model picks the right tool for ten test questions.",""],
@@ -787,7 +787,7 @@ var FINDINGS=[
   ["info","bashbop","Data retention is unverified: Responses API calls don’t set `store`, and what the `OpenAI-ZDR` header does needs checking against OpenAI’s docs.","a7"],
   ["info","Claude agents","Default models are pinned to earlier generations (`claude-sonnet-4-6`, `claude-opus-4-6`) with no eval showing whether a newer model is better or cheaper.","a3"]
 ];
-var STRENGTHS=["Untrusted transcript delimiting before extraction","`userConfirmed` gate before an AI draft becomes an event","Editable templated fallback when AI is down","Deterministic `AI_TEST_MODE` for e2e tests","Per-user AI quotas and cost alerts","`LOCAL_AI_ONLY` mode with Ollama","Public support assistant limited to 5 requests a minute","Sanitised HTML in the FAQ chatbot","On-device inference with five-frame smoothing","Snap A Bird model card, DPIA and AI Act risk assessment","Cloud rescans capped (`RESCAN_LIMIT`)","ReAct, orchestrator and evaluator agents already built","Python agents read tokens from `response.usage`","Per-agent turn and spend caps in bashbop-agents","Your own AI governance tools: aiglare, Òtítọ́ and gate"];
+var STRENGTHS=["Untrusted transcript delimiting before extraction","`userConfirmed` gate before an AI draft becomes an event","Editable templated fallback when AI is down","Deterministic `AI_TEST_MODE` for e2e tests","Per-user AI quotas and cost alerts","`LOCAL_AI_ONLY` mode with Ollama","Public support assistant limited to 5 requests a minute","Sanitised HTML in the FAQ chatbot","On-device inference with five-frame smoothing","Snap A Bird model card, DPIA and AI Act risk assessment","Cloud rescans capped (`RESCAN_LIMIT`)","ReAct, orchestrator and evaluator agents already built","Python agents read tokens from `response.usage`","Per-agent turn and spend caps in bashbop-agents","Your own AI governance tools: aiglare, Solumbe and gate"];
 
 /* diagram helpers */
 function txt(x,y,cls,s,anchor){return "<text class=\""+cls+"\" x=\""+x+"\" y=\""+y+"\""+(anchor?" text-anchor=\""+anchor+"\"":"")+">"+esc(s)+"</text>";}

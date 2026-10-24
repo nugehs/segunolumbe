@@ -350,7 +350,7 @@ var PHASES=[
   flowTitle:"The PR gate you want",
   flow:[["trigger","PR opened","into develop or main"],["parallel","Lint + types","`yarn lint`, `yarn tsc:check`"],["parallel","Unit tests","`yarn test` (Jest)"],["parallel","Build","`next build`, cached"],["gate","Required checks","merge button stays grey until green"]],
   hot:4,
-  callouts:[["warn","Today `main-branch-checks.yml` (which runs the type check) only triggers on PRs into main. `next.config.mjs` also sets `typescript.ignoreBuildErrors: true`, so `next build` in other workflows doesn’t catch type errors either."],["warn","Node 18 in `e2e-tests.yml` and `main-branch-checks.yml`, 20 in `bundle-size.yml`, 22 in `otito-ci.yml`. Node 18 left security support in April 2025."]],
+  callouts:[["warn","Today `main-branch-checks.yml` (which runs the type check) only triggers on PRs into main. `next.config.mjs` also sets `typescript.ignoreBuildErrors: true`, so `next build` in other workflows doesn’t catch type errors either."],["warn","Node 18 in `e2e-tests.yml` and `main-branch-checks.yml`, 20 in `bundle-size.yml`, 22 in `solumbe-ci.yml`. Node 18 left security support in April 2025."]],
   tasks:[
     ["Add `.nvmrc` to bashbop-event-web and switch every workflow’s setup-node step to `node-version-file: .nvmrc`.","Match the Dockerfile’s `node:20-alpine`, or bump both together."],
     ["Make the lint / type check / test job run on PRs into `develop` as well as `main`.",""],
@@ -975,7 +975,7 @@ var DRILL={
   p2:{title:"Green checks, broken types",
     setup:"On a branch from `develop`, add `const n: number = 'oops';` to a component used by one page, and open a PR into `develop`.",
     symptoms:["Every check on the PR is green.","It merges, and `yarn build` still succeeds.","Weeks later a PR into `main` fails ‘Type check’ on code it didn’t touch."],
-    hints:["List what actually ran: `gh pr checks <number>`. Does any check run `tsc`?","Open `.github/workflows/main-branch-checks.yml`. Which branches trigger it?","Why didn’t `next build` in `otito-ci.yml` fail? Search `next.config.mjs` for `typescript`."],
+    hints:["List what actually ran: `gh pr checks <number>`. Does any check run `tsc`?","Open `.github/workflows/main-branch-checks.yml`. Which branches trigger it?","Why didn’t `next build` in `solumbe-ci.yml` fail? Search `next.config.mjs` for `typescript`."],
     cause:"Type checking only runs on PRs into `main`, and `next.config.mjs` sets `typescript.ignoreBuildErrors: true`, so the build ignores type errors too. Nothing on a `develop` PR could catch it.",
     fix:"Fix the error, add the PR gate from this job’s worked example on both branches, and make `checks` a required status check.",
     prevent:"A ruleset requiring `checks` on `develop` and `main`, a deliberate test PR proving a type error blocks merging, and removing `ignoreBuildErrors` once the backlog is clean."},
@@ -1129,7 +1129,7 @@ exit "$failed"`]],
   steps:[["Find yours","`docker inspect <api-container>` shows the `traefik.*` labels Coolify generated; `ls /data/coolify/proxy/dynamic/` shows the hand-written files, such as the wildcard route."],["Saving is deploying","Traefik reloads dynamic files the moment they change, so a typo goes live at once. Validate the YAML before saving, then watch `docker logs coolify-proxy`."],["Bypass one layer at a time","`docker run --rm --network coolify curlimages/curl -s http://<api-container>:9999/api/v1/health` skips Traefik and Cloudflare; then try the public URL. The difference is what the proxies add."],["Read the right log","`docker logs coolify-proxy` explains routing and 502 errors; `docker logs <api-container>` explains the app, including the migration step in `coolify-entrypoint.sh`."]]};
 
 DEEP.p2={verify:"Checked: the YAML parses. Adapt: branch protection must require the job name `checks`.",title:"One PR gate for develop and main",
-  intro:"A single workflow that replaces today’s split between `main-branch-checks.yml` and `otito-ci.yml` for the checks that must block a merge.",
+  intro:"A single workflow that replaces today’s split between `main-branch-checks.yml` and `solumbe-ci.yml` for the checks that must block a merge.",
   files:[[".github/workflows/pr-checks.yml",`name: PR checks
 on:
   pull_request:

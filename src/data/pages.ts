@@ -15,7 +15,7 @@ export const now: Page = {
   title: 'Now',
   domain: 'q4 2026',
   body:
-    'Shipped Solumbe v4.7.1, the new name for Òtítọ́: a request can now declare the files it will touch before the edit, and the gate fails any file that was never declared. The gate delegates to gitleaks, Semgrep, and osv-scanner where they are installed, attestation records can be signed, and Claude can now answer the request read alongside Jev. Brain Boost Buddy reached v2.6.0 with weekly lesson-time scheduling. Growing BashBop and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
+    'Shipped Solumbe v4.8.0: it now reads dependency work as dependency work, ranking the manifests and lockfiles an upgrade or audit actually changes, and runtime version pins now gate a merge. A new history replay measures the context pack on a repository’s own past commits instead of a corpus I wrote myself. Brain Boost Buddy reached v2.6.0 with weekly lesson-time scheduling. Growing BashBop and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
 };
 
 export const speaking: Page = {
