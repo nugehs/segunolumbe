@@ -110,16 +110,12 @@ export default function App({ initialPath }: Props) {
               />
             </figure>
             <div className="hero-copy">
-              <p className="role">Founder & software architect</p>
-              <h1>
-                Oluwasegun
-                <span>Olumbe</span>
-              </h1>
-              <p className="tagline">Static analysis, never the model.</p>
+              <h1>Oluwasegun Olumbe</h1>
+              <p className="role">Founder & software architect, London</p>
               <p className="bio">
                 Founder of <b>BashBop</b>. I build deterministic tools that make AI software safer,
                 faster, and more reliable: context, contracts, compliance, governance. Local-first.
-                MCP-native.
+                MCP-native. Static analysis, never the model.
               </p>
               {identityLinks}
             </div>
@@ -145,15 +141,17 @@ export default function App({ initialPath }: Props) {
               <SectionHeading id="section-title">{sectionLabel[route.mode]}</SectionHeading>
               <p className="mode-note">{sectionNote[route.mode]}</p>
             </header>
+            <div className="index-head" aria-hidden="true">
+              <span>Name</span>
+              <span>What it does</span>
+              <span>Links</span>
+            </div>
             <ol className="index">
-              {catalog[route.mode].map((item, position) => {
+              {catalog[route.mode].map((item) => {
                 const href = itemPath(route.mode, item.slug);
                 const site = item.links.find((link) => link.site);
                 return (
                   <li key={item.slug} className="entry">
-                    <span className="entry-num" aria-hidden="true">
-                      {String(position + 1).padStart(2, '0')}
-                    </span>
                     <div className="entry-head">
                       <EntryHeading className="entry-name">
                         <a href={href} onClick={navigate}>
@@ -164,30 +162,24 @@ export default function App({ initialPath }: Props) {
                     </div>
                     <div className="entry-body">
                       <p className="entry-what">{item.what}</p>
-                      {item.stack ? (
-                        <ul className="chips" aria-label="Stack">
-                          {item.stack.map((tech) => (
-                            <li key={tech}>{tech}</li>
-                          ))}
-                        </ul>
-                      ) : null}
-                      {item.caseStudy ? (
-                        <div className="detail-links">
-                          <a className="site" href={href} onClick={navigate}>
-                            case study →
-                          </a>
-                          {site ? <a href={site.href}>{site.label}</a> : null}
-                        </div>
-                      ) : item.links.length > 0 ? (
-                        <div className="detail-links">
-                          {item.links.map((link) => (
-                            <a key={link.href} className={link.site ? 'site' : undefined} href={link.href}>
-                              {link.label}
-                            </a>
-                          ))}
-                        </div>
-                      ) : null}
+                      {item.stack ? <p className="entry-stack">{item.stack.join(', ')}</p> : null}
                     </div>
+                    {item.caseStudy ? (
+                      <div className="detail-links entry-links">
+                        <a className="site" href={href} onClick={navigate}>
+                          case study
+                        </a>
+                        {site ? <a href={site.href}>{site.label}</a> : null}
+                      </div>
+                    ) : item.links.length > 0 ? (
+                      <div className="detail-links entry-links">
+                        {item.links.map((link) => (
+                          <a key={link.href} className={link.site ? 'site' : undefined} href={link.href}>
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
+                    ) : null}
                   </li>
                 );
               })}
@@ -215,24 +207,30 @@ export default function App({ initialPath }: Props) {
             </nav>
 
             <article className="detail" key={route.path}>
-              <p className="detail-dom">{route.item.domain}</p>
               <h1>{route.item.name}</h1>
+              <p className="detail-dom">{route.item.domain}</p>
               <p className="detail-what">{route.item.what}</p>
-              {route.item.stack ? (
-                <ul className="chips" aria-label="Stack">
-                  {route.item.stack.map((tech) => (
-                    <li key={tech}>{tech}</li>
-                  ))}
-                </ul>
-              ) : null}
-              {route.item.links.length > 0 ? (
-                <div className="detail-links">
-                  {route.item.links.map((link) => (
-                    <a key={link.href} className={link.site ? 'site' : undefined} href={link.href}>
-                      {link.label}
-                    </a>
-                  ))}
-                </div>
+              {route.item.stack || route.item.links.length > 0 ? (
+                <dl className="facts">
+                  {route.item.stack ? (
+                    <div>
+                      <dt>Stack</dt>
+                      <dd>{route.item.stack.join(', ')}</dd>
+                    </div>
+                  ) : null}
+                  {route.item.links.length > 0 ? (
+                    <div>
+                      <dt>Links</dt>
+                      <dd className="detail-links">
+                        {route.item.links.map((link) => (
+                          <a key={link.href} className={link.site ? 'site' : undefined} href={link.href}>
+                            {link.label}
+                          </a>
+                        ))}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
               ) : null}
               {route.item.caseStudy ? <CaseStudy study={route.item.caseStudy} /> : null}
             </article>
@@ -260,8 +258,8 @@ export default function App({ initialPath }: Props) {
 
             <article className="detail detail-article" key={route.path}>
               <p className="mode-note">{pages.writing.body}</p>
-              <p className="detail-dom">{route.article.category}</p>
               <h1 className="detail-title-article">{route.article.title}</h1>
+              <p className="detail-dom">{route.article.category}</p>
               <p className="detail-what">{route.article.description}</p>
               <ArticleBody markdown={route.article.body} />
               <div className="detail-links">
@@ -274,8 +272,8 @@ export default function App({ initialPath }: Props) {
           </div>
         ) : route.kind === 'page' ? (
           <article className="detail detail-full" key={route.path}>
-            <p className="detail-dom">{pages[route.mode].domain}</p>
             <h1>{pages[route.mode].title}</h1>
+            <p className="detail-dom">{pages[route.mode].domain}</p>
             <p className="detail-what">{pages[route.mode].body}</p>
             <div className="detail-links">
               <a className="site" href="mailto:info@bashbop.com">
@@ -285,8 +283,8 @@ export default function App({ initialPath }: Props) {
           </article>
         ) : (
           <article className="detail detail-full">
-            <p className="detail-dom">404</p>
             <h1>Page not found</h1>
+            <p className="detail-dom">404</p>
             <p className="detail-what">Nothing lives at that address. The work is one click away.</p>
             <div className="detail-links">
               <a className="site" href="/" onClick={navigate}>

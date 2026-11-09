@@ -20,8 +20,13 @@ Light, gentle, and technical. Direct founder voice: practical stories, no fluff.
 
 - The original cream/paper + red accent + mono-label look
 - The dark indigo and yellow, fixed-viewport look it had before the light theme
+- The white and indigo light theme that followed: all-caps heavy Bricolage headings, pill chips and buttons, dot-grid hero, offset-shadow portrait, tracked accent eyebrow labels, "01 02" numbering. It read as AI-generated.
 - Generic SaaS landings (identical cards, soft gradients, Inter-default typography)
 - Terminal/hacker aesthetics (neon on black, green code, monospaced costume)
+
+## Visual System
+
+Plain index. One sans family (IBM Plex Sans) in sentence case, near-black ink on a light warm grey, and no accent colour: hierarchy comes from size, weight, and hairline rules, and links are underlined in ink. The work is listed as a table (name, what it does, links), not as cards. Case-study architecture is a captioned figure of names in boxes, one row per layer with an arrow into the next, followed by a key that says what each part does.
 
 ## Design Principles
 

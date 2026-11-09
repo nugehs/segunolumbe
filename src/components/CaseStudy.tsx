@@ -1,38 +1,75 @@
 import type { ReactNode } from 'react';
-import type { ArchLayer, ArchNode, CaseStudy as Study } from '../data/products';
+import type { ArchLayer, CaseStudy as Study } from '../data/products';
 
 type Props = {
   study: Study;
 };
 
-function Nodes({ nodes }: { nodes: ArchNode[] }) {
+function Boxes({ layer }: { layer: ArchLayer }) {
   return (
-    <ul className="arch-nodes">
-      {nodes.map((node) => (
-        <li key={node.name} className="arch-node">
-          <strong>{node.name}</strong>
-          <span>{node.role}</span>
+    <ul className="arch-boxes">
+      {layer.nodes.map((node) => (
+        <li key={node.name} className="arch-box">
+          {node.name}
         </li>
       ))}
     </ul>
   );
 }
 
-function Layers({ layers }: { layers: ArchLayer[] }) {
+/**
+ * The picture: component names only, one row per layer, an arrow from each row into the next.
+ * What each component does is in the key below it, so the drawing stays readable.
+ */
+function Figure({ number, layers, aside }: { number: number; layers: ArchLayer[]; aside?: ArchLayer }) {
   return (
-    <ol className="arch-layers">
+    <figure className="arch">
+      <ol className="arch-flow">
+        {layers.map((layer) => (
+          <li key={layer.label} className="arch-row">
+            <p className="arch-label">{layer.label}</p>
+            <Boxes layer={layer} />
+          </li>
+        ))}
+      </ol>
+      {aside ? (
+        <div className="arch-row arch-aside">
+          <p className="arch-label">{aside.label}</p>
+          <Boxes layer={aside} />
+        </div>
+      ) : null}
+      <figcaption>
+        Figure {number}. Read top to bottom: each row feeds the one below it.
+        {aside ? ' The dashed row sits outside that flow.' : ''}
+      </figcaption>
+    </figure>
+  );
+}
+
+/** The words: every component in the figure, grouped by its row, with what it does. */
+function Key({ layers }: { layers: ArchLayer[] }) {
+  return (
+    <div className="arch-key">
       {layers.map((layer) => (
-        <li key={layer.label} className="arch-layer">
-          <p className="arch-label">{layer.label}</p>
-          <Nodes nodes={layer.nodes} />
-        </li>
+        <div key={layer.label} className="key-group">
+          <p className="key-label">{layer.label}</p>
+          <dl>
+            {layer.nodes.map((node) => (
+              <div key={node.name} className="key-row">
+                <dt>{node.name}</dt>
+                <dd>{node.role}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       ))}
-    </ol>
+    </div>
   );
 }
 
 export default function CaseStudy({ study }: Props) {
   const { architecture } = study;
+  const mainLayers = [...architecture.layers, ...(architecture.aside ? [architecture.aside] : [])];
 
   // A section with nothing in it is left out, heading and all.
   const sections: { id: string; title: string; body: ReactNode }[] = [
@@ -60,22 +97,14 @@ export default function CaseStudy({ study }: Props) {
         architecture.layers.length > 0 ? (
           <>
             <p className="cs-text">{architecture.intro}</p>
-            <div className="arch">
-              <Layers layers={architecture.layers} />
-              {architecture.aside ? (
-                <div className="arch-layer arch-aside">
-                  <p className="arch-label">{architecture.aside.label}</p>
-                  <Nodes nodes={architecture.aside.nodes} />
-                </div>
-              ) : null}
-            </div>
-            {(architecture.more ?? []).map((part) => (
+            <Figure number={1} layers={architecture.layers} aside={architecture.aside} />
+            <Key layers={mainLayers} />
+            {(architecture.more ?? []).map((part, index) => (
               <div key={part.title} className="arch-more">
                 <h3>{part.title}</h3>
                 <p className="cs-text">{part.intro}</p>
-                <div className="arch">
-                  <Layers layers={part.layers} />
-                </div>
+                <Figure number={index + 2} layers={part.layers} />
+                <Key layers={part.layers} />
               </div>
             ))}
           </>
@@ -92,7 +121,7 @@ export default function CaseStudy({ study }: Props) {
                 <div>
                   <h3>{decision.chose}</h3>
                   <p className="decision-over">
-                    <span>Instead of</span> {decision.over}
+                    <span>Instead of:</span> {decision.over}
                   </p>
                 </div>
                 <p className="decision-why">{decision.why}</p>
