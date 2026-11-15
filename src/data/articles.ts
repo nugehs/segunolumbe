@@ -16,6 +16,77 @@ export type Article = {
 
 export const articles: Article[] = [
   {
+    slug: 'a-gate-needs-a-stop-condition',
+    shortTitle: 'A gate needs a stop',
+    title: 'A Merge Gate an Agent Can Call Needs a Stop Condition',
+    description:
+      'A gate that answers PASS or FAIL was built for a person who reads the answer once. An agent reads it, edits, and calls again. Solumbe 4.12.0 counts those calls and tells the agent when to stop and ask.',
+    domain: 'release · 15 nov 2026',
+    publishDate: '2026-11-15',
+    category: 'release',
+    tags: ['ai-agents', 'merge-gates', 'mcp', 'solumbe', 'release'],
+    canonicalUrl:
+      'https://geekienews.com/articles/a-gate-needs-a-stop-condition/',
+    body: `A merge gate returns a verdict: PASS, WARN or FAIL, with the checks behind it. That design assumes a reader who takes the answer once and decides what to do. A coding agent is not that reader. It takes a FAIL, edits, and calls the gate again, and nothing in that exchange says when to stop.
+
+Solumbe 4.12.0 adds the missing part. It is a small change, and the reasoning behind it matters more than the code.
+
+## The loop nobody wrote
+
+Solumbe's \`review_gate\` is an MCP tool. It answers one call and remembers nothing: the same tree gets the same verdict whether it is the first call or the tenth. That is what makes the verdict reproducible, and I do not want to give it up.
+
+But put that tool in front of an agent whose instructions say "run the gate before opening a pull request", and the agent builds a loop around it. Read the FAIL, change something, call again. Each step is reasonable. The loop as a whole has no exit other than PASS, so the agent keeps going until it gets one.
+
+There are two ways to get a PASS. One is to fix what the gate found. The other is to change the diff until the gate stops finding it: drop the file that tripped the scope check, split the change, reword the request. A gate cannot tell those apart from the inside, because both end in a tree that passes. A person can, but only if someone asks them, and the loop never does.
+
+So the stop condition is not about saving tokens. A FAIL that survives several attempts is information for the person who owns the change, and a loop with no exit keeps it from them.
+
+## What 4.12.0 does
+
+A local FAIL from the MCP \`review_gate\` now carries an \`attempts\` object:
+
+\`\`\`json
+{
+  "verdict": "FAIL",
+  "attempts": { "consecutiveFails": 3, "cap": 3, "escalate": true }
+}
+\`\`\`
+
+\`consecutiveFails\` counts FAIL verdicts in a row on one change. At the cap, \`escalate\` is true and the result adds one plain instruction: stop retrying, report the failing checks and their reasons to the user, and wait for their decision before running the gate again.
+
+The cap is 3 by default. \`SOLUMBE_GATE_FAIL_CAP\` sets it, and \`0\` or \`off\` turns the count off.
+
+A few choices sit under that:
+
+- **A change is a repository and its head commit.** Every gate run before the next commit counts as the same change. A new commit starts a new count, and so does a PASS or a WARN.
+- **The verdict is never changed.** The third FAIL is the same FAIL the first one was. The count is added beside it; it does not make the gate stricter or looser.
+- **Nothing is written to disk.** The count lives in the MCP server's process, so it lasts one agent session and leaves no file behind.
+- **Only the agent's surface is counted.** The command line, the pre-commit hook, CI and the pull request gate are left alone. A person re-running a command already knows how many times they have run it.
+- **Counting cannot fail the call.** If the count throws for any reason, the gate's result comes back untouched.
+
+## An instruction, not a lock
+
+The cap does not refuse the fourth call. It tells the agent to stop, and the agent can ignore it.
+
+I chose that on purpose. A hard refusal would make the gate stateful in a way that changes its answer, and a tool that sometimes will not answer is a tool people route around. An instruction in the result is the one place an agent reliably reads, and it leaves the verdict reproducible. The cost is that it depends on the agent doing what the result says.
+
+## The other fix: a key the server could not see
+
+The same release fixes something duller that cost more time than it should have. Solumbe's context pack can ask a model to read the request, which needs \`TYPESAFE_API_KEY\` or \`ANTHROPIC_API_KEY\`. Desktop hosts start MCP servers outside any shell, so a key exported in a shell startup file never reached the server, and the pack reported the key as not set and fell back to its own ranking. The key was there in every terminal and missing in the one process that needed it.
+
+At startup the server now asks the user's login shell for either key when it is missing. It runs the shell non-interactively, never overwrites a key the host passed, logs the names it loaded and never the values, gives up after five seconds, and is skipped on Windows. \`SOLUMBE_SHELL_ENV=0\` turns it off. A login shell reads \`.zprofile\` or \`.bash_profile\`, not \`.zshrc\` or \`.bashrc\`, so the export has to live in one of the former.
+
+## What this does not prove
+
+I have no number for how often agents loop on a failing gate, or for whether the message changes what they do next. The count exists so that question can be asked; it is not an answer to it.
+
+Three is a guess. It is high enough to allow a real fix and a correction to that fix, and low enough that a person hears about it the same hour. It is configurable because I do not expect the guess to hold everywhere.
+
+The count is per session and per head commit. An agent that commits between attempts, or a new session on the same change, starts from zero. That is a gap I left open rather than write state to disk for it.
+
+A gate built for people reports a verdict. A gate an agent can call also has to say when the verdict has stopped being the agent's to resolve.`,
+  },
+  {
     slug: 'when-the-benchmark-and-the-history-disagree',
     shortTitle: 'Benchmark vs history',
     title: 'When Your Benchmark and Your Git History Disagree',

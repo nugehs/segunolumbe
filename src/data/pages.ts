@@ -15,7 +15,7 @@ export const now: Page = {
   title: 'Now',
   domain: 'q4 2026',
   body:
-    'Shipped Solumbe v4.8.0: it now reads dependency work as dependency work, ranking the manifests and lockfiles an upgrade or audit actually changes, and runtime version pins now gate a merge. A new history replay measures the context pack on a repository’s own past commits instead of a corpus I wrote myself. Brain Boost Buddy reached v2.6.0 with weekly lesson-time scheduling. Growing BashBop and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
+    'Shipped Solumbe v4.12.0: the gate an agent calls over MCP now counts consecutive failures on a change and, at three, tells the agent to stop retrying and take the failing checks to a person. The MCP server also finds an API key exported in a shell startup file, which desktop hosts never passed on. Brain Boost Buddy reached v2.6.0 with weekly lesson-time scheduling. Growing BashBop and delivering OTT clients at NBCUniversal for Peacock, NOW, and SkyShowtime.',
 };
 
 export const speaking: Page = {
