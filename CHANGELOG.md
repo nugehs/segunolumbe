@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0] — 2026-11-15
+
+### Added
+- A new GeekieNews article, "A Merge Gate an Agent Can Call Needs a Stop Condition", mirrored into the writing section: Solumbe 4.12.0's retry cap on the MCP gate.
+
+### Changed
+- Solumbe is now shown as v4.12.0 on the card, the release link, and the Now page, with Now copy for the 4.12.0 work (the gate's stop condition, and API keys loaded from the login shell).
+
 ## [1.4.0] — 2026-10-24
 
 ### Added
